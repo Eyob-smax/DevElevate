@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Journey tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inknut+Antiqua&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Irish+Grover&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Itim&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mona+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sour+Gummy&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Imprima&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Imprima&family=Laila:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Imprima&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Laila:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Imprima&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Laila:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              inkut: ["Inknut Antiqua", "system-ui"],
+              inria: ["Inria Serif", "serif"],
+              itim: ["Itim", "cursive"],
+              roboto: ["Roboto", "sans-serif"],
+              faculty: ["Faculty Glyphic", "sans-serif"],
+              sour: ["Sour Gummy", "sans-serif"],
+              mona: ["Mona Sans", "sans-serif"],
+              imprima: ["Imprima", "sans-serif"],
+              laila: ["Laila", "serif"],
+              inter: ["Inter", "sans-serif"],
+              k2d: ["K2D", "sans-serif"],
+            },
+          },
+        },
+        plugins: [],
+      };
+    </script>
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .scrollbar::-webkit-scrollbar {
+          width: 3px;
+          height: 2px;
+        }
+
+        .justify-last-center {
+          text-align: justify;
+          text-align-last: center;
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+          background: none;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+          background: none;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #555;
+          width: 10px; /* Even darker */
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <section
+      id="sign-section"
+      class="hidden flex-col items-center justify-center w-[80%] mx-auto"
+    >
+      <h1
+        id="sign-text"
+        class="text-center mt-10 h-10 text-3xl font-bold mb-10"
+      >
+        Sign Up
+      </h1>
+      <form action="" class="mb-3">
+        <label for="sign-email" class="w-[90%] pt-2 mx-auto block">Name</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto mb-5"
+        >
+          <i class="fas fa-user text-gray-500"></i
+          ><input
+            id="sign-user-name"
+            type="text"
+            placeholder="Your User Name"
+            class="block mx-auto pt-2 px-4 focus:outline-none"
+            required
+          />
+        </div>
+        <label for="email" class="w-[90%] pt-2 mx-auto block">Email</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto mb-5"
+        >
+          <i class="fas fa-envelope text-gray-500"></i
+          ><input
+            id="sign-email"
+            type="email"
+            placeholder="Your Email"
+            class="block mx-auto py-2 px-4 focus:outline-none"
+            required
+          />
+        </div>
+        <label for="email" class="w-[90%] pt-2 mx-auto block">Password</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto"
+        >
+          <i class="fas fa-lock text-gray-500"></i
+          ><input
+            id="sign-pass"
+            type="password"
+            placeholder="Your Password"
+            class="block mx-auto py-2 px-4 focus:outline-none"
+            minlength="8"
+            required
+          />
+        </div>
+        <label for="email" class="w-[90%] pt-4 mx-auto block"
+          >Confirm Password</label
+        >
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto"
+        >
+          <i class="fas fa-lock text-gray-500"></i
+          ><input
+            id="sign-pass2"
+            type="password"
+            placeholder="Repeat Password"
+            class="block mx-auto py-2 px-4 focus:outline-none"
+            minlength="8"
+            required
+          />
+        </div>
+      </form>
+
+      <div class="mx-auto w-[90%] mt-16">
+        <button
+          id="sign-btn"
+          class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold bg-black text-white"
+        >
+          SIGN UP
+        </button>
+        <button
+          id="sign-cancel-btn"
+          class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold mt-5"
+        >
+          CANCEL
+        </button>
+      </div>
+    </section>
+
+    <section
+      class="hidden flex-col items-center mt-16 justify-center w-[80%] mx-auto"
+      id="log-section"
+    >
+      <h1
+        id="login-text"
+        class="text-center mt-10 h-10 text-3xl font-bold mb-10"
+      >
+        Log In
+      </h1>
+      <form action="" class="mb-3">
+        <label for="log-email" class="w-[90%] pt-2 mx-auto block">Name</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto mb-5"
+        >
+          <i class="fas fa-user text-gray-500"></i
+          ><input
+            id="log-user-name"
+            type="text"
+            placeholder="Your User Name"
+            class="block mx-auto pt-2 px-4 focus:outline-none"
+            required
+          />
+        </div>
+
+        <label for="email" class="w-[90%] pt-2 mx-auto block">Password</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto"
+        >
+          <i class="fas fa-lock text-gray-500"></i
+          ><input
+            id="log-pass"
+            type="password"
+            placeholder="Your Password"
+            class="block mx-auto py-2 px-4 focus:outline-none"
+            minlength="8"
+            required
+          />
+        </div>
+      </form>
+      <div class="text-right" id="forget">
+        <a href="#" class="text-[15px]">Forget Password?</a>
+      </div>
+      <div class="mx-auto w-[90%] mt-16">
+        <button
+          id="log-btn"
+          class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold bg-black text-white"
+        >
+          LOGIN
+        </button>
+        <button
+          id="log-cancel-btn"
+          class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold mt-5"
+        >
+          CANCEL
+        </button>
+      </div>
+    </section>
+
+    <section class="relative h-screen" id="first-page">
+      <div
+        class="absolute top-[70%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+      >
+        <button
+          class="block font-bold py-2 w-52 bg-white text-black rounded-3xl mb-5 shadow-xl shadow-slate-900/50 hover:scale-105 duration-100"
+          id="first-page-log-btn"
+        >
+          LOGIN
+        </button>
+        <button
+          class="relative block font-bold py-2 w-52 bg-black text-white rounded-3xl shadow-xl shadow-white/40 mb-5 hover:scale-105 duration-100"
+          id="first-page-sign-btn"
+        >
+          SIGN UP
+        </button>
+      </div>
+    </section>
+
+    <section class="hidden max-h-screen bg-[#F9F8FD] py-4" id="main-page">
+      <header class="h-100px flex justify-between items-center px-2">
+        <p id="display-userName" class="font-faculty text-[#BEB8DD]">
+          Hi, Eyob Simachew
+        </p>
+        <img
+          src="images/bgc.png"
+          class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
+        />
+      </header>
+      <div class="px-2 mb-5 font-inkut font-extrabold text-center">
+        CODING JOURNAL APP
+      </div>
+      <div
+        id="title-container"
+        class="w-[90%] bg-[#8068FB] flex space-x-5 items-center justify-center h-24 mx-auto mt-2 rounded-2xl shadow-2xl shadow-slate-500"
+      >
+        <img src="images/bg-card.webp" class="w-16 rounded-full" />
+        <p class="text-white font-bold font-sour">Organize you day</p>
+      </div>
+      <div
+        id="card-container"
+        class="mt-10 grid grid-cols-2 grid-rows-2 px-2 py-4 w-[350px] mx-auto max-h-[60vh] bg-white rounded-xl"
+      >
+        <div
+          id="note-card"
+          class="relative mb-5 px-12 space-y-2 pt-5 font-semibold w-36 h-36 rounded-xl shadow-lg shadow-slate-9/500 mx-auto ring-2 ring-black ring-opacity-10 shadow-slate-900/5"
+        >
+          <div
+            class="bg-[#F1EEFF] h-10 w-10 rounded-full text-[#8068FB] flex justify-center items-center shadow-md"
+          >
+            <i class="fas fa-sticky-note"></i>
+          </div>
+          <p class="font-sour">Notes</p>
+          <div
+            class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[70%] right-[5%]"
+          >
+            <p class="main-notes-card-counter text-[#8068FB]">0</p>
+          </div>
+        </div>
+        <div
+          id="projects-card"
+          class="mb-5 space-y-2 pt-5 font-semibold w-36 h-36 rounded-xl ring-2 ring-black ring-opacity-10 shadow-lg shadow-slate-900/5 shadow-slate-9/500 mx-auto px-12 relative"
+        >
+          <div
+            class="bg-[#F1EEFF] h-10 w-10 rounded-full text-[#8068FB] relative shadow-md"
+          >
+            <i
+              class="absolute fas fa-project-diagram top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            ></i>
+          </div>
+          <p class="font-sour">Projects</p>
+          <div
+            class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[70%] right-[5%]"
+          >
+            <p class="text-[#8068FB] main-projects-card-counter">0</p>
+          </div>
+        </div>
+        <div
+          id="to-do-card"
+          class="mb-5 px-12 space-y-2 pt-5 font-semibold w-36 h-36 rounded-xl ring-2 ring-black ring-opacity-10 shadow-lg shadow-slate-900/5 shadow-slate-9/500 mx-auto relative"
+        >
+          <div
+            class="bg-[#F1EEFF] h-10 w-10 rounded-full text-[#8068FB] relative shadow-md"
+          >
+            <i
+              class="absolute fas fa-tasks top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            ></i>
+          </div>
+          <p class="font-sour">To-do tasks</p>
+          <div
+            class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[70%] right-[5%]"
+          >
+            <p class="text-[#8068FB] main-to-do-card-counter">0</p>
+          </div>
+        </div>
+        <div
+          id="journal-card"
+          class="mb-5 px-12 space-y-2 pt-5 font-semibold w-36 h-36 rounded-xl ring-2 ring-black ring-opacity-10 shadow-lg shadow-slate-900/5 shadow-slate-9/500 mx-auto relative"
+        >
+          <div
+            class="bg-[#F1EEFF] h-10 w-10 rounded-full text-[#8068FB] relative shadow-md"
+          >
+            <i
+              class="absolute fas fa-book-open top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            ></i>
+          </div>
+          <p class="font-sour">jOURNAL</p>
+          <div
+            class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[70%] right-[5%]"
+          >
+            <p class="text-[#8068FB] main-journal-card-counter">0</p>
+          </div>
+        </div>
+        <div
+          id="Ai-question-card"
+          class="bg-[#8068FB] shadow-lg shadow-slate-600 w-16 h-16 rounded-xl absolute top-[88%] left-[50%] font-extrabold text-[30px] flex justify-center items-center -translate-x-1/2 -translate-y-1/2 z-10"
+        >
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-brain text-white"
+          ></i>
+        </div>
+        <footer
+          class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+        >
+          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
+            <i
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+            ></i>
+          </div>
+          <div
+            id="focus-session-card"
+            class="w-10 h-10 rounded-full bg-[#F1EEFF] relative mr-12"
+          >
+            <p
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            >
+              ⏰
+            </p>
+          </div>
+          <div
+            id="quote-card"
+            class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12"
+          >
+            <i
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-book-open"
+            >
+            </i>
+          </div>
+          <div
+            id="dark-mode"
+            class="w-10 h-10 rounded-full bg-[#F1EEFF] relative"
+          >
+            <i
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-moon"
+            ></i>
+          </div>
+        </footer>
+      </div>
+      <main class="max-h-[80vh] overflow-y-scroll scrollbar"></main>
+    </section>
+    <section class="hidden h-screen" id="note-section">
+      <header class="mt-1 h-100px flex justify-between items-center px-4">
+        <p id="display-userName" class="font-faculty text-[#BEB8DD]">
+          Hi, Eyob Simachew
+        </p>
+        <img
+          src="images/bgc.png"
+          class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
+        />
+      </header>
+      <div>
+        <h1 class="text-center font-inkut font-extrabold mb-3">NOTES</h1>
+        <div
+          id="filter-container"
+          class="bg-white ring-2 relative ring-slate-200 shadow-xl shadow-slate-900/5 w-[90%] h-[50PX] mx-auto items-center justify-center rounded-2xl"
+        >
+          <input
+            id="search-notes"
+            type="text"
+            class="w-[85%] h-[80%] bg-transparent px-4 py-1 focus:outline-none"
+            placeholder="Search Notes"
+          />
+          <div
+            id="search-note-btn"
+            class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[50%] right-[5%] -translate-y-1/2"
+          >
+            <i class="fas fa-search text-[#8068FB]"></i>
+          </div>
+        </div>
+      </div>
+      <div id="notes" class="px-2 mt-3">
+        <div class="relative flex justify-between items-center">
+          <h2 class="font-mona font-semibold mx-5">note list</h2>
+          <div
+            id="notes-number"
+            class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-1/2 left-[85%] -translate-x-1/2 -translate-y-1/2"
+          >
+            <p id="note-counter" class="text-[#8068FB]">0</p>
+          </div>
+        </div>
+        <div
+          class="cards-container mt-1 max-h-[69vh] overflow-y-scroll scrollbar shadow-lg shadow-slate-900/5 rounded-xl"
+        ></div>
+        <footer
+          class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+        >
+          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+            <i
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+            ></i>
+          </div>
+          <div
+            class="nav-focus w-10 h-10 rounded-full bg-[#F1EEFF] relative mr-12"
+          >
+            <p
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            >
+              ⏰
+            </p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12">
+            <i
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-book-open"
+            >
+            </i>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
+            <i
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-moon"
+            ></i>
+          </div>
+          <div
+            class="bg-[#8068FB] add-notes-btn w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+          >
+            <i class="text-white duration-300 fas fa-plus text-2xl"></i>
+          </div>
+        </footer>
+      </div>
+      <div
+        class="add-notes-section hidden py-5 absolute w-[95%] rounded-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#F7F8FB] ring-2 ring-slate-400/10 max-h-[480px] shadow-xl shadow-slate-900/5 overflow-y-scroll scrollbar"
+      >
+        <h1 class="text-[#8068FB] font-inkut font-bold text-center mb-3">
+          Add Notes
+        </h1>
+        <div class="flex-col space-y-4 mx-auto px-2">
+          <form id="notes-form">
+            <div class="mx-auto p-2 flex items-center justify-between">
+              <label class="font-semibold font-faculty" for="write-note-title"
+                >Title</label
+              >
+              <input
+                name="noteTitle"
+                class="write-note-title ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
+                type="text"
+                maxlength="200"
+                placeholder="let vs var"
+              />
+            </div>
+            <div class="mx-auto p-2 flex items-center justify-between">
+              <label class="font-semibold font-faculty" for="write-note-topic"
+                >Topic</label
+              >
+              <input
+                name="noteTopic"
+                class="write-note-topic ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
+                type="text"
+                maxlength="20"
+                placeholder="html , css, js, react, node"
+              />
+            </div>
+
+            <div class="flex justify-around items-start">
+              <label for="write-note-body" class="font-semibold font-faculty"
+                >Notes</label
+              >
+              <textarea
+                name="noteBody"
+                cols="26"
+                rows="5"
+                class="write-note-body p-2 ring-2 ring-black block rounded-xl"
+                placeholder="notes here..."
+                wrap="soft"
+              ></textarea>
+            </div>
+            <div class="flex justify-center items-center mt-4">
+              <button
+                type="submit"
+                class="bg-white write-note-submit-btn relative rounded-[17px] w-40 py-2"
+              >
+                Enter
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="main-Ai-question" class="hidden h-screen relative">
+      <div class="hidden question-display-section">
+        <div
+          class="mt-2 flex items-center font-faculty justify-between py-3 mx-2 px-6 rounded-xl bg-[#8068FB]"
+        >
+          <img
+            src="images/DALL·E 2024-11-13 23.02.48 - A sleek, modern digital interface showing an AI coding assistant. The assistant displays a code editor on the left side with highlighted syntax, sugge.webp"
+            class="w-10 bg-cover object-fill rounded-full shadow-lg shadow-slate-900/50"
+          />
+          <h1 class="text-white font-itim font-bold">
+            PRACTICE WITH QUESTIONS
+          </h1>
+        </div>
+        <div class="mt-2 mx-2 text-center">
+          <select
+            name="difficulty"
+            id="difficulty-selector"
+            class="rounded-lg w-full py-1 font- focus:outline-gold px-4 bg-[#F1EEFF]"
+          >
+            <option value="" class="opacity-5">Difficulty</option>
+            <option id="easy-option" value="easy">Easy</option>
+            <option id="medium-option" value="medium">Medium</option>
+            <option id="hard-option" value="hard">Hard</option>
+          </select>
+        </div>
+        <div
+          class="main-question-container max-h-[69vh] border-[1px] ring-[1px] ring-slate-200 overflow-y-scroll shadow-xl shadow-slate-950/25 scrollbar w-[95%] mx-auto rounded-xl p-2 mt-2"
+        >
+          <div
+            class="hidden question-answer-container bg-white p-2 mx-auto rounded-lg shadow-lg shadow-slate-900/5 ring-2 ring-black ring-opacity-10"
+          >
+            <div
+              class="que-1 question-container border-b-[1px] break-words border-b-[#6350bf] py-1"
+            >
+              <h2 class="font-roboto font-semibold text-[#8068FB] pb-2"></h2>
+              <p
+                class="font-sour font-semibold text-[13px] tracking-wide max-h-[200px] overflow-y-scroll scrollbar"
+              >
+                <span id="current-question-no">1. </span>
+              </p>
+            </div>
+            <div
+              class="answer-container w-full bg-[#f1f1f1] rounded-lg p-1 mt-1 mx-auto text-center max-h-[250px] overflow-y-scroll scrollbar"
+            >
+              <button
+                class="text-[12px] answer-btn text-center bg-white shadow-xl shadow-slate-600/5 ring-2 ring-slate-200 w-[95%] mx-auto rounded-xl focus:border-2 py-2 break-words focus:border-[#6350bf] focus:border-opacity-50 mt-2"
+              ></button>
+              <button
+                class="text-[12px] answer-btn text-center bg-white shadow-xl shadow-slate-600/5 ring-2 ring-slate-200 w-[95%] mx-auto rounded-xl py-2 break-words focus:border-2 focus:border-[#6350bf] focus:border-opacity-50 mt-2"
+              ></button>
+              <button
+                class="text-[12px] answer-btn text-center bg-white shadow-xl shadow-slate-600/5 ring-2 ring-slate-200 w-[95%] mx-auto rounded-xl py-2 break-words focus:border-2 focus:border-[#6350bf] focus:border-opacity-50 mt-2"
+              ></button>
+              <button
+                class="text-[12px] answer-btn text-center bg-white shadow-xl shadow-slate-600/5 ring-2 ring-slate-200 w-[95%] mx-auto rounded-xl py-2 break-words focus:border-2 focus:border-[#6350bf] focus:border-opacity-50 mt-2"
+              ></button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="generate-section absolute bottom-[8%] w-full mx-auto flex justify-between items-center mb-2"
+        >
+          <button
+            class="delete-all w-11 h-11 ml-4 py-2 px-2 rounded-full bg-[#161616] text-white"
+          >
+            <i class="fa fa-trash text-[#8068FB]"></i>
+          </button>
+          <input
+            type="text"
+            maxlength="50"
+            placeholder="generate Question"
+            class="generate-question shadow-lg shadow-slate-900/5 py-3 px-2 bg-white w-[60%] mx-auto rounded-xl focus:outline-none ring-2 ring-slate-200 ring-opacity-10"
+          />
+          <button
+            class="generate-btn w-14 mr-4 bg-[#8068FB] py-2 px-2 rounded-xl text-white"
+          >
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+
+        <div
+          class="landing bg-white pointer-events-none absolute top-[49%] left-1/2 -translate-y-1/2 -translate-x-1/2 h-[69%] w-[95%] mx-auto rounded-xl shadow-xl shadow-slate-900/5 ring-2 ring-slate-400"
+        >
+          <img
+            src="images/question_2.jpg"
+            class="shadow-xl shadow-slate-950/25 landing-image h-[100px] w-[100px] rounded-full -translate-y-1/2 -translate-x-1/2 mx-auto top-[32%] left-[50%] absolute"
+          />
+          <div
+            class="w-[80%] landing-text text-justify absolute top-[53%] left-1/2 -translate-x-1/2 -translate-y-1/2 justify-last-center font-bold text-black text-[22px]"
+          >
+            Generate questions and practice with the AI assistant
+          </div>
+
+          <div
+            class="hidden questions-loading-landing w-20 h-20 rounded-full bg-transparent absolute top-[80%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+          >
+            <i
+              class="questions-loading-landing-spinner fas text-4xl fa-spinner text-[#8068FB] absolute top-1/2 left-[37%] -translate-x-1/2 -translate-y-1/2"
+            ></i>
+          </div>
+        </div>
+      </div>
+      <div class="show-scores hidden"><p>5</p></div>
+      <div class="hidden assistant-display-section">
+        <div
+          class="flex items-center font-faculty justify-between py-3 mx-2 mt-2 px-8 rounded-xl bg-[#8068FB]"
+        >
+          <img
+            src="images/DALL·E 2024-11-13 23.02.48 - A sleek, modern digital interface showing an AI coding assistant. The assistant displays a code editor on the left side with highlighted syntax, sugge.webp"
+            class="w-10 bg-cover object-fill rounded-full shadow-lg shadow-slate-900/50"
+          />
+          <h1 class="text-white font-itim font-bold">TECH CONCEPTS WITH AI</h1>
+        </div>
+        <div
+          class="w-[90%] mx-auto h-[72vh] bg-white absolute top-[46%] left-[50%] overflow-y-hidden -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-xl ring-2 ring-slate-300 shadow-slate-900/15"
+        >
+          <h1 class="font-k2d text-center font-bold my-2 text-black">
+            EXPLANATION
+          </h1>
+          <div
+            class="max-h-[57vh] overflow-y-scroll px-2 py-2 coming-assistance m-2 font-roboto rounded-xl shadow-lg shadow-slate-900/5 bg-[#f1f1f1] ring-2 ring-slate-200"
+          ></div>
+          <div
+            style="white-space: pre-wrap"
+            class="max-w-[80%] absolute bottom-2 right-3 question-asked max-h-[50px] font-roboto font-semibold text-[14px] bg-white overflow-y-scroll scrollbar p-2 ring-[1px] ring-slate-500 my-2 rounded-xl shadow-xl shadow-slate-900/5"
+          ></div>
+        </div>
+        <div
+          class="generate-assitance-section fixed bottom-[9%] w-full mx-auto flex justify-between items-center mb-2"
+        >
+          <button
+            class="delete-all-assistance w-11 h-11 ml-4 py-2 px-2 rounded-full bg-[#161616] text-white"
+          >
+            <i class="fa fa-trash text-[#8068FB]"></i>
+          </button>
+          <input
+            type="text"
+            placeholder="ask any dev questions"
+            class="generate-assistance shadow-lg shadow-slate-900/5 py-3 px-2 bg-white w-[60%] mx-auto rounded-xl focus:outline-none ring-2 ring-slate-200 ring-opacity-10"
+          />
+          <button
+            class="generate-assistance-btn w-14 mr-4 bg-[#8068FB] py-2 px-2 rounded-xl text-white"
+          >
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        <div
+          class="assistance-landing bg-white pointer-events-none absolute top-[46%] left-1/2 -translate-y-1/2 -translate-x-1/2 h-[72%] w-[90%] mx-auto rounded-xl shadow-xl shadow-slate-900/5 ring-2 ring-slate-400"
+        >
+          <img
+            src="images/assistant_4.jpg"
+            class="shadow-xl shadow-slate-950/25 landing-image h-[100px] w-[100px] rounded-full -translate-y-1/2 -translate-x-1/2 mx-auto top-[32%] left-[50%] absolute"
+          />
+          <div
+            class="w-[80%] landing-text text-justify absolute top-[53%] left-1/2 -translate-x-1/2 -translate-y-1/2 justify-last-center font-bold text-black text-[22px]"
+          >
+            Explain any tech related concepts here, and make your tech journey
+            simple.
+          </div>
+
+          <div
+            class="hidden loading-landing w-20 h-20 rounded-full bg-transparent absolute top-[80%] left-[48%] -translate-x-1/2 -translate-y-1/2"
+          >
+            <i
+              class="loading-landing-spinner fas text-4xl fa-spinner text-[#8068FB] absolute top-1/2 left-[37%] -translate-x-1/2 -translate-y-1/2"
+            ></i>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+      >
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+          ></i>
+        </div>
+        <div
+          class="nav-focus w-10 h-10 rounded-full bg-[#F1EEFF] relative mr-12"
+        >
+          <p
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            ⏰
+          </p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-book-open"
+          >
+          </i>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-moon"
+          ></i>
+        </div>
+        <div
+          class="bg-[#8068FB] finish-questions display-review w-12 h-12 rounded-full flex items-center justify-center absolute top-[20%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+        >
+          <i class="text-white fas fa-award text-2xl"></i>
+        </div>
+      </footer>
+
+      <div
+        class="select-AI-type h-[84%] absolute top-[48%] left-1/2 -translate-y-1/2 -translate-x-1/2 w-full bg-white flex-col items-center content-center space-y-4"
+      >
+        <div
+          class="assistant w-[80%] h-48 rounded-xl shadow-xl shadow-slate-900/15 ring-2 ring-slate-200 mx-auto flex items-center"
+        ></div>
+        <h1 class="text-center font-k2d pb-5 font-semibold">
+          CODING ASSISTANT
+        </h1>
+        <div
+          class="question w-[80%] h-48 rounded-xl shadow-xl shadow-slate-900/15 ring-2 ring-slate-200 mx-auto flex items-center justify-center"
+        ></div>
+        <h1 class="text-center font-k2d pb-5 font-semibold">DEV QUESTIONS</h1>
+      </div>
+    </section>
+
+    <section class="h-screen relative hidden" id="main-to-do-section">
+      <header class="flex justify-between items-center px-4">
+        <p id="display-userName" class="font-faculty text-[black]">
+          Hi, Eyob Simachew
+        </p>
+        <img
+          src="images/bgc.png"
+          class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
+        />
+      </header>
+      <div class="py-1">
+        <img src="images/todo.webp" class="h-28 w-full object-cover" />
+      </div>
+
+      <div class="to-do-header w-[100%]">
+        <div class="flex justify-between items-center px-6 space-x-5">
+          <h1 class="font-roboto font-semibold">todos</h1>
+          <div
+            class="bg-[#F9F8FD] rounded-full flex justify-center items-center w-10 h-10 mx-auto"
+          >
+            <p id="todo-counter" class="text-[#8068FB]">0</p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="main-to-do-container bg-white w-[95%] max-h-[65vh] overflow-y-scroll scrollbar rounded-lg mx-auto py-2 my-1"
+      >
+        <div
+          class="hidden todo-card w-[97%] max-h-[200px] overflow-y-scroll scrollbar mx-auto rounded-lg shadow-lg bg-[#E5E4E9] shadow-slate-900/5 p-1"
+        >
+          <div class="to-do-content mb-4">
+            <h2
+              class="to-do-text text-justify px-3 font-roboto text-[16px] font-sour"
+            >
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor
+              quas ipsa cumque commodi maxime accusantium in maiores laudantium
+              sint officiis.
+            </h2>
+          </div>
+          <div class="flex space-x-3 font-semibold text-[13px]">
+            <button class="complete-todo w-16 rounded-xl bg-[gold]">
+              Done
+            </button>
+            <button id="precedence" class="w-16 rounded-xl bg-black text-white">
+              High
+            </button>
+          </div>
+          <div class="time-and-buttons flex items-center justify-between mx-2">
+            <p><i class="fa fa-calendar-check"></i> 11/03/24</p>
+            <div class="buttons flex space-x-4">
+              <button
+                class="delete-todo rounded-full w-8 h-8 bg-white justify-center items-center"
+              >
+                <i class="fa fa-trash text-[#8068FB]"></i>
+              </button>
+              <button
+                class="edit-todo rounded-full w-8 h-8 bg-white justify-center items-center"
+              >
+                <i class="fa fa-pen text-[#8068FB]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+      >
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+          ></i>
+        </div>
+        <div
+          class="nav-focus w-10 h-10 rounded-full bg-[#F1EEFF] relative mr-12"
+        >
+          <p
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            ⏰
+          </p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-book-open"
+          >
+          </i>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-moon"
+          ></i>
+        </div>
+        <div
+          id="add-todos-btn"
+          class="bg-[#8068FB] focus:scale w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+        >
+          <i class="text-white duration-300 fas fa-plus text-2xl"></i>
+        </div>
+      </footer>
+      <div
+        class="add-todo-section py-5 absolute w-[95%] rounded-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#F7F8FB] ring-2 ring-slate-400/10 max-h-[480px] shadow-xl shadow-slate-900/5 overflow-y-scroll scrollbar hidden"
+      >
+        <form id="to-do-form">
+          <div class="flex justify-around items-start">
+            <label for="write-note-body" class="font-semibold font-faculty"
+              >To do</label
+            >
+            <textarea
+              name="todoBody"
+              cols="26"
+              rows="5"
+              class="add-todo-body p-2 ring-2 ring-black block rounded-xl"
+              placeholder="notes here..."
+              wrap="soft"
+            ></textarea>
+          </div>
+          <div class="mx-auto my-2 p-3 flex items-center justify-between">
+            <label class="font-semibold font-faculty" for="write-note-title"
+              >Date</label
+            >
+            <input
+              name="todoDate"
+              class="add-todo-date ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
+              type="date"
+              maxlength="200"
+              placeholder="let vs var"
+            />
+          </div>
+
+          <div class="flex mt-6 ml-2 space-x-2 items-center">
+            <label for="priority" class="text-[18px] font-inria font-bold"
+              >Priority</label
+            >
+            <select
+              name="priority"
+              id="todo-priority"
+              class="w-48 font-inria h-10 rounded-lg ring-2 ring-black focus:outline-none"
+            >
+              <option value="high">🔴High</option>
+              <option value="medium">🟡Medium</option>
+              <option value="low">🟢Low</option>
+            </select>
+          </div>
+          <div class="flex mt-6 justify-center">
+            <button
+              type="submit"
+              class="bg-[#8068FB] add-todo-btn-to-list w-40 focus:scale-95 shadow-xl shadow-slate-950/5 ring-2 ring-slate-400/5 h-10 rounded-lg text-white font-bold"
+            >
+              Add
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section
+      id="main-projects-section"
+      class="h-screen hidden bg-[#F4F6F8] relative"
+    >
+      <header class="h-100px flex justify-between items-center px-4">
+        <p id="display-userName" class="font-faculty text-[#BEB8DD]">Hi,</p>
+        <img
+          src="images/bgc.png"
+          class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
+        />
+      </header>
+      <div
+        class="projects-header flex w-[90%] mx-auto items-center justify-center"
+      >
+        <div
+          class="projects-header-image w-[100px] h-[100px] rounded-full mr-[-50px] z-[7]"
+        ></div>
+        <div
+          class="projects-header-gradient w-[80%] h-[80px] rounded-3xl z-[5] flex items-center justify-end relative"
+        >
+          <div
+            class="w-[80%] h-[80px] flex-col space-y-2 rounded-3xl items-center justify-center"
+          >
+            <h1 class="text-center ml-[-40px] text-white font-bold">
+              Projects
+            </h1>
+            <p class="text-[10px] font-imprima text-center w-[150px]">
+              Streamline tasks, track projects, achieve goals.
+            </p>
+          </div>
+          <div
+            id="projects-counter"
+            class="text-[48px] absolute font-laila font-bold right-2 top-[10px] text-white"
+          >
+            22
+          </div>
+        </div>
+      </div>
+      <div class="search-projects">
+        <div
+          class="w-[90%] mx-auto bg-white rounded-3xl mt-5 flex px-10 items-center justify-start"
+        >
+          <input
+            type="text"
+            class="py-2 search-projects-input mx-auto rounded-lg focus:outline-none"
+            placeholder="Search Projects"
+          />
+          <div
+            class="input-search-btn w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full"
+          >
+            <i class="fa fa-search"></i>
+          </div>
+        </div>
+      </div>
+      <div
+        class="main-project-cards-container w-[90%] mx-auto bg-[#EEEEEE] h-[61vh] mt-5 px-2 py-3 rounded-3xl overflow-y-scroll scrollbar"
+      >
+        <h2 class="mx-2 my-2 font-semibold text-[17px]">Projects</h2>
+        <div
+          class="mx-auto project-card w-[100%] h-[135px] flex shadow-xl mb-2 shadow-slate-900/5 ring-slate-400"
+        >
+          <div class="h-[135px] w-[108px]">
+            <img
+              src="images/project-1.png"
+              class="card-thumbnail w-[100%] h-[100%] object-fill rounded-l-2xl"
+            />
+          </div>
+          <div
+            class="mt-[.8px] w-[75%] bg-gradient-to-tr from-[#999999] via-[#c6c5c5] to-white to-50% rounded-r-3xl"
+          >
+            <h2
+              class="project-card-name font-roboto font-semibold tetx-[16px] text-center mt-2"
+            >
+              Movie search app
+            </h2>
+            <p
+              class="project-card-desc text-[10px] font-light font-inter text-center mt-2 border-b-[1px] pb-1 border-b-black ml-2"
+            >
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat
+              aliquam dolorem incidunt illo eligendi deserunt.
+            </p>
+            <div class="card-buttons flex justify-end mr-4 my-2 gap-x-3">
+              <div
+                class="delete-project-card rounded-full w-7 h-7 flex items-center justify-center bg-[#1DC693] shadow-xl shadow-slate-900/5"
+              >
+                <i class="fa fa-trash text-[#] text-[10px]"></i>
+              </div>
+              <div
+                class="edit-project-card rounded-full w-7 h-7 flex items-center justify-center bg-[#F5FC87] shadow-xl shadow-slate-900/5"
+              >
+                <i class="fa fa-pen text-[#000000] text-[10px]"></i>
+              </div>
+              <div
+                class="preview-project-card rounded-full w-7 h-7 flex items-center justify-center bg-[#1DC693] shadow-xl shadow-slate-900/5"
+              >
+                <i class="fa fa-eye text-[10px] text-[#000000]"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="hidden h-[82vh] w-[95%] mx-auto add-new-project-section bg-[#F4F4F4] shadow-lg ring-2 ring-slate-300 rounded-md z-[10] shadow-slate-900/5 fixed left-1/2 top-[47%] -translate-x-1/2 -translate-y-1/2"
+      >
+        <h1
+          class="text-[#8068FB] mt-5 text-[16px] font-k2d font-semibold text-center"
+        >
+          ADD PROJECT
+        </h1>
+        <form id="project-add-form" enctype="multipart/form-data">
+          <div class="w-[90%] mx-auto">
+            <div class="mt-[12px]">
+              <label for="pro-name" class="block mb-[10px] font-roboto"
+                >Project name</label
+              >
+              <input
+                type="text"
+                id="pro-name"
+                name="pro_name"
+                class="outline-black h-100% px-3 border-[1px] border-black h-[43px] w-[100%]"
+              />
+            </div>
+            <div class="mt-[12px] relative">
+              <label
+                for="pro-completion-date"
+                class="block mb-[10px] font-roboto"
+                >Completion Date</label
+              >
+              <input
+                type="text"
+                name="pro_completion_date"
+                id="pro-completion-date"
+                class="outline-black h-100% px-3 border-[1px] border-black h-[43px] w-[100%]"
+              />
+              <i
+                class="fa fa-calendar absolute top-[70%] right-[20px] -translate-x-1/2 -translate-y-1/2"
+              ></i>
+            </div>
+
+            <div class="flex justify-center relative gap-x-2">
+              <div class="mt-[12px] h-[32px] w-[50%] relative">
+                <label for="pro-source-code" class="mb-[8px]"
+                  >Source code</label
+                >
+                <input
+                  id="pro-source-code"
+                  type="file"
+                  accept="text/html"
+                  name="pro_source_code"
+                  class="outline-black h-100% px-3 mt-[8px] w-[100%] h-full border-[1px] border-black"
+                />
+                <p class="absolute top-[35px] right-[10px]">🧑‍💻</p>
+              </div>
+              <div class="mt-[12px] h-[32px] w-[50%] relative">
+                <label for="pro-time-taken" class="mb-[6px]"
+                  >Time taken(days)</label
+                >
+                <input
+                  id="pro-time-taken"
+                  type="number"
+                  name="pro_time_taken"
+                  class="outline-black h-100% px-2 mt-[8px] w-[100%] h-full border-[1px] border-black"
+                />
+                <p class="absolute top-[35px] right-[10px]">⌛</p>
+              </div>
+            </div>
+            <div class="font-roboto mt-11">
+              <label for="pro-desc" class="text-black">Description</label>
+              <textarea
+                class="border-2 border-r-black px-2 py-2 mt-[10px] outline-black w-[100%] block h-[85px]"
+                name="pro_desc"
+                id="pro-desc"
+              ></textarea>
+            </div>
+            <div class="font-roboto mt-2">
+              <label for="pro-concepts" class="text-black"
+                >Concepts learned</label
+              >
+              <textarea
+                class="border-2 border-r-black px-2 py-2 mt-[10px] outline-black w-[100%] block h-[70px]"
+                name="pro_concepts"
+                id="pro-concepts"
+              ></textarea>
+            </div>
+            <div class="flex justify-center relative gap-x-2">
+              <div class="mt-[12px] h-[32px] w-[50%] relative">
+                <label for="pro-thumbnail-image" class="mb-[6px]">image</label>
+                <input
+                  id="pro-thumbnail-image"
+                  type="file"
+                  accept="image/*"
+                  name="pro_thumbnail_image"
+                  class="outline-black h-100% px-2 mt-[8px] w-[100%] h-full border-[1px] border-black"
+                />
+                <p class="absolute top-[35px] right-[10px]">📷</p>
+              </div>
+              <div class="mt-[12px] h-[32px] w-[50%] relative">
+                <label for="pro-video-url" class="mb-[8px]">Video</label>
+                <input
+                  id="pro-video-url"
+                  type="file"
+                  accept="video/*"
+                  name="pro_video_url"
+                  class="outline-black h-100% px-3 mt-[8px] w-[100%] h-full border-[1px] border-black"
+                />
+                <p class="absolute top-[35px] right-[10px]">📽️</p>
+              </div>
+            </div>
+            <div
+              class="pro-add-btn w-[100%] bg-[#8068FB] text-center mt-[45px] rounded-md"
+            >
+              <button
+                type="submit"
+                class="font-roboto text-[18px] py-2 text-white"
+              >
+                ADD
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div
+        class="hidden project-details-display bg-[#F0F0F0] w-[95%] h-[75vh] absolute mx-auto rounded-3xl top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 ring-2 ring-slate-400 shadow-xl shadow-slate-900/25 scrollbar overflow-y-scroll z-[100]"
+      >
+        <h1 class="text-[#8068FB] text-center font-k2d mt-[17px] text-[20px]">
+          DETAILS
+        </h1>
+        <div>
+          <h1
+            class="preview-name text-center mt-6 mb-2 text-[16px] font-roboto"
+          >
+            movie search app
+          </h1>
+          <div
+            class="mx-auto preveiw-video-details w-[100%] flex h-[170px] bg-[#FFFFFF] rounded-[20px]"
+          >
+            <div
+              class="w-[30%] h-[170px] border-r-2 pl-2 pr-1 pb-0 border-black"
+            >
+              <video
+                autoplay
+                loop
+                muted
+                class="preview-video h-full w-[100%] object-cover rounded-[10px]"
+                src="images/Dark mode.mp4"
+              ></video>
+            </div>
+            <div class="w-[70%]">
+              <p class="text-center font-robot text-[12px] mt-2">Description</p>
+              <div class="border-black pb-3 border-b-[1px] w-[90%] mx-auto">
+                <p
+                  class="preview-desc text-[10px] font-light font-roboto w-[90%] px-4 mx-auto max-h-[70px] overflow-y-scroll scrollbar mt-3 text-center"
+                >
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Excepturi repellendus quasi suscipit laborum, incidunt porro
+                  eius eaque, eveniet aut, illo doloremque voluptate iste beatae
+                  nihil nesciunt ea debitis distinctio sit? Repellat eius
+                  doloribus provident, temporibus qui pariatur ad labore ea
+                  voluptate magnam necessitatibus! Dignissimos similique vel
+                  commodi unde, porro dolor ex! Incidunt ipsum repellendus
+                  perspiciatis, mollitia quod dicta accusamus maiores cumque quo
+                  laudantium hic aut alias eligendi nihil quia assumenda.
+                  Consequuntur, modi soluta quo inventore saepe dolore, veniam
+                  culpa corporis sapiente, recusandae necessitatibus pariatur
+                  unde officiis velit vitae mollitia consequatur dicta ipsa.
+                  Eaque dolorem placeat quaerat adipisci nihil veniam quis.
+                </p>
+              </div>
+              <div
+                class="preview-func-btns flex justify-end w-[90%] gap-x-5 mt-3"
+              >
+                <button
+                  class="bg-[#1DC693] preview-pin-btn rounded-[10px] w-[60px] h-[25px]"
+                >
+                  <i class="fa-solid fa-thumbtack rotate-45"></i>
+                </button>
+                <button
+                  class="bg-[#EF6B6E] preview-delete-btn rounded-[10px] w-[60px] h-[25px]"
+                >
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <p class="w-full border-b-[.5px] border-black my-4"></p>
+          <div
+            class="preview-time-related-details bg-white w-[97%] h-[190px] rounded-[20px] mx-auto flex"
+          >
+            <div class="w-[50%] border-r-2 border-black h-full relative">
+              <div
+                class="bg-[#F5FC87] w-[90%] rounded-r-[10px] flex items-center absolute top-[10%] py-1 gap-3 px-2"
+              >
+                <i class="fa fa-calendar"></i>
+                <p class="font-roboto text-[12px] font-extrabold">
+                  Completion date
+                </p>
+              </div>
+              <p
+                class="preview-completion-date text-[10px] absolute font-roboto text-center mt-16 left-10 top-[-2%]"
+              >
+                2024-12-6
+              </p>
+              <div
+                class="bg-[#EF6B6E] w-[90%] rounded-r-[10px] flex items-center absolute top-[53%] py-1 gap-3 px-4"
+              >
+                <i class="fa-solid fa-hourglass-half"></i>
+                <p class="font-roboto text-[12px] font-extrabold">Time taken</p>
+              </div>
+              <p
+                class="preview-time-taken text-[10px] absolute top-[41%] font-roboto text-center mt-16 left-10"
+              >
+                3 weeks
+              </p>
+            </div>
+            <div class="w-1/2">
+              <div
+                class="flex justify-end gap-3 mt-8 px-4 bg-[#EF6B6E] w-[90%] py-1 ml-4 rounded-l-[10px]"
+              >
+                <i class="fa-solid fa-code"></i>
+                <p class="font-roboto text-[12px] font-extrabold">Concepts</p>
+              </div>
+              <p
+                class="ml-5 mt-2 font-roboto text-[10px] preview-concepts overflow-y-scroll max-h-[100px]"
+              >
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed
+                numquam harum dolor quidem soluta commodi!
+              </p>
+              <p
+                class="ml-5 mt-2 font-roboto text-[10px] text-center my-2 font-semibold"
+              >
+                DOWNLOAD SOURCE CODE
+              </p>
+              <div
+                class="preview-dowload-code flex justify-center gap-3 bg-[black] w-[95%] py-1 mx-auto rounded-[5px] text-white shadow-lg shadow-slate-900/15"
+              >
+                <i class="fa-solid fa-download"></i>
+                <p class="font-roboto text-[12px] font-extrabold">DOWNLOAD</p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 w-[90%] mx-auto">
+            <button
+              class="bg-[#8068FB] preview-back-btn w-full rounded-[10px] h-[35px] my-2 text-white text-[18px] font-roboto"
+            >
+              BACK
+            </button>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+      >
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+          ></i>
+        </div>
+        <div
+          class="nav-focus w-10 h-10 rounded-full bg-[#F1EEFF] relative mr-12"
+        >
+          <p
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            ⏰
+          </p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-book-open"
+          >
+          </i>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-moon"
+          ></i>
+        </div>
+        <div
+          class="add-new-project-btn bg-[#8068FB] focus:scale w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+        >
+          <i class="text-white fas fa-plus text-2xl"></i>
+        </div>
+      </footer>
+    </section>
+    <section class="relative hidden h-screen bg-[#F9F8FD]" id="focus-session">
+      <h1 class="text-center w-full font-k2d text-3xl pt-14 font-bold">
+        FOCUS SESSION
+      </h1>
+      <!-- <p>cut distractions!</p> -->
+
+      <div
+        class="absolute rounded-full top-[280px] left-1/2 -translate-x-1/2 -translate-y-1/2 main-circle-container size-[252px]"
+      >
+        <div
+          class="inner-focus-container bg-white relative size-[252px] rounded-full"
+        ></div>
+      </div>
+      <div
+        class="absolute rounded-full top-[280px] left-1/2 -translate-x-1/2 -translate-y-1/2 size-[245px] flex items-center justify-center font-k2d text-4xl font-bold bg-white"
+      >
+        <span class="timer-countdown">0</span>
+        <span class="text-[1rem] pt-[.7rem]">min</span>
+      </div>
+      <div
+        class="session-complete-count size-[50px] flex items-center justify-center rounded-full shadow-md ring-slate-300 ring-[1px] right-[30px] absolute top-[360px] font-k2d shadow-slate-900/5"
+      >
+        3
+      </div>
+      <div
+        class="buttons absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-[75%] flex justify-between w-[50%]"
+      >
+        <div class="flex-col items-center justify-center">
+          <button
+            class="size-[50px] timer-play-pause-btn rounded-full bg-[#f97102]"
+          >
+            <i class="fas fa-play"></i>
+          </button>
+          <p class="text-center timer-play-pause-text font-mona mt-1">PLAY</p>
+        </div>
+        <div class="flex-col items-center justify-center">
+          <button class="timer-reset-btn size-[50px] rounded-full bg-[#f97102]">
+            <i class="fas fa-redo"></i>
+          </button>
+          <p class="timer-reset-text text-center font-mona mt-1">RESET</p>
+        </div>
+      </div>
+      <div
+        class="select-sessions-length hidden h-[30vh] w-[85%] bg-[white] rounded-2xl shadow-xl shadow-slate-900/5 absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 ring-2 ring-slate-200"
+      >
+        <p class="text-center font-roboto text-1xl font-bold pt-6">
+          Select session period
+        </p>
+        <div
+          class="close-timer-config absolute top-5 left-3 rounded-full shadow-xl shadow-slate-900/5 ring-[1px] ring-slate-400 w-8 h-8 flex items-center justify-center font-bold text-[17px]"
+        >
+          <i class="fas fa-times"></i>
+        </div>
+        <form
+          id="timer-form"
+          class="w-[90%] mx-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        >
+          <select
+            id="timer-selecter"
+            class="w-full bg-[white] shadow-xl shadow-slate-900/5 rounded-lg h-10 mt-4 focus:outline-none px-3 ring-2 ring-slate-200"
+          >
+            <option value="25">25 min</option>
+            <option value="1">1 min</option>
+            <option value="30">30 min</option>
+            <option value="45">45 min</option>
+            <option value="60">1 hour</option>
+            <option value="90">1.5 hr</option>
+            <option value="120">2 hr</option>
+            <option value="150">2.5 hr</option>
+            <option value="180">3 hr</option>
+          </select>
+        </form>
+      </div>
+      <footer
+        class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+      >
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+          ></i>
+        </div>
+        <div
+          class="nav-focus w-10 h-10 rounded-full bg-[#F1EEFF] relative mr-12"
+        >
+          <p
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            ⏰
+          </p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-book-open"
+          >
+          </i>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-moon"
+          ></i>
+        </div>
+        <div
+          id="adjust-time-btn"
+          class="bg-[#8068FB] focus:scale w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+        >
+          <i class="text-white duration-300 fas fa-sliders text-2xl"></i>
+        </div>
+      </footer>
+    </section>
+    <script>
+      const ip = "localhost";
+      const port = 8090;
+    </script>
+    <script src="script.js"></script>
+    <script src="noteBook.js"></script>
+    <script src="login.js"></script>
+    <script src="to-do.js"></script>
+    <script src="openAi.js"></script>
+    <script src="project.js"></script>
+    <script src="TS_dist/focus_sessions.js"></script>
+    <!-- <script src="touchTracker.js"></script> -->
+  </body>
+</html>
