@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Page</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <section
+      id="sign-section"
+      class="flex-col items-center justify-center w-[80%] mx-auto"
+    >
+      <h1
+        id="sign-text"
+        class="text-center mt-10 h-10 text-3xl font-bold mb-10"
+      >
+        Sign Up
+      </h1>
+      <form action="" class="mb-3">
+        <label for="sign-email" class="w-[90%] pt-2 mx-auto block">Name</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto mb-5"
+        >
+          <i class="fas fa-user text-gray-500"></i
+          ><input
+            id="sign-user-name"
+            type="text"
+            placeholder="Your User Name"
+            class="block mx-auto pt-2 px-4 focus:outline-none"
+            required
+          />
+        </div>
+        <label for="email" class="w-[90%] pt-2 mx-auto block">Email</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto mb-5"
+        >
+          <i class="fas fa-envelope text-gray-500"></i
+          ><input
+            id="sign-email"
+            type="email"
+            placeholder="Your Email"
+            class="block mx-auto py-2 px-4 focus:outline-none"
+            required
+          />
+        </div>
+        <label for="email" class="w-[90%] pt-2 mx-auto block">Password</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto"
+        >
+          <i class="fas fa-lock text-gray-500"></i
+          ><input
+            id="sign-pass"
+            type="password"
+            placeholder="Your Password"
+            class="block mx-auto py-2 px-4 focus:outline-none"
+            minlength="8"
+            required
+          />
+        </div>
+        <label for="email" class="w-[90%] pt-4 mx-auto block"
+          >Confirm Password</label
+        >
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto"
+        >
+          <i class="fas fa-lock text-gray-500"></i
+          ><input
+            id="sign-pass2"
+            type="password"
+            placeholder="Repeat Password"
+            class="block mx-auto py-2 px-4 focus:outline-none"
+            minlength="8"
+            required
+          />
+        </div>
+
+        <div class="mx-auto w-[90%] mt-16">
+          <button
+            id="sign-btn"
+            type="submit"
+            class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold bg-black text-white"
+          >
+            SIGN UP
+          </button>
+          <button
+            id="sign-cancel-btn"
+            class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold mt-5"
+          >
+            CANCEL
+          </button>
+        </div>
+      </form>
+    </section>
+    <script>
+      const BASE_URL = "http://localhost:8090";
+      const signBtn = document.getElementById("sign-btn");
+      const cancelBtn = document.getElementById("sign-cancel-btn");
+      const form = document.querySelector("form");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const username = document.getElementById("sign-user-name").value;
+        const email = document.getElementById("sign-email").value;
+        const password = document.getElementById("sign-pass").value;
+        const password2 = document.getElementById("sign-pass2").value;
+
+        const data = {
+          username,
+          email,
+          password,
+        };
+        if (password !== password2) {
+          document.getElementById("sign-pass").style.border = "1px solid red";
+          document.getElementById("sign-pass2").style.border = "1px solid red";
+          alert("Password does not match");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${BASE_URL}/auth/register`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+          console.log(result);
+          if (
+            !result.valid &&
+            result.message === "please enter correct email to precede"
+          ) {
+            document.getElementById("sign-email").style.border =
+              "1px solid red";
+            document.getElementById("sign-email").style.color = "red";
+            alert("please enter correct email to precede");
+            return;
+          }
+
+          if (
+            !result.valid &&
+            result.message ===
+              "User credentials already exist! Please use unique email and username"
+          ) {
+            console.log(result.which);
+            if (result.which === "email") {
+              document.getElementById("sign-email").style.border =
+                "1px solid red";
+            } else if (result.which === "username") {
+              document.getElementById("sign-user-name").style.border =
+                "1px solid red";
+            } else if (result.which === "both") {
+              document.getElementById("sign-email").style.border =
+                "1px solid red";
+              document.getElementById("sign-user-name").style.border =
+                "1px solid red";
+            }
+
+            alert(result.message);
+            return;
+          }
+
+          if (result.valid) {
+            alert("Registration successful");
+            window.location.href = `${BASE_URL}/login.html`;
+          }
+        } catch (err) {
+          console.log(err.message);
+          alert(err.message);
+        }
+      });
+
+      document.getElementById("sign-email").addEventListener("input", () => {
+        document.getElementById("sign-email").style.border = "none";
+        document.getElementById("sign-email").style.color = "black";
+      });
+
+      document
+        .getElementById("sign-user-name")
+        .addEventListener("input", () => {
+          document.getElementById("sign-user-name").style.border = "none";
+          document.getElementById("sign-user-name").style.color = "black";
+        });
+
+      cancelBtn.addEventListener("click", () => {
+        window.location.href = `${BASE_URL}/hero.html`;
+      });
+    </script>
+  </body>
+</html>

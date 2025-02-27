@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+  </head>
+  <body>
+    <section
+      class="flex-col items-center mt-16 justify-center w-[80%] mx-auto"
+      id="log-section"
+    >
+      <h1
+        id="login-text"
+        class="text-center mt-10 h-10 text-3xl font-bold mb-10"
+      >
+        Log In
+      </h1>
+      <form action="" class="mb-3">
+        <label for="log-email" class="w-[90%] pt-2 mx-auto block"
+          >Username</label
+        >
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto mb-5"
+        >
+          <i class="fas fa-user text-gray-500"></i
+          ><input
+            id="log-user-name"
+            type="text"
+            name="username"
+            placeholder="Your User Name"
+            class="block mx-auto pt-2 px-4 focus:outline-none"
+            required
+          />
+        </div>
+
+        <label for="email" class="w-[90%] pt-2 mx-auto block">Password</label>
+        <div
+          class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto"
+        >
+          <i class="fas fa-lock text-gray-500"></i
+          ><input
+            id="log-pass"
+            type="password"
+            name="password"
+            placeholder="Your Password"
+            class="block mx-auto py-2 px-4 focus:outline-none"
+            minlength="8"
+            required
+          />
+        </div>
+
+        <div class="text-right mt-[20px] mr-[15px]" id="forget">
+          <a href="#" class="text-[15px]">Forget Password?</a>
+        </div>
+
+        <div class="mx-auto w-[90%] mt-16">
+          <button
+            id="log-btn"
+            type="submit"
+            class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold bg-black text-white"
+          >
+            LOGIN
+          </button>
+          <button
+            id="log-cancel-btn"
+            class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold mt-5"
+          >
+            CANCEL
+          </button>
+        </div>
+      </form>
+    </section>
+    <script>
+      const BASE_URL = "http://localhost:8090";
+      const logBtn = document.getElementById("log-btn");
+      const cancelBtn = document.getElementById("log-cancel-btn");
+      const forgetBtn = document.getElementById("forget");
+      const form = document.querySelector("form");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const data = {
+          username: document.getElementById("log-user-name").value,
+          password: document.getElementById("log-pass").value,
+        };
+        console.log(data);
+
+        if (!data.password === "" && !data.username) {
+          alert("Please fill in all fields");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          const { session } = await response.json();
+          if (session === undefined) {
+            alert("Invalid username or password");
+            return;
+          }
+          sessionStorage.setItem("token", session);
+          window.location.href = `${BASE_URL}`;
+        } catch (err) {
+          alert(err.message);
+        }
+
+        form.reset();
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        window.location.href = `${BASE_URL}/hero.html`;
+      });
+    </script>
+  </body>
+</html>

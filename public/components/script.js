@@ -9,7 +9,7 @@ const openfocusSessionSection = mainPage.querySelector("#focus-session-card");
 const openquoteSection = mainPage.querySelector("#quote-card");
 const opendarkMode = mainPage.querySelector("#dark-mode");
 const mainAiQuetionSection = document.querySelector("#main-Ai-question");
-const mainProjectsSection = document.querySelector("#main-projects-section");
+// const mainProjectsSection = document.querySelector("#main-projects-section");
 const noteCardCouter = mainPage.querySelector(".main-notes-card-counter");
 const mainToDoSection = document.querySelector("#main-to-do-section");
 const projectCardCouter = mainPage.querySelector(".main-projects-card-counter");
@@ -31,17 +31,16 @@ opentodoSection.addEventListener("click", () => {
   mainToDoSection.classList.remove("hidden");
 });
 
-openprojectSection.addEventListener("click", () => {
-  mainPage.classList.add("hidden");
-  mainProjectsSection.classList.remove("hidden");
-});
-
 openfocusSessionSection.addEventListener("click", () => {
   mainPage.classList.add("hidden");
   mainFocusSessions.classList.remove("hidden");
 });
 
-function countLengthNotes(section = "notes") {
+// openfocusSessionSection.addEventListener("click", () => {
+
+// });
+
+async function countLengthNotes(section = "notes") {
   return fetch(`http://${ip}:${port}/${section}`)
     .then((res) => res.json())
     .then((data) => {

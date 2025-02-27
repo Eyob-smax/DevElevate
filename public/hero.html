@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hero Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <section class="relative h-screen" id="first-page">
+      <div
+        class="absolute top-[70%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+      >
+        <button
+          class="block font-bold py-2 w-52 bg-white text-black rounded-3xl mb-5 shadow-xl shadow-slate-900/50 hover:scale-105 duration-100"
+          id="first-page-log-btn"
+        >
+          LOGIN
+        </button>
+        <button
+          class="relative block font-bold py-2 w-52 bg-black text-white rounded-3xl shadow-xl shadow-white/40 mb-5 hover:scale-105 duration-100"
+          id="first-page-sign-btn"
+        >
+          SIGN UP
+        </button>
+      </div>
+    </section>
+
+    <script>
+      const BASE_URL = "http://localhost:8090";
+      const logBtn = document.getElementById("first-page-log-btn");
+      const signBtn = document.getElementById("first-page-sign-btn");
+
+      logBtn.addEventListener("click", () => {
+        window.location.href = `${BASE_URL}/login.html`;
+      });
+
+      signBtn.addEventListener("click", () => {
+        window.location.href = `${BASE_URL}/login.html`;
+      });
+    </script>
+  </body>
+</html>
