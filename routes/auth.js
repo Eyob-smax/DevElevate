@@ -16,6 +16,8 @@ auth.use(express.json());
 auth.use(express.urlencoded({ extended: true }));
 dotenv.config();
 
+auth.use(express.static("public/auth_files", { acceptRanges: true }));
+
 const store = MongoStore.create({ mongoUrl: process.env.dbString });
 
 (async () => {

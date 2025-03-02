@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register Page</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="../style.css" />
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
@@ -165,7 +165,7 @@
 
           if (result.valid) {
             alert("Registration successful");
-            window.location.href = `${BASE_URL}/login.html`;
+            window.location.href = `${BASE_URL}/auth_files/login.html`;
           }
         } catch (err) {
           console.log(err.message);
@@ -186,7 +186,7 @@
         });
 
       cancelBtn.addEventListener("click", () => {
-        window.location.href = `${BASE_URL}/hero.html`;
+        window.location.href = `${BASE_URL}/auth_files/hero.html`;
       });
     </script>
   </body>

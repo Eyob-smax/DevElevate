@@ -60,6 +60,10 @@
       href="https://fonts.googleapis.com/css2?family=Imprima&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Laila:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
     <script>
       tailwind.config = {
         theme: {
@@ -76,6 +80,7 @@
               laila: ["Laila", "serif"],
               inter: ["Inter", "sans-serif"],
               k2d: ["K2D", "sans-serif"],
+              league: ["League Spartan", "sans-serif"],
             },
             screens: {
               "custom-height-mq-1k": {
@@ -120,6 +125,7 @@
       }
     </style>
     <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body>
     <section class="max-h-screen bg-[#F9F8FD] py-4" id="main-page">
@@ -283,7 +289,7 @@
           </div>
         </div>
       </div>
-      <div id="notes" class="px-2 mt-3">
+      <div id="notes" class="px-5 mt-3">
         <div class="relative flex justify-between items-center">
           <h2 class="font-mona font-semibold mx-5">note list</h2>
           <div
@@ -294,29 +300,134 @@
           </div>
         </div>
         <div
-          class="cards-container mt-1 max-h-[69vh] overflow-y-scroll scrollbar shadow-lg shadow-slate-900/5 rounded-xl"
-        ></div>
+          class="cards-container mt-1 h-[69vh] overflow-y-scroll scrollbar shadow-lg shadow-slate-900/5 rounded-xl"
+        >
+          <div
+            style="width: calc(100% - 20px)"
+            class="hidden note-card min-h-[100px] py-3 px-2 relative max-h-[300px] bg-[#fbf9f6] rounded-xl shadow-lg shadow-slate-900/5 mx-auto mt-5"
+          >
+            <div class="flex items-center justify-between px-2 py-1">
+              <h1 class="font-mona text-[16px] font-semibold">Auto commit</h1>
+              <div>
+                <button class="edit-note w-8 h-8 rounded-full bg-[#F1EEFF]">
+                  <i class="fas fa-edit text-[#8068FB]"></i>
+                </button>
+                <button class="delete-note w-8 h-8 rounded-full bg-[#F1EEFF]">
+                  <i class="fa fa-trash text-[#8068FB]"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mb-2">
+              <p
+                class="font-roboto text-justify px-3 text-[14px] text-slate-600 leading-4 max-h-[150px] overflow-y-scroll scrollbar"
+              ></p>
+            </div>
+            <div
+              class="flex items-center justify-between px-2 border-t-2 border-t-slate-200"
+            >
+              <h3>Topic- <span class="topic">HTML</span></h3>
+              <p class="date">Thu dec 26 2023</p>
+            </div>
+          </div>
+        </div>
+
         <footer
           class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
         >
-          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
-            <i
-              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
-            ></i>
-          </div>
-
           <div
-            class="bg-[#8068FB] add-notes-btn w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+            style="display: none"
+            id="add-notes-section-container"
+            class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
           >
-            <i class="text-white duration-300 fas fa-plus text-2xl"></i>
-          </div>
+            <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+              <i
+                id="backToBoxes"
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+              ></i>
+            </div>
 
-          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
-            <i
-              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-info-circle"
-            ></i>
+            <div
+              class="bg-[#8068FB] add-notes-btn w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+            >
+              <i class="text-white duration-300 fas fa-plus text-2xl"></i>
+            </div>
+
+            <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
+              <i
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-info-circle"
+              ></i>
+            </div>
+          </div>
+          <div
+            id="add-boxes-section-container"
+            class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+          >
+            <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+              <i
+                id="backToMain"
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+              ></i>
+            </div>
+
+            <div
+              class="bg-[#8068FB] add-boxes-btn w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+            >
+              <i
+                id="icon2"
+                class="text-white duration-300 fas fa-plus text-2xl"
+              ></i>
+            </div>
+
+            <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative">
+              <i
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-info-circle"
+              ></i>
+            </div>
           </div>
         </footer>
+      </div>
+      <div
+        class="create-day-container hidden py-5 absolute w-[95%] rounded-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#F7F8FB] ring-2 ring-slate-400/10 max-h-[480px] shadow-xl shadow-slate-900/5 overflow-y-scroll scrollbar"
+      >
+        <h1 class="text-[#8068FB] font-inkut font-bold text-center mb-3">
+          Add New Box
+        </h1>
+        <div class="flex-col space-y-4 mx-auto px-2">
+          <form id="days-container-form">
+            <div class="mx-auto p-2 flex items-center justify-between">
+              <label class="font-semibold font-faculty" for="BoxTitle"
+                >Title</label
+              >
+              <input
+                name="BoxTitle"
+                class="write-note-title ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
+                type="text"
+                id="BoxTitle"
+                maxlength="200"
+                placeholder="Java"
+              />
+            </div>
+            <div class="mx-auto p-2 flex items-center justify-between">
+              <label class="font-semibold font-faculty" for="BoxDate"
+                >Date</label
+              >
+              <input
+                name="BoxDate"
+                id="BoxDate"
+                class="write-note-topic ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
+                type="date"
+              />
+            </div>
+            <div class="flex justify-center items-center mt-4">
+              <button
+                type="submit"
+                class="bg-white write-note-submit-btn relative rounded-[17px] w-40 py-2"
+              >
+                Enter
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
       <div
         class="add-notes-section hidden py-5 absolute w-[95%] rounded-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#F7F8FB] ring-2 ring-slate-400/10 max-h-[480px] shadow-xl shadow-slate-900/5 overflow-y-scroll scrollbar"
@@ -334,8 +445,9 @@
                 name="noteTitle"
                 class="write-note-title ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
                 type="text"
-                maxlength="200"
+                maxlength="30"
                 placeholder="let vs var"
+                required
               />
             </div>
             <div class="mx-auto p-2 flex items-center justify-between">
@@ -346,7 +458,7 @@
                 name="noteTopic"
                 class="write-note-topic ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
                 type="text"
-                maxlength="20"
+                maxlength="10"
                 placeholder="html , css, js, react, node"
               />
             </div>
@@ -359,6 +471,7 @@
                 class="write-note-body flex-1 p-2 ring-2 ring-black block rounded-xl"
                 placeholder="notes here..."
                 wrap="soft"
+                required
               ></textarea>
             </div>
             <div class="flex justify-center items-center mt-4">
@@ -820,10 +933,27 @@
         </div>
       </footer>
     </section>
-    <script type="module">
+    <script>
       const ip = "localhost";
       const port = 8090;
-      const domain = `https://develevate.onrender.com`;
+      const domain = `http://${ip}:${port}`;
+      // document.addEventListener("DOMContentLoaded", () => {
+      //   (async () => {
+      //     console.log("hi from frontend");
+      //     const sessionId = sessionStorage.getItem("token") || "no token";
+      //     const response = await fetch(
+      //       `http://localhost:8090/?sessionId=${sessionId}`
+      //     );
+
+      //     const res = fetch(`http://localhost:8090`, {
+      //       method: "POST",
+      //       headers: {
+      //         "content-type": "application/json",
+      //       },
+      //       body: sessionId,
+      //     });
+      //   })();
+      // });
     </script>
     <script src="./components/script.js"></script>
     <script src="./components/noteBook.js"></script>

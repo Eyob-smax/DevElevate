@@ -6,7 +6,10 @@ import note from "./routes/notes.js";
 import toDo from "./routes/to_do.js";
 import auth from "./routes/auth.js";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
+import mongodb from "mongodb";
+import axios from "axios";
+import { Cookie } from "express-session";
+import { ObjectId } from "mongodb";
 
 dotenv.config();
 const app = express();
@@ -14,11 +17,25 @@ app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
 app.use(express.json());
 
-app.use(express.static("public"));
-
 app.use("/notes", note);
 app.use("/to-do", toDo);
 app.use("/auth", auth);
+let isAuthenticate;
+
+const User = async () => {
+  try {
+    const client = await mongodb.MongoClient.connect(process.env.dbString);
+    console.log("Connected to MongoDB");
+    const db = client.db("DevElevate");
+    const users = db.collection("users");
+    const sessions = db.collection("sessions");
+    return { users, sessions };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+app.use(express.static("public", { acceptRanges: true }));
 
 let prompt;
 let assistancePrompt;
