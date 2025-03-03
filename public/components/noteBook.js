@@ -27,9 +27,12 @@ function createElement(
 
 let boxArray = [];
 let noteArray = [];
+let boxNumber = 0;
 
 const searchnoteinput = getElement("#search-note");
 const searchNoteButton = getElement("#search-note-btn");
+
+const boxCounter = getElement("#note-counter");
 
 const NotesCardContainer = getElement(".cards-container");
 
@@ -53,7 +56,6 @@ let currentBoxInfo = {
   date: "",
 };
 
-// Array of soft, neutral colors similar to #fbf9f6 that work well with black text on a white background
 const colors = [
   "#F5F1EB",
   "#EAE7DC",
@@ -72,7 +74,6 @@ getElement("#backToMain", mainNoteSection).addEventListener("click", () => {
   dayContainerAddSection.classList.add("hidden");
   icon.classList.remove("rotate-[135deg]");
   icon2.classList.remove("rotate-[135]deg");
-  NotesCardContainer.innerHTML = "";
   currentBoxInfo = {
     title: "",
     date: "",
@@ -133,7 +134,7 @@ function closeBoxAddForm() {
 function createDayContainer(title, date, notesNumber, number) {
   const dayContainer = createElement(
     "div",
-    "day-container w-[calc(100% - 50px)] bg-[url(../images/day-container.png)] h-[200px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-5 mx-2"
+    "day-container w-[calc(100% - 50px)] custom-height-mq:h-[170px] bg-[url(../images/day-container.png)] h-[200px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer  my-2 mx-2"
   );
 
   const h2 = createElement("h2", "text-white  p-5 font-robot text-2xl", title);
@@ -191,6 +192,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const { data, success } = await getBoxData();
 
   if (success) {
+    boxNumber = data.length;
+    boxCounter.textContent = boxNumber;
     data.forEach((element) => {
       const card = createDayContainer(
         element.title,
@@ -237,6 +240,9 @@ formForDayContainer.addEventListener("submit", async (e) => {
 
   saveToLS("box-data", boxArray);
   NotesCardContainer.appendChild(card);
+
+  boxNumber++;
+  boxCounter.textContent = boxNumber;
   closeBoxAddForm();
 
   formForDayContainer.reset();
@@ -256,6 +262,9 @@ async function deleteBox(container, title, date) {
   const confirm = result.isConfirmed;
 
   if (!confirm) return;
+  boxNumber--;
+  boxCounter.textContent = boxNumber;
+
   const res = await fetch("http://localhost:8090/notes/box", {
     method: "DELETE",
     headers: {
@@ -313,12 +322,10 @@ async function sendDataToServer(data) {
 async function getBoxData() {
   const response = await fetch("http://localhost:8090/notes/box");
   const data = await response.json();
-  console.log(data);
   return data;
 }
 
 async function openNotesAddForm(title, date) {
-  console.log("Opening notes BOX");
   NotesCardContainer.innerHTML = "";
   addBoxesSectionContainer.style.display = "none";
   addNotesSectionContainer.style.display = "block flex";
@@ -363,6 +370,13 @@ function createNoteCard(title, topic, note) {
     "button",
     "edit-note w-8 h-8 rounded-full bg-[#F1EEFF]"
   );
+  let saveBtn = createElement(
+    "button",
+    "save-note w-8 h-8 rounded-full bg-[#F1EEFF]"
+  );
+
+  let saveIcon = createElement("i", "fas fa-save text-[#8068fb]");
+
   let editIcon = createElement("i", "fas fa-edit text-[#8068FB]");
   let deleteBtn = createElement(
     "button",
@@ -373,6 +387,7 @@ function createNoteCard(title, topic, note) {
   // Append icons to buttons
   editBtn.appendChild(editIcon);
   deleteBtn.appendChild(deleteIcon);
+  saveBtn.appendChild(saveIcon);
 
   // Append buttons to button container
   btnContainer.appendChild(editBtn);
@@ -409,6 +424,44 @@ function createNoteCard(title, topic, note) {
   card.appendChild(header);
   card.appendChild(noteContainer);
   card.appendChild(footer);
+
+  editBtn.addEventListener("click", (e) => {
+    editNote(card, titleEl, noteText, topicSpan);
+
+    if (e.currentTarget.classList.contains("edit-note")) {
+      btnContainer.appendChild(saveBtn);
+      btnContainer.removeChild(editBtn);
+    } else {
+      e.currentTarget.className = "fas fa-save text-[#8068FB]";
+    }
+  });
+
+  saveBtn.addEventListener("click", (e) => {
+    console.log(currentBoxInfo.title, currentBoxInfo.date);
+    saveNote(
+      titleEl,
+      noteText,
+      topicSpan,
+      title,
+      note,
+      topic,
+      currentBoxInfo.title,
+      currentBoxInfo.date
+    );
+    if (e.currentTarget.classList.contains("save-note")) {
+      btnContainer.appendChild(editBtn);
+      btnContainer.removeChild(saveBtn);
+    } else {
+      e.currentTarget.className = "fas fa-edit text-[#8068FB]";
+      btnContainer.removeChild(saveBtn);
+      btnContainer.appendChild(editBtn);
+    }
+  });
+
+  deleteBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    deleteNote(card, title, note, topic);
+  });
   return card;
 }
 
@@ -465,4 +518,137 @@ async function sendNotesToServer(data) {
 
 function editNote() {}
 
-function deleteNote(element, id) {}
+async function deleteNote(card, title, note, topic) {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#00a86b",
+    confirmButtonText: "Yes, delete it!",
+  });
+
+  const confirm = result.isConfirmed;
+
+  if (!confirm) return;
+
+  const res = await fetch("http://localhost:8090/notes", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ title, note, topic }),
+  });
+
+  const { success, message } = await res.json();
+  if (!success) {
+    return swal.fire({
+      title: "Error!",
+      text: message,
+      icon: "error",
+      confirmButtonText: "OK",
+    });
+  }
+  card.remove();
+  Swal.fire("Deleted!", message, "success");
+}
+
+function editNote(card, titleEl, noteText, topicSpan) {
+  titleEl.contentEditable = true;
+  titleEl.style.outline = "black 1px solid";
+  topicSpan.style.outline = "black 1px solid";
+  noteText.style.outline = "black 1px solid";
+  titleEl.style.padding = "0 10px";
+  noteText.contentEditable = true;
+  topicSpan.contentEditable = true;
+  topicSpan.style.padding = "0 10px";
+
+  limitText(titleEl, 29);
+  limitText(topicSpan, 10);
+
+  const range = document.createRange();
+  const selection = window.getSelection();
+  range.selectNodeContents(titleEl);
+  range.collapse(false); // Move to the end
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  titleEl.focus();
+}
+
+function saveNote(
+  titleEl,
+  noteText,
+  topicSpan,
+  title,
+  note,
+  topic,
+  parentTitle,
+  parentDate
+) {
+  titleEl.contentEditable = false;
+  titleEl.style.outline = "none";
+  noteText.contentEditable = false;
+  noteText.style.outline = "none";
+  topicSpan.contentEditable = false;
+  topicSpan.style.outline = "none";
+
+  titleEl.style.padding = "0";
+  noteText.style.padding = "0";
+
+  const data = {
+    parentTitle,
+    parentDate,
+    title,
+    note,
+    topic,
+    newTitle: titleEl.textContent,
+    newTopic: topicSpan.textContent,
+    newNote: noteText.textContent,
+  };
+
+  updateEditedNotes(data);
+}
+
+async function updateEditedNotes(data) {
+  const response = await fetch("http://localhost:8090/notes", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const res = await response.json();
+  if (!res.success) {
+    return Swal.fire("Error", res.message, "error");
+  }
+  Swal.fire("Success", res.message, "success");
+}
+
+function limitText(textElement, limit) {
+  textElement.addEventListener("keydown", (e) => {
+    if (
+      textElement.textContent.length > limit &&
+      e.key !== "Backspace" &&
+      e.key !== "Delete" &&
+      e.key !== "ArrowLeft" &&
+      e.key !== "ArrowRight" &&
+      e.key !== "ArrowUp" &&
+      e.key !== "ArrowDown" &&
+      e.key !== "Enter" &&
+      e.key !== "Tab" &&
+      e.key !== "Shift" &&
+      e.key !== "Control" &&
+      e.key !== "Alt"
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `You can only enter ${limit} characters`,
+      });
+      e.preventDefault();
+    }
+  });
+}

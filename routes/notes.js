@@ -45,24 +45,18 @@ note.post("/", async (req, res) => {
   }
 });
 
-note.post("/delete", async (req, res) => {
+note.delete("/", async (req, res) => {
+  const { title, note, topic } = req.body;
+  if (!title || !note || !topic)
+    return res.json({ success: false, message: "Incomplete data!" });
+
   try {
-    const deleteNote = await NotebookCollection.collection.deleteOne({
-      _id: new ObjectId(req.body.id),
-    });
-    if (deleteNote.deletedCount > 0) {
-      return res.json({
-        success: false,
-        message: "can't delete note",
-        Error: "Database error",
-      });
-    }
-    res.json({ success: true, message: "Note deleted successfully✅" });
-  } catch (error) {
+    await NotebookCollection.deleteOne({ title, note, topic });
+    res.json({ success: true, message: "Note deleted successfully" });
+  } catch (err) {
     res.json({
       success: false,
-      message: "Internal server error",
-      error: err,
+      message: "there is something wrong with the DB!",
     });
   }
 });
@@ -86,10 +80,49 @@ note.get("/", async (req, res) => {
         createTime: 1,
       })
       .toArray();
-    console.log(notes);
     res.json(notes);
   } catch (err) {
     res.json({ success: false, message: "server Error", error: err.message });
+  }
+});
+
+note.put("/", async (req, res) => {
+  const {
+    title,
+    note,
+    topic,
+    parentTitle,
+    parentDate,
+    newNote,
+    newTopic,
+    newTitle,
+  } = req.body;
+  if (!title || !note || !topic || !newNote || !newTopic || !newTitle) {
+    return res.json({ success: false, message: "Incomplete data!" });
+  }
+
+  if (title === newTitle && note === newNote && topic === newTopic) {
+    return res.json({ success: false, message: "No changes found!" });
+  }
+
+  try {
+    const result = await NotebookCollection.updateOne(
+      { title, note, topic, parent: `${parentTitle}-${parentDate}` },
+      { $set: { title: newTitle, note: newNote, topic: newTopic } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.json({
+        success: false,
+        message: "No matching note found to update",
+      });
+    }
+    res.json({ success: true, message: "Note updated successfully✅" });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: "there is something wrong with the DB!",
+    });
   }
 });
 
@@ -125,7 +158,6 @@ note.get("/box", async (req, res) => {
       box.number = count;
       await box.save();
     });
-    console.log(number);
     res.json({ success: true, data: boxData, number });
   } catch (err) {
     res.status(500).json({ error: err.message });
