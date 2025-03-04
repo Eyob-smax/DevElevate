@@ -29,6 +29,8 @@ let boxArray = [];
 let noteArray = [];
 let boxNumber = 0;
 
+noteCardCouter.textContent = boxNumber;
+
 const searchnoteinput = getElement("#search-note");
 const searchNoteButton = getElement("#search-note-btn");
 
@@ -41,7 +43,7 @@ const addBoxesBtn = getElement(".add-boxes-btn");
 const addNotesBtn = getElement(".add-notes-btn");
 const addNotesSection = getElement(".add-notes-section");
 const icon = getElement(".fa-plus");
-const icon2 = getElement("#icon2");
+const icon2 = getElement("#icon2", addBoxesBtn);
 
 const dayContainer = getElement(".day-container");
 const formForDayContainer = getElement("#days-container-form");
@@ -67,23 +69,27 @@ const colors = [
   "#F8F6F2",
 ];
 
-getElement("#backToMain", mainNoteSection).addEventListener("click", () => {
-  mainNoteSection.classList.add("hidden");
-  mainPage.classList.remove("hidden");
-  addNotesSection.classList.add("hidden");
-  dayContainerAddSection.classList.add("hidden");
-  icon.classList.remove("rotate-[135deg]");
-  icon2.classList.remove("rotate-[135]deg");
-  currentBoxInfo = {
-    title: "",
-    date: "",
-  };
-});
+getElement(".navBack", addBoxesSectionContainer).addEventListener(
+  "click",
+  () => {
+    icon2.classList.remove("rotate-[135]deg");
+    icon.classList.remove("rotate-[135deg]");
+    mainNoteSection.classList.add("hidden");
+    mainPage.classList.remove("hidden");
+    addNotesSection.classList.add("hidden");
+    dayContainerAddSection.classList.add("hidden");
+    currentBoxInfo = {
+      title: "",
+      date: "",
+    };
+  }
+);
 
 getElement("#backToBoxes", mainNoteSection).addEventListener(
   "click",
   async () => {
     addNotesSectionContainer.style.display = "none";
+    icon.classList.remove("rotate-[135deg]");
     icon2.classList.remove("rotate-[135]deg");
     addBoxesSectionContainer.style.display = "block flex";
     NotesCardContainer.innerHTML = "";
@@ -91,6 +97,7 @@ getElement("#backToBoxes", mainNoteSection).addEventListener(
       title: "",
       date: "",
     };
+    addNotesSection.classList.add("hidden");
     const { data, success } = await getBoxData();
     if (success) {
       data.forEach((element) => {
@@ -141,7 +148,7 @@ function createDayContainer(title, date, notesNumber, number) {
   const h1 = createElement(
     "h1",
     "text-white font-roboto text-3xl pl-4 pt-5",
-    number || "2"
+    number || "0"
   );
   const h4 = createElement(
     "h4",
@@ -153,7 +160,7 @@ function createDayContainer(title, date, notesNumber, number) {
   const p = createElement(
     "p",
     "absolute right-0 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-sour text-[25px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[gold] shadow-lg shadow-slate-900 ring-slate-400 ring-1",
-    notesNumber || "1"
+    notesNumber || "0"
   );
 
   const p2 = createElement(
@@ -194,6 +201,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (success) {
     boxNumber = data.length;
     boxCounter.textContent = boxNumber;
+    noteCardCouter.textContent = boxNumber;
     data.forEach((element) => {
       const card = createDayContainer(
         element.title,
@@ -243,6 +251,7 @@ formForDayContainer.addEventListener("submit", async (e) => {
 
   boxNumber++;
   boxCounter.textContent = boxNumber;
+  noteCardCouter.textContent = boxNumber;
   closeBoxAddForm();
 
   formForDayContainer.reset();
@@ -353,7 +362,7 @@ function createNoteCard(title, topic, note) {
   // Header section
   let header = createElement(
     "div",
-    "flex items-center justify-between px-2 py-1"
+    "flex items-center justify-between px-2 pb-2"
   );
   let titleEl = createElement(
     "h1",
@@ -587,16 +596,6 @@ function saveNote(
   parentTitle,
   parentDate
 ) {
-  titleEl.contentEditable = false;
-  titleEl.style.outline = "none";
-  noteText.contentEditable = false;
-  noteText.style.outline = "none";
-  topicSpan.contentEditable = false;
-  topicSpan.style.outline = "none";
-
-  titleEl.style.padding = "0";
-  noteText.style.padding = "0";
-
   const data = {
     parentTitle,
     parentDate,
@@ -607,8 +606,26 @@ function saveNote(
     newTopic: topicSpan.textContent,
     newNote: noteText.textContent,
   };
+  const { success, message } = updateEditedNotes(data);
+  if (titleEl.textContent === "" || !success) {
+    titleEl.textContent = title;
+  }
+  if (topicSpan.textContent === "" || !success) {
+    topicSpan.textContent = topic;
+  }
 
-  updateEditedNotes(data);
+  if (noteText.textContent === "" || !success) {
+    noteText.textContent = note;
+  }
+  titleEl.contentEditable = false;
+  titleEl.style.outline = "none";
+  noteText.contentEditable = false;
+  noteText.style.outline = "none";
+  topicSpan.contentEditable = false;
+  topicSpan.style.outline = "none";
+
+  titleEl.style.padding = "0";
+  noteText.style.padding = "0";
 }
 
 async function updateEditedNotes(data) {
@@ -625,6 +642,7 @@ async function updateEditedNotes(data) {
     return Swal.fire("Error", res.message, "error");
   }
   Swal.fire("Success", res.message, "success");
+  return { success: res.message, message: res.message };
 }
 
 function limitText(textElement, limit) {
@@ -648,6 +666,8 @@ function limitText(textElement, limit) {
         title: "Oops...",
         text: `You can only enter ${limit} characters`,
       });
+      e.preventDefault();
+    } else if (textElement.textContent.length === 0 && e.key === "Backspace") {
       e.preventDefault();
     }
   });

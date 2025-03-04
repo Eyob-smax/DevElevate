@@ -55,9 +55,6 @@ const toDoCounter = countLengthNotes("to-do");
 toDoCounter.then((data) => {
   toDoCardCouter.textContent = data.length;
 });
-notesCounter.then((data) => {
-  noteCardCouter.textContent = data.length;
-});
 
 projectCardCouter.textContent = "5";
 journalCardCouter.textContent = "3";

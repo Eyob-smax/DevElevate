@@ -95,64 +95,44 @@ deleteAllBtn.addEventListener("click", () => {
 });
 
 generateBtn.addEventListener("click", async () => {
-  const data = {
-    questionPrompt: `
-  I want you to generate 5 questions about ${generateQuestion.value} for self-thought students studying web development. Each question should be relevant, and tailored to deepen understanding of the subject. 
-  
-  ### Formatting Criteria:
-  1. **Each question should be numbered and follow this strict format:**
-     **<Question Number>. <Question Text>**
-     For example: 
-     **1. What does the DOM stand for in web development?**
-  
-  2. **Answers should be listed in this precise format:**
-     a) <Option A>
-     b) <Option B>
-     c) <Option C>
-     d) <Option D>
-  
-  3. **Correct answers should follow this specific format:**
-     **Correct Answer: <Answer Letter>**
-     For example: 
-     **Correct Answer: a)**
-  
-  4. **Do not include explanations or extra text, only the questions, answers, and correct answers in this strict order.**
-  
-  5. **Repeat this exact pattern for each question to ensure consistency.**
-  
-  ### Example Output:
-  **1. What does the DOM stand for in web development?**
-  a) Document Orientation Model  
-  b) Document Object Model  
-  c) Data Object Module  
-  d) Data Orientation Model  
-  
-  **Correct Answer: b)**
-  
-  Ensure your output follows the above structure exactly to allow my program to process it effectively. Use the ${difficultyLevel.value} difficulty level to make the questions suitable for students. Never deviate from this format.
-  and the another thing is the ${generateQuestion.value}(topic) random or non-sense you should generate random question aboout web dev`,
-  };
-  if (generateQuestion.value === "") {
-    alert("Please enter a prompt");
-    return;
+  generateBtn.disabled = true;
+  generateBtn.style.cursor = "not-allowed";
+  generateBtn.style.backgroundColor = "#5f4dbb9c";
+  try {
+    mainAiQuetionSection.querySelector(".landing").classList.remove("hidden");
+    loadingSpinner.classList.remove("hidden");
+    const data = {
+      prompt: generateQuestion.value,
+      difficultyLevel: difficultyLevel.value,
+    };
+    if (generateQuestion.value === "") {
+      await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please enter a prompt",
+      });
+      return;
+    }
+
+    await fetch(`http://${ip}:${port}/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    mainAiContainer.innerHTML = "";
+    manipulateGeneratedData();
+  } catch (err) {
+    await Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
+    });
+    generateBtn.disabled = false;
+    generateBtn.style.cursor = "default";
+    generateBtn.style.backgroundColor = "#8068FB";
   }
-
-  loadingSpinner.classList.remove("hidden");
-  setTimeout(() => {
-    mainAiQuetionSection.querySelector(".landing").classList.add("hidden");
-    loadingSpinner.classList.add("hidden");
-  }, 5000);
-
-  await fetch(`http://${ip}:${port}/generate`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  mainAiContainer.innerHTML = "";
-  manipulateGeneratedData();
-  generateQuestion.value = "";
 });
 
 deleteAllAssistance.addEventListener("click", () => {
@@ -163,81 +143,165 @@ deleteAllAssistance.addEventListener("click", () => {
 });
 
 generateAssistanceBtn.addEventListener("click", async () => {
-  const assistanceData = {
-    prompt: `Explain the concept of ${generateAssistance.value} in a explained and concise manner, focusing on is purpose, usage and examples. Include a practical example or use case to clarify the explanation. Use simple language and avoid technical jargon to ensure the explanation is easy to understand. the reponse should be specific to to web development, mobile development, or other technology-related domains. should not be very long !!not only these you should be flexible and able to adapt to the user's needs and provide the necessary information in a clear and concise manner.`,
-  };
-  if (generateAssistance.value === "") {
-    alert("Please enter a prompt");
-    return;
-  }
-
+  generateAssistanceBtn.disabled = true;
+  generateAssistanceBtn.style.cursor = "not-allowed";
+  generateAssistanceBtn.style.backgroundColor = "#5f4dbb9c";
+  mainAiQuetionSection
+    .querySelector(".assistance-landing")
+    .classList.remove("hidden");
   mainAiQuetionSection
     .querySelector(".loading-landing")
     .classList.remove("hidden");
+  try {
+    const assistanceData = {
+      prompt: generateAssistance.value,
+    };
+    askedQuestion.innerHTML = generateAssistance.value;
 
-  setTimeout(() => {
+    if (generateAssistance.value === "") {
+      await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please enter a prompt",
+      });
+      return;
+    }
+
+    const response = await fetch(`http://${ip}:${port}/assistance`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(assistanceData),
+    });
+
+    const data = await response.json();
+    if (!data.success) {
+      return await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: data.message,
+      });
+    }
+
+    generateAssistance.value = "";
+    const fetchedAssistance = await getAssistanceData();
+    displayAssistance.firstChild?.remove();
+    const preElement = document.createElement("pre");
+    preElement.style.whiteSpace = "pre-wrap";
+    preElement.classList.add("text-[14px]");
+    preElement.classList.add("font-roboto");
+    preElement.classList.add("font-semibold");
+    preElement.textContent = fetchedAssistance;
+    displayAssistance.appendChild(preElement);
+  } catch (err) {
+    await Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
+    });
+    generateBtn.disabled = false;
+    generateBtn.style.cursor = "default";
+    generateBtn.style.backgroundColor = "#8068FB";
+    mainAiQuetionSection
+      .querySelector(".assistance-landing")
+      .classList.add("hidden");
+    mainAiQuetionSection
+      .querySelector(".loading-landing")
+      .classList.remove("hidden");
+  }
+});
+
+async function getAssistanceData() {
+  generateAssistanceBtn.disabled = true;
+  generateAssistanceBtn.style.cursor = "not-allowed";
+  generateAssistanceBtn.style.backgroundColor = "#5f4dbb9c";
+  mainAiQuetionSection
+    .querySelector(".assistance-landing")
+    .classList.remove("hidden");
+  mainAiQuetionSection
+    .querySelector(".loading-landing")
+    .classList.remove("hidden");
+  try {
+    // loadingSpinner.classList.remove("hidden");
+    const res = await fetch(`http://${ip}:${port}/assistance`);
+    const data = await res.json();
+    if (!data.success) {
+      return await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: data.message,
+      });
+    }
+    const fetchedAssistance =
+      data.result?.response?.candidates[0]?.content?.parts[0]?.text;
+    const final = fetchedAssistance
+      .replaceAll("**", "")
+      .replaceAll("``", "")
+      .replaceAll("##", "");
+    return final;
+  } catch (err) {
+    await Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
+    });
+    assistanceLandingPage.classList.add("hidden");
+    loadingSpinner.classList.add("hidden");
+  } finally {
     mainAiQuetionSection
       .querySelector(".loading-landing")
       .classList.add("hidden");
     mainAiQuetionSection
       .querySelector(".assistance-landing")
       .classList.add("hidden");
-  }, 6000);
-
-  displayAssistance.firstChild?.remove();
-
-  askedQuestion.innerHTML = generateAssistance.value;
-  generateAssistance.value = "";
-  await fetch(`http://${ip}:${port}/assistance`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(assistanceData),
-  })
-    .then((res) => console.log(res))
-    .catch((err) => console.error(err));
-
-  const fetchedAssistance = await getAssistanceData();
-
-  const preElement = document.createElement("pre");
-  preElement.style.whiteSpace = "pre-wrap";
-  preElement.classList.add("text-[14px]");
-  preElement.classList.add("font-roboto");
-  preElement.classList.add("font-semibold");
-  preElement.textContent = fetchedAssistance;
-  displayAssistance.appendChild(preElement);
-});
-
-async function getAssistanceData() {
-  return fetch(`http://${ip}:${port}/assistance`)
-    .then((res) => res.json())
-    .then((data) => {
-      const fetchedAssistance =
-        data?.response?.candidates[0]?.content?.parts[0]?.text;
-      const final = fetchedAssistance
-        .replaceAll("**", "")
-        .replaceAll("``", "")
-        .replaceAll("##", "");
-      return final;
-    });
+    loadingSpinner.classList.add("hidden");
+    generateAssistanceBtn.disabled = false;
+    generateAssistanceBtn.style.cursor = "default";
+    generateAssistanceBtn.style.backgroundColor = "#8068FB";
+  }
 }
 
-function getDataFromGemini() {
-  return fetch(`http://${ip}:${port}/generate`)
-    .then((res) => res.json())
-    .then((data) => {
-      const fetchedQuestion =
-        data?.response?.candidates[0]?.content?.parts[0]?.text;
-      console.log(data.response.candidates[0].content.parts[0].text);
-      return fetchedQuestion;
+async function getDataFromGemini() {
+  generateBtn.disabled = true;
+  generateBtn.style.cursor = "not-allowed";
+  generateBtn.style.backgroundColor = "#5f4dbb9c";
+  try {
+    const res = await fetch(`http://${ip}:${port}/generate`);
+    const { success, results, message } = await res.json();
+    console.log(success, results, message);
+    if (!success) {
+      return await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: message,
+      });
+    }
+
+    const fetchedQuestion =
+      results?.response?.candidates[0]?.content?.parts[0]?.text;
+    return fetchedQuestion;
+  } catch (err) {
+    await Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
     });
+    loadingSpinner.classList.add("hidden");
+    return err.message;
+  } finally {
+    generateQuestion.value = "";
+    mainAiContainer.innerHTML = "";
+    loadingSpinner.classList.add("hidden");
+    generateBtn.disabled = false;
+    generateBtn.style.cursor = "default";
+    generateBtn.style.backgroundColor = "#8068FB";
+  }
 }
 let corrects = Math.floor(Math.random() * 150);
 
 async function manipulateGeneratedData() {
   const fetched = await getDataFromGemini();
-  console.log(fetched);
   const questions = [...fetched.matchAll(/^\*\*\d+\.\s(.+?)\*\*/gm)].map(
     (match) => match[1]
   );
