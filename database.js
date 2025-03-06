@@ -23,10 +23,19 @@ const noteBookSchema = new Schema({
 });
 
 const todoSchema = new Schema({
-  createTime: Number,
+  createTime: { type: Number, default: Date.now() },
+  parent: String,
   todo: String,
   date: String,
   priority: String,
+});
+
+const todoBoxSchema = new Schema({
+  createTime: Number,
+  title: String,
+  date: String,
+  number: Number,
+  index: Number,
 });
 
 const noteBookBoxSchema = new Schema({
@@ -44,6 +53,7 @@ const noteBookBoxSchema = new Schema({
 noteBookBoxSchema.plugin(AutoIncrementPlugin, { inc_field: "index" });
 
 const NotebookCollection = mongoose.model("Notebook", noteBookSchema);
+const TodoBoxCollection = mongoose.model("TodoBox", todoBoxSchema);
 const TodoCollection = mongoose.model("Todo", todoSchema);
 const NoteBookBox = mongoose.model("NotebookBox", noteBookBoxSchema);
 
@@ -53,4 +63,4 @@ NotebookCollection.collection.createIndex({
   title: "text",
 });
 
-export { NotebookCollection, TodoCollection, NoteBookBox };
+export { NotebookCollection, TodoCollection, NoteBookBox, TodoBoxCollection };

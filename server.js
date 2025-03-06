@@ -3,7 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import note from "./routes/notes.js";
-import toDo from "./routes/to_do.js";
+import todo from "./routes/to_do.js";
 import auth from "./routes/auth.js";
 import dotenv from "dotenv";
 import mongodb from "mongodb";
@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 app.use("/notes", note);
-app.use("/to-do", toDo);
+app.use("/to-do", todo);
 app.use("/auth", auth);
 let isAuthenticate;
 
@@ -40,7 +40,7 @@ app.use(express.static("public", { acceptRanges: true }));
 
 let prompt;
 let assistancePrompt;
-const PORT = process.env.PORT || 8090;
+const PORT = process.env.PORT || 9000;
 
 function generateQuestionPrompt(prompt, difficulty) {
   const question = `

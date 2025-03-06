@@ -64,13 +64,16 @@ selectAssistanceBtn.addEventListener("click", () => {
   selectAiType.classList.add("hidden");
   assistanceSection.classList.remove("hidden");
   questionSection.classList.add("hidden");
+  displayReview.classList.add("hidden");
 });
 
 selectQuestionsBtn.addEventListener("click", () => {
   selectAiType.classList.add("hidden");
   questionSection.classList.remove("hidden");
   assistanceSection.classList.add("hidden");
+  displayReview.classList.remove("hidden");
 });
+displayReview.classList.add("hidden");
 
 const loadingSpinner = mainAiQuetionSection.querySelector(
   ".questions-loading-landing"
@@ -83,6 +86,7 @@ mainAiQuetionSection
     assistanceSection.classList.add("hidden");
     questionSection.classList.add("hidden");
     selectAiType.classList.remove("hidden");
+    displayReview.classList.add("hidden");
     mainPage.classList.remove("hidden");
   });
 
@@ -92,6 +96,8 @@ const deleteAllBtn = document.querySelector(".delete-all");
 
 deleteAllBtn.addEventListener("click", () => {
   mainAiQuetionSection.querySelector(".landing").classList.remove("hidden");
+  mainAiContainer.innerHTML = "";
+  generateQuestion.value = "";
 });
 
 generateBtn.addEventListener("click", async () => {
@@ -106,12 +112,24 @@ generateBtn.addEventListener("click", async () => {
       difficultyLevel: difficultyLevel.value,
     };
     if (generateQuestion.value === "") {
-      await Swal.fire({
+      generateBtn.disabled = false;
+      generateBtn.style.cursor = "default";
+      generateBtn.style.backgroundColor = "#8068FB";
+      loadingSpinner.classList.add("hidden");
+      if (
+        mainAiQuetionSection
+          .querySelector(".landing")
+          .classList.contains("hidden")
+      ) {
+        mainAiQuetionSection
+          .querySelector(".landing")
+          .classList.remove("hidden");
+      }
+      return await Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Please enter a prompt",
       });
-      return;
     }
 
     await fetch(`http://${ip}:${port}/generate`, {
@@ -159,12 +177,17 @@ generateAssistanceBtn.addEventListener("click", async () => {
     askedQuestion.innerHTML = generateAssistance.value;
 
     if (generateAssistance.value === "") {
-      await Swal.fire({
+      mainAiQuetionSection
+        .querySelector(".loading-landing")
+        .classList.add("hidden");
+      generateAssistanceBtn.disabled = false;
+      generateAssistanceBtn.style.cursor = "default";
+      generateAssistanceBtn.style.backgroundColor = "#8068FB";
+      return await Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Please enter a prompt",
       });
-      return;
     }
 
     const response = await fetch(`http://${ip}:${port}/assistance`, {
@@ -198,7 +221,7 @@ generateAssistanceBtn.addEventListener("click", async () => {
     await Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "Something went wrong!",
+      text: err.message,
     });
     generateBtn.disabled = false;
     generateBtn.style.cursor = "default";
@@ -244,7 +267,7 @@ async function getAssistanceData() {
     await Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "Something went wrong!",
+      text: err.message,
     });
     assistanceLandingPage.classList.add("hidden");
     loadingSpinner.classList.add("hidden");
@@ -269,7 +292,6 @@ async function getDataFromGemini() {
   try {
     const res = await fetch(`http://${ip}:${port}/generate`);
     const { success, results, message } = await res.json();
-    console.log(success, results, message);
     if (!success) {
       return await Swal.fire({
         icon: "error",
@@ -285,17 +307,18 @@ async function getDataFromGemini() {
     await Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "Something went wrong!",
+      text: err.message,
     });
-    loadingSpinner.classList.add("hidden");
+
     return err.message;
   } finally {
     generateQuestion.value = "";
     mainAiContainer.innerHTML = "";
-    loadingSpinner.classList.add("hidden");
     generateBtn.disabled = false;
     generateBtn.style.cursor = "default";
     generateBtn.style.backgroundColor = "#8068FB";
+    loadingSpinner.classList.add("hidden");
+    mainAiQuetionSection.querySelector(".landing").classList.add("hidden");
   }
 }
 let corrects = Math.floor(Math.random() * 150);

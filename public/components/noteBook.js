@@ -196,13 +196,12 @@ function createDayContainer(title, date, notesNumber, number) {
 
 // addNoteForm.addEventListener("submit", );
 document.addEventListener("DOMContentLoaded", async () => {
-  const { data, success } = await getBoxData();
-
-  if (success) {
-    boxNumber = data.length;
+  const result = await getBoxData();
+  if (result.success) {
+    boxNumber = result.data.length;
     boxCounter.textContent = boxNumber;
     noteCardCouter.textContent = boxNumber;
-    data.forEach((element) => {
+    result.data.forEach((element) => {
       const card = createDayContainer(
         element.title,
         element.date,
@@ -274,7 +273,7 @@ async function deleteBox(container, title, date) {
   boxNumber--;
   boxCounter.textContent = boxNumber;
 
-  const res = await fetch("http://localhost:8090/notes/box", {
+  const res = await fetch(`http://${ip}:${port}/notes/box`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -317,7 +316,7 @@ function delteFromLS(item) {
 }
 
 async function sendDataToServer(data) {
-  const response = await fetch("http://localhost:8090/notes/box", {
+  const response = await fetch(`http://${ip}:${port}/notes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -329,9 +328,14 @@ async function sendDataToServer(data) {
 }
 
 async function getBoxData() {
-  const response = await fetch("http://localhost:8090/notes/box");
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(`http://${ip}:${port}/notes/box`);
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    Swal.fire("Error", err.message, "error");
+    return;
+  }
 }
 
 async function openNotesAddForm(title, date) {
@@ -477,7 +481,7 @@ function createNoteCard(title, topic, note) {
 async function fetchNotes(title, date) {
   try {
     const response = await fetch(
-      "http://localhost:8090/notes?parentTitle=" +
+      `http://${ip}:${port}/notes?parentTitle=` +
         encodeURIComponent(title) +
         "&parentDate=" +
         encodeURIComponent(date)
@@ -514,7 +518,7 @@ async function handleNotesForm() {
 }
 
 async function sendNotesToServer(data) {
-  const response = await fetch("http://localhost:8090/notes", {
+  const response = await fetch(`http://${ip}:${port}/notes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -542,7 +546,7 @@ async function deleteNote(card, title, note, topic) {
 
   if (!confirm) return;
 
-  const res = await fetch("http://localhost:8090/notes", {
+  const res = await fetch(`http://${ip}:${port}/notes`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -575,7 +579,7 @@ function editNote(card, titleEl, noteText, topicSpan) {
 
   limitText(titleEl, 29);
   limitText(topicSpan, 10);
-
+  limitText(noteText, 500);
   const range = document.createRange();
   const selection = window.getSelection();
   range.selectNodeContents(titleEl);
@@ -629,7 +633,7 @@ function saveNote(
 }
 
 async function updateEditedNotes(data) {
-  const response = await fetch("http://localhost:8090/notes", {
+  const response = await fetch(`http://${ip}:${port}/notes`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

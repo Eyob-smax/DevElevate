@@ -257,7 +257,7 @@ label {
   );
 }
 
-#note-section .today {
+.today {
   font-family: "Joti One", serif;
   font-weight: 400;
   font-style: normal;

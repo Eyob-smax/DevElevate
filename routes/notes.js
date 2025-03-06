@@ -128,7 +128,6 @@ note.put("/", async (req, res) => {
 
 note.post("/box", async (req, res) => {
   const { title, date } = req.body;
-
   try {
     const newBox = new NoteBookBox({
       title,
@@ -136,7 +135,6 @@ note.post("/box", async (req, res) => {
       number: 0,
     });
     await newBox.save();
-
     const boxData = await NoteBookBox.findOne({ title, date });
     res.json(boxData);
   } catch (err) {
@@ -158,9 +156,9 @@ note.get("/box", async (req, res) => {
       box.number = count;
       await box.save();
     });
-    res.json({ success: true, data: boxData, number });
+    res.json({ success: true, data: boxData });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

@@ -12,7 +12,7 @@
       rel="stylesheet"
     />
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.css"
       rel="stylesheet"
     />
 
@@ -579,7 +579,7 @@
             EXPLANATION
           </h1>
           <div
-            class="max-h-[59vh] custom-height-mq:max-h-[59vh] custom-height-mq-850:max-h-[57vh] overflow-y-scroll px-2 py-2 coming-assistance m-2 font-roboto rounded-xl shadow-lg shadow-slate-900/5 bg-[#f1f1f1] ring-2 ring-slate-200"
+            class="max-h-[60vh] custom-height-mq:max-h-[59vh] custom-height-mq-850:max-h-[57vh] overflow-y-scroll px-2 py-2 coming-assistance m-2 font-roboto rounded-xl shadow-lg shadow-slate-900/5 bg-[#f1f1f1] ring-2 ring-slate-200"
           ></div>
           <div
             style="white-space: pre-wrap"
@@ -729,43 +729,96 @@
             </div>
           </div>
         </div>
+        <div
+          class="hidden todo-day-container w-[calc(100% - 50px)] custom-height-mq:h-[170px] bg-[url(../images/todo-box.png)] h-[200px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
+        >
+          <h2 class="text-white p-5 font-robot text-2xl">
+            This is a todo title
+          </h2>
+          <h1 class="text-white font-roboto text-3xl pl-4 pt-5">0</h1>
+          <h4
+            class="today text-white absolute -translate-x-1/2 -translate-y-1/2 bottom-0 left-20"
+          >
+            <span id="date">3-4-2025</span>
+          </h4>
+          <p
+            class="absolute right-0 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-sour text-[25px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[gold] shadow-lg shadow-slate-900 ring-slate-400 ring-1"
+          >
+            0
+          </p>
+          <p
+            class="absolute right-14 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-sour text-[25px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[#F1EEFF] shadow-lg shadow-slate-900 ring-slate-400 ring-1"
+          >
+            <i class="text-[15px] fas fa-trash-alt"></i>
+          </p>
+        </div>
       </div>
       <footer
         class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
       >
-        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
-          <i
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
-          ></i>
-        </div>
-
         <div
-          id="add-todos-btn"
-          class="bg-[#8068FB] focus:scale w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+          class="footer-box-section flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
         >
-          <i class="text-white duration-300 fas fa-plus text-2xl"></i>
-        </div>
-        <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12">
-          <i
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-info-circle"
+          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+            <i
+              id="backToMain"
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+            ></i>
+          </div>
+
+          <div
+            id="add-todo-box-btn"
+            class="bg-[#8068FB] focus:scale w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
           >
-          </i>
+            <i class="text-white duration-300 fas fa-plus text-2xl"></i>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12">
+            <i
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-info-circle"
+            >
+            </i>
+          </div>
+        </div>
+        <div
+          style="display: none"
+          class="footer-todo-section flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+        >
+          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative navBack">
+            <i
+              id="backToBoxes"
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+            ></i>
+          </div>
+
+          <div
+            id="add-todo-btn"
+            class="bg-[#8068FB] focus:scale w-12 h-12 rounded-full flex items-center justify-center absolute top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2"
+          >
+            <i class="text-white duration-300 fas fa-plus text-2xl"></i>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12">
+            <i
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-info-circle"
+            >
+            </i>
+          </div>
         </div>
       </footer>
       <div
         class="add-todo-section py-5 absolute w-[95%] rounded-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#F7F8FB] ring-2 ring-slate-400/10 max-h-[480px] shadow-xl shadow-slate-900/5 overflow-y-scroll scrollbar hidden"
       >
-        <form id="to-do-form">
+        <form id="todo-form">
           <div
             class="mx-auto gap-[80px] my-2 p-3 flex items-center justify-between"
           >
-            <label class="font-semibold font-faculty" for="write-note-title"
+            <label class="font-semibold font-faculty" for="todoDate"
               >Date</label
             >
             <input
               name="todoDate"
               class="add-todo-date ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
               type="date"
+              id="todoDate"
               maxlength="200"
               placeholder="let vs var"
             />
@@ -779,7 +832,7 @@
             >
             <select
               name="priority"
-              id="todo-priority"
+              id="priority"
               class="w-48 flex-1 font-inria h-10 rounded-lg ring-2 ring-black focus:outline-none"
             >
               <option value="high">🔴High</option>
@@ -795,6 +848,7 @@
               class="add-todo-body flex-1 mt-[20px] mx-[15px] px-[7px] p-2 ring-2 ring-black block rounded-xl"
               placeholder="todos here..."
               wrap="soft"
+              maxlength="150"
             ></textarea>
           </div>
           <div class="flex mt-6 justify-center">
@@ -806,6 +860,50 @@
             </button>
           </div>
         </form>
+      </div>
+
+      <div
+        class="create-todo-days-container hidden py-5 absolute w-[95%] rounded-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#F7F8FB] ring-2 ring-slate-400/10 max-h-[480px] shadow-xl shadow-slate-900/5 overflow-y-scroll scrollbar"
+      >
+        <h1 class="text-[#8068FB] font-inkut font-bold text-center mb-3">
+          Add New Box
+        </h1>
+        <div class="flex-col space-y-4 mx-auto px-2">
+          <form id="todo-days-container-form">
+            <div class="mx-auto p-2 flex items-center justify-between">
+              <label class="font-semibold font-faculty" for="todoBoxTitle"
+                >Title</label
+              >
+              <input
+                name="todoBoxTitle"
+                class="write-note-title ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
+                type="text"
+                id="todoBoxTitle"
+                maxlength="200"
+                placeholder="Java"
+              />
+            </div>
+            <div class="mx-auto p-2 flex items-center justify-between">
+              <label class="font-semibold font-faculty" for="todoBoxDate"
+                >Date</label
+              >
+              <input
+                name="todoBoxDate"
+                id="todoBoxDate"
+                class="write-note-topic ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
+                type="date"
+              />
+            </div>
+            <div class="flex justify-center items-center mt-4">
+              <button
+                type="submit"
+                class="bg-white write-note-submit-btn relative rounded-[17px] w-40 py-2"
+              >
+                Enter
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
 
@@ -907,7 +1005,7 @@
     </section>
     <script>
       const ip = "localhost";
-      const port = 8090;
+      const port = 9000;
       const domain = `http://${ip}:${port}`;
       // document.addEventListener("DOMContentLoaded", () => {
       //   (async () => {
