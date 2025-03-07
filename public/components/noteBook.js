@@ -141,25 +141,25 @@ function closeBoxAddForm() {
 function createDayContainer(title, date, notesNumber, number) {
   const dayContainer = createElement(
     "div",
-    "day-container w-[calc(100% - 50px)] custom-height-mq:h-[170px] bg-[url(../images/day-container.png)] h-[200px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer  my-2 mx-2"
+    "day-container w-[calc(100% - 10px)] custom-height-mq:h-[130px] bg-[url(../images/day-container.png)] h-[150px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
   );
 
-  const h2 = createElement("h2", "text-white  p-5 font-robot text-2xl", title);
-  const h1 = createElement(
-    "h1",
-    "text-white font-roboto text-3xl pl-4 pt-5",
-    number || "0"
+  const h2 = createElement(
+    "h2",
+    "text-white  p-5 font-roboto text-pretty font-bold text-2xl",
+    title
   );
+
   const h4 = createElement(
     "h4",
-    "today text-white absolute -translate-x-1/2 -translate-y-1/2 bottom-0 left-20"
+    "today font-inter font-semibold text-white absolute -translate-x-1/2 -translate-y-1/2 bottom-3 left-20"
   );
   const span1 = createElement("span", null, date);
   span1.setAttribute("id", "date");
 
   const p = createElement(
     "p",
-    "absolute right-0 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-sour text-[25px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[gold] shadow-lg shadow-slate-900 ring-slate-400 ring-1",
+    "absolute right-0 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-inter font-semibold  text-[18px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[gold] shadow-lg shadow-slate-900 ring-slate-400 ring-1",
     notesNumber || "0"
   );
 
@@ -183,10 +183,13 @@ function createDayContainer(title, date, notesNumber, number) {
     openNotesAddForm(title, date);
     currentBoxInfo.title = title;
     currentBoxInfo.date = date;
+    dayContainerAddSection.classList.add("hidden");
+    icon2.classList.remove("rotate-[135deg]");
+    icon.classList.remove("rotate-[135deg]");
+    addNotesSection.classList.add("hidden");
   });
 
   dayContainer.appendChild(h2);
-  dayContainer.appendChild(h1);
   dayContainer.appendChild(h4);
   dayContainer.appendChild(p);
   dayContainer.appendChild(p2);
@@ -439,7 +442,7 @@ function createNoteCard(title, topic, note) {
   card.appendChild(footer);
 
   editBtn.addEventListener("click", (e) => {
-    editNote(card, titleEl, noteText, topicSpan);
+    editNote(titleEl, noteText, topicSpan);
 
     if (e.currentTarget.classList.contains("edit-note")) {
       btnContainer.appendChild(saveBtn);
@@ -461,6 +464,7 @@ function createNoteCard(title, topic, note) {
       currentBoxInfo.title,
       currentBoxInfo.date
     );
+
     if (e.currentTarget.classList.contains("save-note")) {
       btnContainer.appendChild(editBtn);
       btnContainer.removeChild(saveBtn);
@@ -529,8 +533,6 @@ async function sendNotesToServer(data) {
   return res;
 }
 
-function editNote() {}
-
 async function deleteNote(card, title, note, topic) {
   const result = await Swal.fire({
     title: "Are you sure?",
@@ -567,15 +569,18 @@ async function deleteNote(card, title, note, topic) {
   Swal.fire("Deleted!", message, "success");
 }
 
-function editNote(card, titleEl, noteText, topicSpan) {
-  titleEl.contentEditable = true;
+function editNote(titleEl, noteText, topicSpan) {
   titleEl.style.outline = "black 1px solid";
-  topicSpan.style.outline = "black 1px solid";
   noteText.style.outline = "black 1px solid";
   titleEl.style.padding = "0 10px";
   noteText.contentEditable = true;
   topicSpan.contentEditable = true;
   topicSpan.style.padding = "0 10px";
+  topicSpan.style.outline = "black .5px solid";
+  titleEl.contentEditable = true;
+
+  topicSpan.focus();
+  titleEl.focus();
 
   limitText(titleEl, 29);
   limitText(topicSpan, 10);
@@ -583,14 +588,12 @@ function editNote(card, titleEl, noteText, topicSpan) {
   const range = document.createRange();
   const selection = window.getSelection();
   range.selectNodeContents(titleEl);
-  range.collapse(false); // Move to the end
+  range.collapse(false);
   selection.removeAllRanges();
   selection.addRange(range);
-
-  titleEl.focus();
 }
 
-function saveNote(
+async function saveNote(
   titleEl,
   noteText,
   topicSpan,
@@ -610,7 +613,7 @@ function saveNote(
     newTopic: topicSpan.textContent,
     newNote: noteText.textContent,
   };
-  const { success, message } = updateEditedNotes(data);
+  const { success, message } = await updateEditedNotes(data);
   if (titleEl.textContent === "" || !success) {
     titleEl.textContent = title;
   }
@@ -652,7 +655,7 @@ async function updateEditedNotes(data) {
 function limitText(textElement, limit) {
   textElement.addEventListener("keydown", (e) => {
     if (
-      textElement.textContent.length > limit &&
+      textElement.textContent.length >= limit &&
       e.key !== "Backspace" &&
       e.key !== "Delete" &&
       e.key !== "ArrowLeft" &&
@@ -660,16 +663,11 @@ function limitText(textElement, limit) {
       e.key !== "ArrowUp" &&
       e.key !== "ArrowDown" &&
       e.key !== "Enter" &&
-      e.key !== "Tab" &&
       e.key !== "Shift" &&
       e.key !== "Control" &&
       e.key !== "Alt"
     ) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: `You can only enter ${limit} characters`,
-      });
+      Swal.fire({ icon: "error", title: "Error", text: "Limit reached" });
       e.preventDefault();
     } else if (textElement.textContent.length === 0 && e.key === "Backspace") {
       e.preventDefault();

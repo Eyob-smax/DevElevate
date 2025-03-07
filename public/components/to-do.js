@@ -26,6 +26,16 @@ const todosForm = getElement("#todo-form");
 let boxesCounter = 0;
 let todosCounter = 0;
 
+const footerBoxSection = getElement(".footer-box-section");
+const addNewBoxSection = getElement(".create-todo-days-container");
+const todoBoxForm = getElement("#todo-days-container-form");
+const addTodoBoxBtn = getElement("#add-todo-box-btn");
+
+const footerTodoSection = getElement(".footer-todo-section");
+const addNewTodoSection = getElement(".add-todo-section");
+const todoForm = getElement("#todo-form");
+const addTodoBtn = getElement("#add-todo-btn");
+
 getElement("#backToMain", mainToDoSection).addEventListener("click", () => {
   mainPage.classList.remove("hidden");
   mainToDoSection.classList.add("hidden");
@@ -56,26 +66,21 @@ function createTodoBox(title, date, number, notesNumber) {
   // Create main container
   const card = createElement(
     "div",
-    "todo-day-container w-[calc(100% - 50px)] custom-height-mq:h-[170px] bg-[url(../images/todo-box.png)] h-[200px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
+    "todo-day-container w-[calc(100% - 10px)] custom-height-mq:h-[130px] bg-[url(../images/todo-box.png)] h-[150px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
   );
 
   // Create title
   const titleElement = createElement(
     "h2",
-    "text-white p-5 font-robot text-2xl",
+    "text-white p-5 text-pretty font-roboto font-bold text-2xl",
     title
   );
 
   // Create count
-  const countElement = createElement(
-    "h1",
-    "text-white font-roboto text-3xl pl-4 pt-5",
-    number || "0"
-  );
 
   const dateElement = createElement(
     "h4",
-    "today text-white absolute -translate-x-1/2 -translate-y-1/2 bottom-0 left-20"
+    "today text-white font-inter font-semibold absolute -translate-x-1/2 -translate-y-1/2 bottom-3 left-20"
   );
 
   const dateSpan = createElement("span", null, date, "date");
@@ -83,7 +88,7 @@ function createTodoBox(title, date, number, notesNumber) {
 
   const counterBubble = createElement(
     "p",
-    "absolute right-0 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-sour text-[25px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[gold] shadow-lg shadow-slate-900 ring-slate-400 ring-1",
+    "absolute right-0 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-inter font-semibold  text-[18px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[gold] shadow-lg shadow-slate-900 ring-slate-400 ring-1",
     notesNumber || "0"
   );
 
@@ -102,7 +107,6 @@ function createTodoBox(title, date, number, notesNumber) {
 
   // Append all elements to the card
   card.appendChild(titleElement);
-  card.appendChild(countElement);
   card.appendChild(dateElement);
   card.appendChild(counterBubble);
   card.appendChild(deleteButton);
@@ -111,8 +115,9 @@ function createTodoBox(title, date, number, notesNumber) {
     currentToDoBox.title = title;
     currentToDoBox.date = date;
     openTodo(title, date);
+    getElement(".fa-plus", addTodoBtn).classList.remove("rotate-[135deg]");
+    getElement(".fa-plus", addTodoBoxBtn).classList.remove("rotate-[135deg]");
   });
-
   return card;
 }
 
@@ -158,7 +163,7 @@ function createTodoCard(content, date, precedence = "High") {
   );
   const textElement = createElement(
     "h2",
-    "to-do-text text-wrap  px-3 font-roboto  text-[16px]",
+    "to-do-text text-pretty text-wrap  px-3 font-roboto  text-[16px]",
     content
   );
   contentContainer.appendChild(textElement);
@@ -202,7 +207,7 @@ function createTodoCard(content, date, precedence = "High") {
 
   deleteButton.addEventListener("click", async (e) => {
     e.stopPropagation();
-    deleteNote(card, content, date);
+    deleteTodo(card, content, date);
   });
 
   const editButton = createElement(
@@ -232,7 +237,7 @@ function createTodoCard(content, date, precedence = "High") {
 
   editButton.addEventListener("click", async (e) => {
     e.stopPropagation();
-    editNote(textElement, precedenceButton);
+    editTodo(textElement, precedenceButton);
 
     if (editButton.classList.contains("edit-todo")) {
       buttonGroup.removeChild(editButton);
@@ -242,7 +247,7 @@ function createTodoCard(content, date, precedence = "High") {
 
   saveButton.addEventListener("click", async (e) => {
     e.stopPropagation();
-    saveNotes(content, date, precedence, textElement, precedenceButton);
+    saveTodo(content, date, precedence, textElement, precedenceButton);
 
     if (saveButton.classList.contains("save-todo")) {
       buttonGroup.removeChild(saveButton);
@@ -252,16 +257,6 @@ function createTodoCard(content, date, precedence = "High") {
 
   return card;
 }
-
-const footerBoxSection = getElement(".footer-box-section");
-const addNewBoxSection = getElement(".create-todo-days-container");
-const todoBoxForm = getElement("#todo-days-container-form");
-const addTodoBoxBtn = getElement("#add-todo-box-btn");
-
-const footerTodoSection = getElement(".footer-todo-section");
-const addNewTodoSection = getElement(".add-todo-section");
-const todoForm = getElement("#todo-form");
-const addTodoBtn = getElement("#add-todo-btn");
 
 footerTodoSection.style.display === "block flex"
   ? (totalToDoElement.textContent = boxesCounter)
@@ -515,7 +510,7 @@ async function handleTodoSubmission() {
   }
 }
 
-async function deleteNote(card, todo, date) {
+async function deleteTodo(card, todo, date) {
   try {
     const check = await Swal.fire({
       icon: "warning",
@@ -559,7 +554,7 @@ async function deleteNote(card, todo, date) {
   }
 }
 
-function editNote(todoEl, priorityBtn) {
+function editTodo(todoEl, priorityBtn) {
   todoEl.contentEditable = true;
   todoEl.style.outline = "1px solid black";
   todoEl.style.padding = "5px";
@@ -579,13 +574,7 @@ function editNote(todoEl, priorityBtn) {
   todoEl.focus();
 }
 
-async function saveNotes(
-  todo,
-  date,
-  precedence,
-  textElement,
-  precedenceButton
-) {
+async function saveTodo(todo, date, precedence, textElement, precedenceButton) {
   try {
     const data = {
       parentTitle: currentToDoBox.title,
@@ -615,7 +604,6 @@ async function saveNotes(
       defaultsForSave(textElement, precedenceButton);
       return;
     }
-    console.log("JKSFHLSKJHSKLJASDHKJS");
     Swal.fire({
       icon: "success",
       title: "Success",

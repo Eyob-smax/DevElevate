@@ -271,25 +271,8 @@
       </header>
       <div>
         <h1 class="text-center font-inkut font-extrabold mb-3">NOTES</h1>
-        <div
-          id="filter-container"
-          class="bg-white ring-2 relative ring-slate-200 shadow-xl shadow-slate-900/5 w-[90%] h-[50PX] mx-auto items-center justify-center rounded-2xl"
-        >
-          <input
-            id="search-notes"
-            type="text"
-            class="w-[85%] h-[80%] bg-transparent px-4 py-1 focus:outline-none"
-            placeholder="Search Notes"
-          />
-          <div
-            id="search-note-btn"
-            class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[50%] right-[5%] -translate-y-1/2"
-          >
-            <i class="fas fa-search text-[#8068FB]"></i>
-          </div>
-        </div>
       </div>
-      <div id="notes" class="px-5 mt-3">
+      <div id="notes" class="px-2 mt-3">
         <div class="relative flex justify-between items-center">
           <h2 class="font-mona font-semibold mx-5">note list</h2>
           <div
@@ -300,9 +283,8 @@
           </div>
         </div>
         <div
-          class="cards-container mt-1 custom-height-mq-850:max-h-[62.5vh] h-[70vh] overflow-y-scroll scrollbar shadow-lg shadow-slate-900/5 rounded-xl"
+          class="cards-container custom-height-mq:max-h-[63.5vh] custom-height-mq-1k:max-h-[76.5vh] mt-1 custom-height-mq-850:max-h-[71.5vh] h-[78vh] overflow-y-scroll scrollbar shadow-lg shadow-slate-900/5 rounded-xl"
         ></div>
-
         <footer
           class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
         >
@@ -540,7 +522,7 @@
         </div>
 
         <div
-          class="landing custom-height-mq:h-[70vh] custom-height-mq:top-[42%] bg-white pointer-events-none custom-height-mq-850:h-[65vh] absolute top-[48%] left-1/2 -translate-y-1/2 -translate-x-1/2 h-[69%] w-[95%] mx-auto rounded-xl shadow-xl custom-height-mq-1k:top-[47.5%] custom-height-mq-1k:h-[70vh] custom-height-mq-850:h-[65vh] custom-height-mq-850:top-[48%] shadow-slate-900/5 ring-2 ring-slate-400"
+          class="landing custom-height-mq:h-[70vh] custom-height-mq:top-[42%] bg-white pointer-events-none custom-height-mq-850:h-[65vh] absolute top-[48%] left-1/2 -translate-y-1/2 -translate-x-1/2 h-[69%] w-[95%] mx-auto rounded-xl shadow-xl custom-height-mq-1k:top-[48.5%] custom-height-mq-1k:h-[70vh] custom-height-mq-850:h-[65vh] custom-height-mq-850:top-[49%] shadow-slate-900/5 ring-2 ring-slate-400"
         >
           <img
             src="images/question_2.jpg"
@@ -691,7 +673,7 @@
         </div>
       </div>
       <div
-        class="main-to-do-container bg-white w-[95%] max-h-[65vh] overflow-y-scroll scrollbar rounded-lg mx-auto py-2 my-1"
+        class="main-to-do-container bg-white w-[95%] custom-height-mq:max-h-[54vh] max-h-[65vh] overflow-y-scroll scrollbar rounded-lg mx-auto py-2 my-1"
       >
         <div
           class="hidden todo-card w-[97%] max-h-[200px] overflow-y-scroll scrollbar mx-auto rounded-lg shadow-lg bg-[#E5E4E9] shadow-slate-900/5 p-1"
@@ -1004,7 +986,7 @@
       </footer>
     </section>
     <script>
-      const ip = "localhost";
+      const ip = "10.5.25.193";
       const port = 9000;
       const domain = `http://${ip}:${port}`;
       // document.addEventListener("DOMContentLoaded", () => {

@@ -174,6 +174,7 @@ generateAssistanceBtn.addEventListener("click", async () => {
     const assistanceData = {
       prompt: generateAssistance.value,
     };
+    askedQuestion.style.textRendering = "optimizeLegibility";
     askedQuestion.innerHTML = generateAssistance.value;
 
     if (generateAssistance.value === "") {
@@ -206,7 +207,7 @@ generateAssistanceBtn.addEventListener("click", async () => {
         text: data.message,
       });
     }
-
+    generateAssistance.style.textRendering = "optimizeLegibility";
     generateAssistance.value = "";
     const fetchedAssistance = await getAssistanceData();
     displayAssistance.firstChild?.remove();
