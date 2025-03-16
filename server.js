@@ -21,7 +21,6 @@ app.use(express.json());
 app.use("/notes", note);
 app.use("/to-do", todo);
 app.use("/auth", auth);
-let isAuthenticate;
 
 const User = async () => {
   try {
