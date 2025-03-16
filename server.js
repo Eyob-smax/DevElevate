@@ -11,6 +11,7 @@ import mongodb from "mongodb";
 import axios from "axios";
 import { Cookie } from "express-session";
 import { ObjectId } from "mongodb";
+import home from "./routes/home.js";
 
 dotenv.config();
 const app = express();
