@@ -92,7 +92,8 @@ app.post("/generate", async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const results = await model.generateContent(prompt);
-    res.status(200).json({ success: true, results });
+    const generatedData = extractGeneratedData(results);
+    res.status(200).json({ success: true, generatedData });
   } catch (err) {
     res.status(400).json({
       success: false,
@@ -101,6 +102,32 @@ app.post("/generate", async (req, res) => {
     });
   }
 });
+
+function extractGeneratedData(results) {
+  const fetchedQuestion =
+    results?.response?.candidates[0]?.content?.parts[0]?.text;
+  const options = [...fetchedQuestion.matchAll(/^[a-d]\)\s.+$/gm)].map(
+    (match) => match[0]
+  );
+
+  const chunkSize = 4;
+  const chunkCount = 10;
+  const separateArrays = [];
+
+  for (let i = 0; i < chunkCount; i++) {
+    separateArrays.push(options.slice(i * chunkSize, (i + 1) * chunkSize));
+  }
+
+  return {
+    questions: [...fetchedQuestion.matchAll(/^\*\*\d+\.\s(.+?)\*\*/gm)].map(
+      (match) => match[1]
+    ),
+    answers: [...separateArrays].slice(0, 5),
+    correctAnswers: [
+      ...fetchedQuestion.matchAll(/^\*\*Correct Answer:\s([a-d]\))\*\*$/gm),
+    ].map((match) => match[1]),
+  };
+}
 
 app.get("/generate", async (req, res) => {
   try {
@@ -111,9 +138,12 @@ app.get("/generate", async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const results = await model.generateContent(prompt);
-    res
-      .status(200)
-      .json({ success: true, results, message: "data fetched successfully" });
+    const generatedData = extractGeneratedData(results);
+    res.status(200).json({
+      success: true,
+      generatedData,
+      message: "data fetched successfully",
+    });
   } catch (err) {
     res.status(400).json({
       success: false,

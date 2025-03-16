@@ -292,7 +292,7 @@ async function getDataFromGemini() {
   generateBtn.style.backgroundColor = "#5f4dbb9c";
   try {
     const res = await fetch(`http://${ip}:${port}/generate`);
-    const { success, results, message } = await res.json();
+    const { success, generatedData, message } = await res.json();
     if (!success) {
       return await Swal.fire({
         icon: "error",
@@ -300,10 +300,8 @@ async function getDataFromGemini() {
         text: message,
       });
     }
-
-    const fetchedQuestion =
-      results?.response?.candidates[0]?.content?.parts[0]?.text;
-    return fetchedQuestion;
+    console.log(generatedData);
+    return generatedData;
   } catch (err) {
     await Swal.fire({
       icon: "error",
@@ -325,28 +323,12 @@ async function getDataFromGemini() {
 let corrects = Math.floor(Math.random() * 150);
 
 async function manipulateGeneratedData() {
-  const fetched = await getDataFromGemini();
-  const questions = [...fetched.matchAll(/^\*\*\d+\.\s(.+?)\*\*/gm)].map(
-    (match) => match[1]
-  );
-  const options = [...fetched.matchAll(/^[a-d]\)\s.+$/gm)].map(
-    (match) => match[0]
-  );
-  const correctAnswers = [
-    ...fetched.matchAll(/^\*\*Correct Answer:\s([a-d]\))\*\*$/gm),
-  ].map((match) => match[1]);
+  const { questions, answers, correctAnswers } = await getDataFromGemini();
 
-  const chunkSize = 4;
-  const chunkCount = 10;
-  const separateArrays = [];
-
-  for (let i = 0; i < chunkCount; i++) {
-    separateArrays.push(options.slice(i * chunkSize, (i + 1) * chunkSize));
-  }
-  separateArrays.forEach((array, index) => {
+  answers.forEach((array, index) => {
     questions.forEach((question, i) => {
       if (index === i) {
-        const templateArray = separateArrays.map((each, ind) => {
+        const templateArray = answers.map((each, ind) => {
           if (ind === i && index === i && each !== ",") {
             return `<div
             class="question-answer-container bg-white p-2 mx-auto rounded-lg shadow-lg shadow-slate-900/5 ring-2 ring-black ring-opacity-10"
