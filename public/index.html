@@ -997,7 +997,7 @@
             icon: "warning",
             confirmButtonText: "Ok",
           });
-          return false;
+          document.body.innerHTML = "Please open it in mobile phones!";
         }
       }
 
@@ -1008,10 +1008,6 @@
       document.addEventListener("resize", () => {
         checkScreenAndDevice();
       });
-
-      if (checkScreenAndDevice() === false) {
-        document.body.style.display = "none";
-      }
 
       const ip = "localhost";
       const port = 9000;
