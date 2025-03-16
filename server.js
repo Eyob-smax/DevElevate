@@ -11,7 +11,6 @@ import mongodb from "mongodb";
 import axios from "axios";
 import { Cookie } from "express-session";
 import { ObjectId } from "mongodb";
-import home from "./routes/home.js";
 
 dotenv.config();
 const app = express();
@@ -21,8 +20,7 @@ app.use(express.json());
 
 app.use("/notes", note);
 app.use("/to-do", todo);
-app.use("/", auth);
-app.use("/home", home);
+app.use("/auth", auth);
 let isAuthenticate;
 
 const User = async () => {
@@ -39,6 +37,8 @@ const User = async () => {
     console.log(error);
   }
 };
+
+app.use(express.static("public/auth_files", { acceptRanges: true }));
 
 let prompt;
 let assistancePrompt;
