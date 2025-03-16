@@ -123,7 +123,7 @@ function createTodoBox(title, date, number, notesNumber) {
 
 async function fetchTodoBox() {
   try {
-    const response = await fetch(`http://${ip}:${port}/to-do/box`);
+    const response = await fetch(`${DOMAIN}/to-do/box`);
     const { success, todoBox } = await response.json();
     if (!success) {
       return Swal.fire({
@@ -279,7 +279,7 @@ async function handleBoxForm() {
       date: formData.get("todoBoxDate"),
     };
 
-    const response = await fetch(`http://${ip}:${port}/to-do/box`, {
+    const response = await fetch(`${DOMAIN}/to-do/box`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -351,7 +351,7 @@ async function deleteTodoBox(card, title, date) {
     });
     if (!check.isConfirmed) return;
 
-    const response = await fetch(`http://${ip}:${port}/to-do/box`, {
+    const response = await fetch(`${DOMAIN}/to-do/box`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -420,7 +420,7 @@ async function openTodo(title, date) {
 async function loadTododos(title, date) {
   try {
     const response = await fetch(
-      `http://${ip}:${port}/to-do?parentTitle=${title}&parentDate=${date}`
+      `${DOMAIN}/to-do?parentTitle=${title}&parentDate=${date}`
     );
     const todos = await response.json();
     if (!todos.success) {
@@ -472,7 +472,7 @@ async function handleTodoSubmission() {
     };
     console.log(data);
 
-    const response = await fetch(`http://${ip}:${port}/to-do`, {
+    const response = await fetch(`${DOMAIN}/to-do`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -521,7 +521,7 @@ async function deleteTodo(card, todo, date) {
     });
     if (!check.isConfirmed) return;
 
-    const response = await fetch(`http://${ip}:${port}/to-do`, {
+    const response = await fetch(`${DOMAIN}/to-do`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -586,7 +586,7 @@ async function saveTodo(todo, date, precedence, textElement, precedenceButton) {
       newPriority: precedenceButton.textContent,
     };
 
-    const response = await fetch(`http://${ip}:${port}/to-do`, {
+    const response = await fetch(`${DOMAIN}/to-do`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

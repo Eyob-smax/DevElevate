@@ -28,6 +28,7 @@ function createElement(
 let boxArray = [];
 let noteArray = [];
 let boxNumber = 0;
+const DOMAIN = `https://develevate-production.up.railway.app/`;
 
 noteCardCouter.textContent = boxNumber;
 
@@ -276,7 +277,7 @@ async function deleteBox(container, title, date) {
   boxNumber--;
   boxCounter.textContent = boxNumber;
 
-  const res = await fetch(`http://${ip}:${port}/notes/box`, {
+  const res = await fetch(`${DOMAIN}/notes/box`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -319,7 +320,7 @@ function delteFromLS(item) {
 }
 
 async function sendDataToServer(data) {
-  const response = await fetch(`http://${ip}:${port}/notes`, {
+  const response = await fetch(`${DOMAIN}/notes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -332,7 +333,7 @@ async function sendDataToServer(data) {
 
 async function getBoxData() {
   try {
-    const response = await fetch(`http://${ip}:${port}/notes/box`);
+    const response = await fetch(`${DOMAIN}/notes/box`);
     const data = await response.json();
     return data;
   } catch (err) {
@@ -485,7 +486,7 @@ function createNoteCard(title, topic, note) {
 async function fetchNotes(title, date) {
   try {
     const response = await fetch(
-      `http://${ip}:${port}/notes?parentTitle=` +
+      `${DOMAIN}/notes?parentTitle=` +
         encodeURIComponent(title) +
         "&parentDate=" +
         encodeURIComponent(date)
@@ -522,7 +523,7 @@ async function handleNotesForm() {
 }
 
 async function sendNotesToServer(data) {
-  const response = await fetch(`http://${ip}:${port}/notes`, {
+  const response = await fetch(`${DOMAIN}/notes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -548,7 +549,7 @@ async function deleteNote(card, title, note, topic) {
 
   if (!confirm) return;
 
-  const res = await fetch(`http://${ip}:${port}/notes`, {
+  const res = await fetch(`${DOMAIN}/notes`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -636,7 +637,7 @@ async function saveNote(
 }
 
 async function updateEditedNotes(data) {
-  const response = await fetch(`http://${ip}:${port}/notes`, {
+  const response = await fetch(`${DOMAIN}/notes`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

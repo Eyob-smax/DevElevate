@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
 });
 
 const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET,
+  secret: "dev elevate app",
   resave: true,
   saveUninitialized: true,
   store,
@@ -55,7 +55,7 @@ const sessionMiddleware = session({
 const User = mongoose.model("Users", userSchema);
 
 const verifyEmailHunter = async (email) => {
-  const apiKey = process.env.HUNTER_API_KEY; // Store API key in .env file
+  const apiKey = "162bad867fbb15565b9ff631341f35e101dbb038";
   const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${apiKey}`;
 
   try {
