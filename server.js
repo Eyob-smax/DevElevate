@@ -21,6 +21,7 @@ app.use(express.json());
 app.use("/notes", note);
 app.use("/to-do", todo);
 app.use("/", auth);
+app.use("/home", home);
 let isAuthenticate;
 
 const User = async () => {
@@ -37,8 +38,6 @@ const User = async () => {
     console.log(error);
   }
 };
-
-app.use(express.static("public", { acceptRanges: true }));
 
 let prompt;
 let assistancePrompt;
