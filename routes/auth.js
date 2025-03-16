@@ -18,14 +18,20 @@ dotenv.config();
 
 auth.use(express.static("public/auth_files", { acceptRanges: true }));
 
-const store = MongoStore.create({ mongoUrl: process.env.dbString });
+const store = MongoStore.create({
+  mongoUrl:
+    "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate",
+});
 
 (async () => {
   try {
-    await mongoose.connect(process.env.dbString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(
+      "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate",
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
     console.log("Connected to MongoDB");
   } catch (error) {
     console.log(error);

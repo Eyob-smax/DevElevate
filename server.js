@@ -25,7 +25,9 @@ let isAuthenticate;
 
 const User = async () => {
   try {
-    const client = await mongodb.MongoClient.connect(process.env.dbString);
+    const client = await mongodb.MongoClient.connect(
+      "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate"
+    );
     console.log("Connected to MongoDB");
     const db = client.db("DevElevate");
     const users = db.collection("users");

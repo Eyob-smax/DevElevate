@@ -6,7 +6,9 @@ import AutoIncrement from "mongoose-sequence";
 const logger = debug("app:db");
 dotenv.config();
 
-const connection = mongoose.connect(process.env.dbString);
+const connection = mongoose.connect(
+  "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate"
+);
 logger("Connected to database");
 
 const connec = mongoose.connection;
