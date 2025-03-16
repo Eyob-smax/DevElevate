@@ -39,7 +39,7 @@ openfocusSessionSection.addEventListener("click", () => {
 // });
 
 async function countLengthNotes(section = "notes") {
-  return fetch(`${domain}/${section}`)
+  return fetch(`${DOMAIN}/${section}`)
     .then((res) => res.json())
     .then((data) => {
       return data;

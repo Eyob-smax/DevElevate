@@ -28,7 +28,6 @@ function createElement(
 let boxArray = [];
 let noteArray = [];
 let boxNumber = 0;
-const DOMAIN = `https://develevate-production.up.railway.app/`;
 
 noteCardCouter.textContent = boxNumber;
 
