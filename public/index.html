@@ -986,6 +986,20 @@
       </footer>
     </section>
     <script>
+      function checkScreenAndDevice() {
+        const screen = window.screen.width;
+        const device = window.navigator.userAgent;
+        console.log(screen, device);
+        if (screen > 500 && !device.includes("Mobile")) {
+          Swal.fire({
+            title: "Please use a bigger screen",
+            text: "This app is optimized for mobile devices",
+            icon: "warning",
+            confirmButtonText: "Ok",
+          });
+          return false;
+        }
+      }
       const ip = "localhost";
       const port = 9000;
       const DOMAIN = `https://develevate-production.up.railway.app`;
