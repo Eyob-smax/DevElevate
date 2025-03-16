@@ -38,7 +38,7 @@ const User = async () => {
   }
 };
 
-app.use(express.static("public/auth_files", { acceptRanges: true }));
+app.use(express.static("public", { acceptRanges: true }));
 
 let prompt;
 let assistancePrompt;
