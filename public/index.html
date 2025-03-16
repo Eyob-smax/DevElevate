@@ -989,7 +989,7 @@
       function checkScreenAndDevice() {
         const screen = window.screen.width;
         const device = window.navigator.userAgent;
-        console.log(screen, device);
+
         if (screen > 500 && !device.includes("Mobile")) {
           Swal.fire({
             title: "Please use a bigger screen",
@@ -1000,6 +1000,19 @@
           return false;
         }
       }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        checkScreenAndDevice();
+      });
+
+      document.addEventListener("resize", () => {
+        checkScreenAndDevice();
+      });
+
+      if (checkScreenAndDevice() === false) {
+        document.body.style.display = "none";
+      }
+
       const ip = "localhost";
       const port = 9000;
       const DOMAIN = `https://develevate-production.up.railway.app`;
