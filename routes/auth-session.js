@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
  */
 
 const conn =
-  "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate?retryWrites=true&w=majority";
+  "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate";
 
 const connection = mongoose.createConnection(conn);
 

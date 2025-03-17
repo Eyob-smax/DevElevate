@@ -990,7 +990,7 @@
         const screen = window.screen.width;
         const device = window.navigator.userAgent;
 
-        if (screen > 500 && !device.includes("Mobile")) {
+        if (screen > 500) {
           await Swal.fire({
             title: "Please use a Mobile device",
             text: "This app is optimized for mobile devices",
