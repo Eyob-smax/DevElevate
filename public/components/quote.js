@@ -27,40 +27,8 @@ getElement("#back-quote", mainQuoteSection).addEventListener("click", () => {
 
 const arr = [];
 
-const cards = document.querySelectorAll(".preview-card");
-const cardsArray = Array.from(cards);
-const last = cardsArray.length - 1;
-console.log(cardsArray.length);
-function rotateCards() {
-  let angle = 0;
-  cardsArray.forEach((card, index) => {
-    if (card.classList.contains("away")) {
-      card.style.transform = `translateY(-120vh) rotate(-48deg)`;
-    } else {
-      card.style.transform = `translate(-50%, -50%) rotate(${angle}deg`;
-      angle = angle - 5;
-      card.style.zIndex = cardsArray.length - index;
-      //   card.style.transform = "translate(-50%, -50%)";
-    }
-  });
-}
-
-cardsArray.forEach((card, index) => {
-  card.style.transition = "0.5s ease-in-out";
-  card.addEventListener("click", () => {
-    card.classList.add("away");
-
-    if (index === last) {
-      cardsArray.forEach((each) => {
-        each.classList.remove("away");
-      });
-    }
-    rotateCards();
-  });
-});
-
 const quoteContainer = getElement(".quote-cards-container", mainQuoteSection);
-const quoteOption = getElement(".quote-option", mainQuoteSection);
+const quoteOption = getElement(".qoute-option", mainQuoteSection);
 const previewBtn = getElement(".preview-btn", mainQuoteSection);
 const favBtn = getElement(".quote-show-favs", mainQuoteSection);
 const refreshBtn = getElement(".quote-refresh", mainQuoteSection);
@@ -114,6 +82,8 @@ function createMainQuoteCard(author, quote) {
   return card;
 }
 
+let counter = 0;
+
 function createPreviewCard(author, quote) {
   const card = createElement(
     "div",
@@ -140,6 +110,21 @@ function createPreviewCard(author, quote) {
   card.appendChild(authorName);
   card.appendChild(quoteContainer);
 
+  card.addEventListener("click", async () => {
+    counter++;
+    if (counter >= 50) {
+      const data = await fetchQuote();
+      data.forEach((quote) => {
+        const { a, q } = quote;
+        const mainQuoteCard = createPreviewCard(a, q);
+        quotePreviewContainer.appendChild(mainQuoteCard);
+      });
+      return;
+    }
+    card.classList.add("away");
+    card.style.transform = "translateY(-120vh) rotate(-48deg)";
+    card.style.transition = "0.5s ease-in-out";
+  });
   return card;
 }
 
@@ -173,16 +158,17 @@ previewBtn.addEventListener("click", () => {
     quotePreviewContainer.appendChild(previewCard);
   });
 });
+console.log(quoteOption);
 
 function toggleToPreview() {
   quoteContainer.classList.add("hidden");
-  quoteOption.style.display = "none";
+  quoteOption.classList.add("hidden");
   quotePreviewContainer.classList.remove("hidden");
 }
 
 function toggleToMain() {
   quoteContainer.classList.remove("hidden");
-  quoteOption.style.display = "block flex";
+  quoteOption.classList.remove("hidden");
   quotePreviewContainer.classList.add("hidden");
 }
 
@@ -193,4 +179,37 @@ backPreviewBtn.addEventListener("click", () => {
     quotePreviewContainer.removeChild(previewCard);
   });
   toggleToMain();
+});
+
+const cards = document.getElementsByClassName("preview-card");
+console.log(cards);
+const cardsArray = Array.from(cards);
+const last = cardsArray.length - 1;
+console.log(cardsArray.length);
+function rotateCards() {
+  let angle = 0;
+  cardsArray.forEach((card, index) => {
+    if (card.classList.contains("away")) {
+      card.style.transform = `translateY(-120vh) rotate(-48deg)`;
+    } else {
+      card.style.transform = `translate(-50%, -50%) rotate(${angle}deg`;
+      angle = angle - 5;
+      card.style.zIndex = cardsArray.length - index;
+      //   card.style.transform = "translate(-50%, -50%)";
+    }
+  });
+}
+
+cardsArray.forEach((card, index) => {
+  card.style.transition = "0.5s ease-in-out";
+  card.addEventListener("click", () => {
+    card.classList.add("away");
+
+    if (index === last) {
+      cardsArray.forEach((each) => {
+        each.classList.remove("away");
+      });
+    }
+    rotateCards();
+  });
 });
