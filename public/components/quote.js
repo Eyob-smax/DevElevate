@@ -1,5 +1,3 @@
-import { create } from "connect-mongo";
-
 function createElement(
   el,
   className = null,
