@@ -65,7 +65,7 @@ const previewBtn = getElement(".preview-btn", mainQuoteSection);
 const favBtn = getElement(".quote-show-favs", mainQuoteSection);
 const refreshBtn = getElement(".quote-refresh", mainQuoteSection);
 const quotePreviewContainer = getElement(".quote-preview", mainQuoteSection);
-const backBtn = getElement(".close-quote-preview", mainQuoteSection);
+const backPreviewBtn = getElement(".close-quote-preview", mainQuoteSection);
 
 function createMainQuoteCard(author, quote) {
   const card = createElement(
@@ -186,7 +186,7 @@ function toggleToMain() {
   quotePreviewContainer.classList.add("hidden");
 }
 
-backBtn.addEventListener("click", () => {
+backPreviewBtn.addEventListener("click", () => {
   arr.forEach((quote) => {
     const { a, q } = quote;
     const previewCard = createPreviewCard(a, q);
