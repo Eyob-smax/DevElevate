@@ -176,7 +176,7 @@ previewBtn.addEventListener("click", () => {
 
 function toggleToPreview() {
   quoteContainer.classList.add("hidden");
-  quoteOption.classList.style.display = "none";
+  quoteOption.style.display = "none";
   quotePreviewContainer.classList.remove("hidden");
 }
 
