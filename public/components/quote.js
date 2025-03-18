@@ -25,7 +25,7 @@ getElement("#back-quote", mainQuoteSection).addEventListener("click", () => {
   mainPage.classList.remove("hidden");
 });
 
-const arr = [];
+let arr = [];
 
 const quoteContainer = getElement(".quote-cards-container", mainQuoteSection);
 const quoteOption = getElement(".qoute-option", mainQuoteSection);
@@ -83,6 +83,7 @@ function createMainQuoteCard(author, quote) {
 }
 
 let counter = 0;
+let angle = 0;
 
 function createPreviewCard(author, quote) {
   const card = createElement(
@@ -114,15 +115,20 @@ function createPreviewCard(author, quote) {
     counter++;
     if (counter >= 50) {
       const data = await fetchQuote();
-      data.forEach((quote) => {
+      console.log(data);
+      arr = data;
+      arr.forEach((quote) => {
         const { a, q } = quote;
-        const mainQuoteCard = createPreviewCard(a, q);
-        quotePreviewContainer.appendChild(mainQuoteCard);
+        const mainQuoteCard = createMainQuoteCard(a, q);
+        quoteContainer.appendChild(mainQuoteCard);
       });
+      counter = 0;
       return;
     }
     card.classList.add("away");
     card.style.transform = "translateY(-120vh) rotate(-48deg)";
+    card.style.transition = `rotate(${angle}deg)`;
+    angle = angle - 5;
     card.style.transition = "0.5s ease-in-out";
   });
   return card;
