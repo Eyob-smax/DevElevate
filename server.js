@@ -180,7 +180,7 @@ app.post("/register", async (req, res) => {
 
 app.get("/protected-route", (req, res, next) => {
   if (req.isAuthenticated()) {
-    res.redirect("/home");
+    res.redirect("https://develevate-production.up.railway.app/home");
   } else {
     res.send(
       '<h1>You are not authenticated</h1><p><a href="/login">Login</a></p>'
@@ -198,7 +198,7 @@ app.get("/logout", (req, res, next) => {
 });
 
 app.get("/login-success", (req, res, next) => {
-  res.redirect("/home");
+  res.redirect("https://develevate-production.up.railway.app/home");
 });
 
 app.get("/login-failure", (req, res, next) => {
