@@ -60,10 +60,12 @@ cardsArray.forEach((card, index) => {
 });
 
 const quoteContainer = getElement(".quote-cards-container", mainQuoteSection);
+const quoteOption = getElement(".quote-option", mainQuoteSection);
 const previewBtn = getElement(".preview-btn", mainQuoteSection);
 const favBtn = getElement(".quote-show-favs", mainQuoteSection);
 const refreshBtn = getElement(".quote-refresh", mainQuoteSection);
 const quotePreviewContainer = getElement(".quote-preview", mainQuoteSection);
+const backBtn = getElement(".close-quote-preview", mainQuoteSection);
 
 function createMainQuoteCard(author, quote) {
   const card = createElement(
@@ -133,21 +135,11 @@ function createPreviewCard(author, quote) {
     "quote-text font-league text-[18px] text-center",
     quote
   );
-  const backBtn = createElement(
-    "button",
-    "close-quote-preview rounded-full bg-[#F1EEFF] ring-[2px] ring-slate-600 text-white w-14 h-14 absolute bottom-[5%] -translate-x-1/2 -translate-y-1/2 left-[50%]"
-  );
-  const backBtnIcon = createElement(
-    "i",
-    "fas fa-times text-[20px] text-[#8068FB]"
-  );
 
-  backBtn.appendChild(backBtnIcon);
   quoteContainer.appendChild(quoteText);
   card.appendChild(authorName);
   card.appendChild(quoteContainer);
 
-  card.appendChild(backBtn);
   return card;
 }
 
@@ -165,4 +157,40 @@ async function fetchQuote() {
     console.log(error);
   }
 }
-fetchQuote();
+
+document.addEventListener("DOMContentLoaded", fetchQuote);
+
+refreshBtn.addEventListener("click", () => {
+  quoteContainer.innerHTML = "";
+  fetchQuote();
+});
+
+previewBtn.addEventListener("click", () => {
+  toggleToPreview();
+  arr.forEach((quote) => {
+    const { a, q } = quote;
+    const previewCard = createPreviewCard(a, q);
+    quotePreviewContainer.appendChild(previewCard);
+  });
+});
+
+function toggleToPreview() {
+  quoteContainer.classList.add("hidden");
+  quoteOption.classList.style.display = "none";
+  quotePreviewContainer.classList.remove("hidden");
+}
+
+function toggleToMain() {
+  quoteContainer.classList.remove("hidden");
+  quoteOption.style.display = "block flex";
+  quotePreviewContainer.classList.add("hidden");
+}
+
+backBtn.addEventListener("click", () => {
+  arr.forEach((quote) => {
+    const { a, q } = quote;
+    const previewCard = createPreviewCard(a, q);
+    quotePreviewContainer.removeChild(previewCard);
+  });
+  toggleToMain();
+});
