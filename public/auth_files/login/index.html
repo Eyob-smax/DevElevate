@@ -22,7 +22,7 @@
       >
         Log In
       </h1>
-      <form action="" class="mb-3">
+      <form action="/login" method="post" class="mb-3">
         <label for="log-email" class="w-[90%] pt-2 mx-auto block"
           >Username</label
         >
@@ -78,54 +78,53 @@
       </form>
     </section>
     <script>
-      const BASE_URL = "https://develevate-production.up.railway.app";
+      const BASE_URL = "http://localhost:9000";
       const logBtn = document.getElementById("log-btn");
       const cancelBtn = document.getElementById("log-cancel-btn");
       const forgetBtn = document.getElementById("forget");
       const form = document.querySelector("form");
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const data = {
-          username: document.getElementById("log-user-name").value,
-          password: document.getElementById("log-pass").value,
-        };
-        console.log(data);
+      // form.addEventListener("submit", async (e) => {
+      //   e.preventDefault();
+      //   const formData = new FormData(form);
+      //   const data = {
+      //     username: document.getElementById("log-user-name").value,
+      //     password: document.getElementById("log-pass").value,
+      //   };
 
-        if (!data.password === "" && !data.username) {
-          alert("Please fill in all fields");
-          return;
-        }
+      //   if (!data.password === "" && !data.username) {
+      //     alert("Please fill in all fields");
+      //     return;
+      //   }
 
-        try {
-          const response = await fetch(`${BASE_URL}/login`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });
+      //   try {
+      //     const response = await fetch(`${BASE_URL}/login`, {
+      //       method: "POST",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify(data),
+      //     });
 
-          const { session, message } = await response.json();
-          if (session === undefined) {
-            alert("Invalid username or password");
-            return;
-          }
-          if (session) {
-            alert(message);
-          }
-          sessionStorage.setItem("token", session);
-          window.location.href = `${BASE_URL}/home`;
-        } catch (err) {
-          alert(err.message);
-        }
+      //     const { isValid, message } = await response.json();
+      //     if (session === undefined) {
+      //       alert("Invalid username or password");
+      //       return;
+      //     }
+      //     if (session) {
+      //       alert(message);
+      //     }
+      //     sessionStorage.setItem("token", session);
+      //     window.location.href = `${BASE_URL}/home`;
+      //   } catch (err) {
+      //     alert(err.message);
+      //   }
 
-        form.reset();
-      });
+      //   form.reset();
+      // });
 
       cancelBtn.addEventListener("click", () => {
-        window.location.href = `${BASE_URL}/auth_files/index.html`;
+        window.location.href = `http://localhost:9000/`;
       });
     </script>
   </body>

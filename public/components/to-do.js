@@ -66,7 +66,7 @@ function createTodoBox(title, date, number, notesNumber) {
   // Create main container
   const card = createElement(
     "div",
-    "todo-day-container w-[calc(100% - 10px)] custom-height-mq:h-[130px] bg-[url(../images/todo-box.png)] h-[150px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
+    "todo-day-container w-[calc(100% - 10px)] custom-height-mq:h-[130px] bg-[url(./images/todo-box.png)] h-[150px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
   );
 
   // Create title

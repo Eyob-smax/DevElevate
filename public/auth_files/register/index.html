@@ -27,6 +27,7 @@
           ><input
             id="sign-user-name"
             type="text"
+            name="username"
             placeholder="Your User Name"
             class="block mx-auto pt-2 px-4 focus:outline-none"
             required
@@ -40,6 +41,7 @@
           ><input
             id="sign-email"
             type="email"
+            name="email"
             placeholder="Your Email"
             class="block mx-auto py-2 px-4 focus:outline-none"
             required
@@ -53,6 +55,7 @@
           ><input
             id="sign-pass"
             type="password"
+            name="password"
             placeholder="Your Password"
             class="block mx-auto py-2 px-4 focus:outline-none"
             minlength="8"
@@ -69,6 +72,7 @@
           ><input
             id="sign-pass2"
             type="password"
+            name="password2"
             placeholder="Repeat Password"
             class="block mx-auto py-2 px-4 focus:outline-none"
             minlength="8"
@@ -94,23 +98,31 @@
       </form>
     </section>
     <script>
-      const BASE_URL = "https://develevate-production.up.railway.app";
+      const BASE_URL = "http://localhost:9000";
       const signBtn = document.getElementById("sign-btn");
       const cancelBtn = document.getElementById("sign-cancel-btn");
       const form = document.querySelector("form");
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const username = document.getElementById("sign-user-name").value;
-        const email = document.getElementById("sign-email").value;
-        const password = document.getElementById("sign-pass").value;
-        const password2 = document.getElementById("sign-pass2").value;
+        const formData = new FormData(form);
+        const username = formData.get("username");
+        const email = formData.get("email");
+        const password = formData.get("password");
+        const password2 = formData.get("password2");
 
         const data = {
           username,
           email,
           password,
+          password2,
         };
+
+        console.log(data);
+        if (!data) {
+          alert("Please fill in all fields");
+          return;
+        }
         if (password !== password2) {
           document.getElementById("sign-pass").style.border = "1px solid red";
           document.getElementById("sign-pass2").style.border = "1px solid red";
@@ -119,14 +131,13 @@
         }
 
         try {
-          const response = await fetch(`${BASE_URL}/register`, {
+          const response = await fetch(`http://localhost:9000/register`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
           });
-
           const result = await response.json();
           console.log(result);
           if (
@@ -165,7 +176,7 @@
 
           if (result.valid) {
             alert("Registration successful");
-            window.location.href = `${BASE_URL}/auth_files/login.html`;
+            window.location.href = `http://localhost:9000/login`;
           }
         } catch (err) {
           console.log(err.message);
@@ -186,7 +197,7 @@
         });
 
       cancelBtn.addEventListener("click", () => {
-        window.location.href = `${BASE_URL}/auth_files/hero.html`;
+        window.location.href = `http://localhost:9000/`;
       });
     </script>
   </body>

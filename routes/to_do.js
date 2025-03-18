@@ -30,6 +30,11 @@ todo.get("/box", async (req, res) => {
   }
 });
 
+todo.use((req, res, next) => {
+  console.log(req.session);
+  next();
+});
+
 todo.post("/box", async (req, res) => {
   try {
     const { title, date } = req.body;

@@ -1,215 +1,209 @@
 import express from "express";
+import mongoose from "mongoose";
+import session from "express-session";
+import passport from "passport";
 import cors from "cors";
-import bodyParser from "body-parser";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Strategy as LocalStrategy } from "passport-local";
+
+import MongoStore from "connect-mongo";
+import bcrypt from "bcrypt";
+import { fileURLToPath } from "url";
+import path from "path";
+import home from "./routes/home.js";
+import login from "./routes/login.js";
+import axios from "axios";
+import register from "./routes/register.js";
+import { User } from "./database.js";
 import note from "./routes/notes.js";
 import todo from "./routes/to_do.js";
-import auth from "./routes/auth.js";
+
 import dotenv from "dotenv";
-import mongodb from "mongodb";
-// import OpenAI from "openai";
-import axios from "axios";
-import { Cookie } from "express-session";
-import { ObjectId } from "mongodb";
-
 dotenv.config();
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.json());
 
+const app = express();
+
+const PORT = process.env.PORT || 9000;
+
+app.use(express.json());
+app.use(cors({ origin: "*" }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+passport.use(
+  new LocalStrategy(async (username, password, cb) => {
+    try {
+      const user = await User.findOne({ username });
+
+      if (!user) {
+        console.log("User not found");
+        return cb(null, false);
+      }
+
+      console.log(user);
+      const isValid = await bcrypt.compare(password, user.password);
+
+      return isValid ? cb(null, user) : cb(null, false);
+    } catch (err) {
+      return cb(err);
+    }
+  })
+);
+
+passport.serializeUser(function (user, cb) {
+  cb(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
+
+const store = MongoStore.create({
+  mongoUrl:
+    "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate",
+  collectionName: "sessions",
+  ttl: 60 * 60 * 24,
+});
+
+const sessionMiddleware = session({
+  secret: "dev elevate app",
+  resave: true,
+  saveUninitialized: true,
+  store,
+  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 },
+});
+
+//check is user is authenticated
+app.use(sessionMiddleware);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login-failure",
+    successRedirect: "/protected-route",
+  }),
+  (err, req, res, next) => {
+    console.log("logining the user");
+    if (err) next(err);
+  }
+);
+
+// app.use((req, res, next) => {
+//   if (req.isAuthenticated()) {
+//     res.redirect("/home");
+//   } else {
+//     next();
+//   }
+// });
+
+app.use("/home", home);
+app.use("/login", login);
+app.use("/register", register);
 app.use("/notes", note);
 app.use("/to-do", todo);
-app.use("/auth", auth);
+app.use(express.static("./public/auth_files", { acceptRanges: true }));
 
-const User = async () => {
+const verifyEmailHunter = async (email) => {
+  const apiKey = "162bad867fbb15565b9ff631341f35e101dbb038";
+  const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${apiKey}`;
+
   try {
-    const client = await mongodb.MongoClient.connect(
-      "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate"
-    );
-    console.log("Connected to MongoDB");
-    const db = client.db("DevElevate");
-    const users = db.collection("users");
-    const sessions = db.collection("sessions");
-    return { users, sessions };
+    const response = await axios.get(url);
+    const data = response.data.data;
+
+    if (data.result === "deliverable") {
+      return { valid: true, message: "Email is valid and deliverable." };
+    } else {
+      return { valid: false, message: `Email is ${data.result}.` };
+    }
   } catch (error) {
-    console.log(error);
+    console.error("Error verifying email:", error.message);
+    return { valid: false, message: "Email verification failed." };
   }
 };
 
-app.use(express.static("public", { acceptRanges: true }));
+app.post("/register", async (req, res) => {
+  const { username, email, password } = req.body;
+  console.log(req.body);
 
-let prompt;
-let assistancePrompt;
-const PORT = process.env.PORT || 9000;
-
-function generateQuestionPrompt(prompt, difficulty) {
-  const question = `
-  I want you to generate 5 questions about ${prompt} for self-thought students studying web development. Each question should be relevant, and tailored to deepen understanding of the subject. 
-  
-  ### Formatting Criteria:
-  1. **Each question should be numbered and follow this strict format:**
-     **<Question Number>. <Question Text>**
-     For example: 
-     **1. What does the DOM stand for in web development?**
-  
-  2. **Answers should be listed in this precise format:**
-     a) <Option A>
-     b) <Option B>
-     c) <Option C>
-     d) <Option D>
-  
-  3. **Correct answers should follow this specific format:**
-     **Correct Answer: <Answer Letter>**
-     For example: 
-     **Correct Answer: a)**
-  
-  4. **Do not include explanations or extra text, only the questions, answers, and correct answers in this strict order.**
-  
-  5. **Repeat this exact pattern for each question to ensure consistency.**
-  
-  ### Example Output:
-  **1. What does the DOM stand for in web development?**
-  a) Document Orientation Model  
-  b) Document Object Model  
-  c) Data Object Module  
-  d) Data Orientation Model  
-  
-  **Correct Answer: b)**
-  
-  Ensure your output follows the above structure exactly to allow my program to process it effectively. Use the ${difficulty}(difficulty) level to make the questions suitable for students. Never deviate from this format.
-  and the another thing is the ${prompt}(topic) random or non-sense you should generate random question aboout web dev`;
-  return question;
-}
-
-app.post("/generate", async (req, res) => {
-  try {
-    prompt = generateQuestionPrompt(req.body.prompt, req.body.difficultyLevel);
-
-    if (!prompt) {
-      res.status(400).json({ success: false, message: "Prompt is required" });
-      return;
-    }
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB4LqRlKRHTHUFTcp63qL3WTOtca-ZT71A"
-    );
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const results = await model.generateContent(prompt);
-    const generatedData = extractGeneratedData(results);
-    res.status(200).json({ success: true, generatedData });
-  } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: "Prompt is required",
-      message: err.message,
-    });
-  }
-});
-
-function extractGeneratedData(results) {
-  const fetchedQuestion =
-    results?.response?.candidates[0]?.content?.parts[0]?.text;
-  const options = [...fetchedQuestion.matchAll(/^[a-d]\)\s.+$/gm)].map(
-    (match) => match[0]
-  );
-
-  const chunkSize = 4;
-  const chunkCount = 10;
-  const separateArrays = [];
-
-  for (let i = 0; i < chunkCount; i++) {
-    separateArrays.push(options.slice(i * chunkSize, (i + 1) * chunkSize));
+  if (username === "" || email === "" || password === "") {
+    return res
+      .status(400)
+      .json({ valid: false, message: "Please fill in all" });
   }
 
-  return {
-    questions: [...fetchedQuestion.matchAll(/^\*\*\d+\.\s(.+?)\*\*/gm)].map(
-      (match) => match[1]
-    ),
-    answers: [...separateArrays].slice(0, 5),
-    correctAnswers: [
-      ...fetchedQuestion.matchAll(/^\*\*Correct Answer:\s([a-d]\))\*\*$/gm),
-    ].map((match) => match[1]),
-  };
-}
+  const emailVerification = await verifyEmailHunter(email);
 
-app.get("/generate", async (req, res) => {
-  try {
-    if (!prompt) {
-      res.status(400).json({ success: false, message: "Prompt is required" });
-      return;
-    }
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB4LqRlKRHTHUFTcp63qL3WTOtca-ZT71A"
-    );
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const results = await model.generateContent(prompt);
-    const generatedData = extractGeneratedData(results);
-    res.status(200).json({
-      success: true,
-      generatedData,
-      message: "data fetched successfully",
-    });
-  } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: "Something went wrong, try again!",
-      message: err.message,
+  if (!emailVerification.valid) {
+    return res
+      .status(400)
+      .json({ valid: false, message: "please enter correct email to precede" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const isUserExist = await User.findOne({ username });
+  const isEmailExist = await User.findOne({ email });
+
+  if (isUserExist || isEmailExist) {
+    return res.status(409).json({
+      valid: false,
+      message:
+        "User credentials already exist! Please use unique email and username",
+      which: isUserExist ? "username" : isEmailExist ? "email" : "both",
     });
   }
-});
 
-function generateContent(prompt) {
-  const question = `Explain the concept of ${prompt} clearly and concisely, focusing on its purpose, usage, and relevant examples. Throughout the explanation, include technical details and insights to help deepen the understanding of the concept. Provide a practical use case or example to clarify the explanation. Use simple language and avoid excessive technical jargon to ensure the explanation is easy to understand, while still offering valuable technical insight. The response should be specific to web development, mobile development, or other technology-related domains. Keep it brief and to the point. You should also be flexible and able to adapt to the user's needs, providing clear and concise information. If the user asks about topics outside of technology, even indirectly, respond with: "I am specifically designed to assist with technology-related topics only and cannot provide information outside of this scope."`;
-  return question;
-}
+  const newUser = new User({
+    username: username,
+    email: email,
+    password: hashedPassword,
+  });
 
-app.post("/assistance", async (req, res) => {
   try {
-    assistancePrompt = generateContent(req.body.prompt);
-    if (!assistancePrompt) {
-      res.status(400).json({ success: false, message: "Prompt is required" });
-      return;
-    }
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB4LqRlKRHTHUFTcp63qL3WTOtca-ZT71A"
-    );
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(assistancePrompt);
+    await newUser.save();
     res
       .status(200)
-      .json({ success: true, result, message: "data fetched successfully" });
-  } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: "something went wrong, try Again!",
-      message: err.message,
-    });
+      .json({ valid: true, message: "User registered successfully" });
+  } catch (error) {
+    res.status(500).json({ valid: false, message: error.message });
   }
 });
 
-app.get("/assistance", async (req, res) => {
-  try {
-    if (!assistancePrompt) {
-      res.status(400).json({ success: false, message: "Prompt is required" });
-      return;
-    }
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB4LqRlKRHTHUFTcp63qL3WTOtca-ZT71A"
+app.get("/protected-route", (req, res, next) => {
+  if (req.isAuthenticated()) {
+    res.redirect("/home");
+  } else {
+    res.send(
+      '<h1>You are not authenticated</h1><p><a href="/login">Login</a></p>'
     );
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(assistancePrompt);
-    res
-      .status(200)
-      .json({ success: true, result, message: "data fetched successfully" });
-  } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: "something went wrong, try Again!",
-      message: err.message,
-    });
   }
 });
 
+app.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
+
+app.get("/login-success", (req, res, next) => {
+  res.redirect("/home");
+});
+
+app.get("/login-failure", (req, res, next) => {
+  res.send("You entered the wrong password.");
+});
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
 });

@@ -28,16 +28,16 @@
     </section>
 
     <script>
-      const BASE_URL = "https://develevate-production.up.railway.app";
+      const BASE_URL = "http://localhost:9000";
       const logBtn = document.getElementById("first-page-log-btn");
       const signBtn = document.getElementById("first-page-sign-btn");
 
       logBtn.addEventListener("click", () => {
-        window.location.href = `${BASE_URL}/auth_files/login.html`;
+        window.location.href = `http://localhost:9000/login`;
       });
 
       signBtn.addEventListener("click", () => {
-        window.location.href = `${BASE_URL}/auth_files/register.html`;
+        window.location.href = `http://localhost:9000/register`;
       });
     </script>
   </body>
