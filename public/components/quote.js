@@ -111,24 +111,17 @@ function createPreviewCard(author, quote) {
   card.appendChild(authorName);
   card.appendChild(quoteContainer);
 
-  card.addEventListener("click", async () => {
+  card.addEventListener("click", async (e) => {
     counter++;
     if (counter >= 50) {
-      const data = await fetchQuote();
-      console.log(data);
-      arr = data;
-      arr.forEach((quote) => {
-        const { a, q } = quote;
-        const mainQuoteCard = createMainQuoteCard(a, q);
-        quoteContainer.appendChild(mainQuoteCard);
-      });
+      toggleToMain();
       counter = 0;
       return;
     }
     card.classList.add("away");
     card.style.transform = "translateY(-120vh) rotate(-48deg)";
     card.style.transition = `rotate(${angle}deg)`;
-    angle = angle - 5;
+    angle = angle - 20;
     card.style.transition = "0.5s ease-in-out";
   });
   return card;
@@ -164,7 +157,6 @@ previewBtn.addEventListener("click", () => {
     quotePreviewContainer.appendChild(previewCard);
   });
 });
-console.log(quoteOption);
 
 function toggleToPreview() {
   quoteContainer.classList.add("hidden");
@@ -172,7 +164,7 @@ function toggleToPreview() {
   quotePreviewContainer.classList.remove("hidden");
 }
 
-function toggleToMain() {
+async function toggleToMain() {
   quoteContainer.classList.remove("hidden");
   quoteOption.classList.remove("hidden");
   quotePreviewContainer.classList.add("hidden");
