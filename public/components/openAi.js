@@ -132,7 +132,7 @@ generateBtn.addEventListener("click", async () => {
       });
     }
 
-    await fetch(`${DOMAIN}/generate`, {
+    await fetch(`${DOMAIN}/home/generate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -191,7 +191,7 @@ generateAssistanceBtn.addEventListener("click", async () => {
       });
     }
 
-    const response = await fetch(`${DOMAIN}/assistance`, {
+    const response = await fetch(`${DOMAIN}/home/assistance`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -248,7 +248,7 @@ async function getAssistanceData() {
     .classList.remove("hidden");
   try {
     // loadingSpinner.classList.remove("hidden");
-    const res = await fetch(`${DOMAIN}/assistance`);
+    const res = await fetch(`${DOMAIN}/home/assistance`);
     const data = await res.json();
     if (!data.success) {
       return await Swal.fire({
@@ -291,7 +291,7 @@ async function getDataFromGemini() {
   generateBtn.style.cursor = "not-allowed";
   generateBtn.style.backgroundColor = "#5f4dbb9c";
   try {
-    const res = await fetch(`${DOMAIN}/generate`);
+    const res = await fetch(`${DOMAIN}/home/generate`);
     const { success, generatedData, message } = await res.json();
     if (!success) {
       return await Swal.fire({
