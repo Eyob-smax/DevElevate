@@ -204,6 +204,17 @@ app.get("/login-success", (req, res, next) => {
 app.get("/login-failure", (req, res, next) => {
   res.send("You entered the wrong password.");
 });
+
+app.get("/quote", async (req, res) => {
+  try {
+    const response = await axios.get("https://zenquotes.io/api/quotes");
+    const data = response.data;
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
 });

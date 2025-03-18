@@ -212,7 +212,7 @@
           </div>
         </div>
         <div
-          id="journal-card"
+          id="quote-card"
           class="mb-5 px-12 space-y-2 pt-5 font-semibold w-36 h-36 rounded-xl ring-2 ring-black ring-opacity-10 shadow-lg shadow-slate-900/5 shadow-slate-9/500 mx-auto relative"
         >
           <div
@@ -222,7 +222,7 @@
               class="absolute fas fa-book-open top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
             ></i>
           </div>
-          <p class="font-sour">Quetes</p>
+          <p class="font-sour">Quotes</p>
           <div
             class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[70%] right-[5%]"
           >
@@ -985,6 +985,84 @@
         </div>
       </footer>
     </section>
+
+    <section class="relative h-[90vh] bg-white" id="main-quote-section">
+        <h1 class="font-k2d font-bold text-[28px] text-center mt-10">
+          DAILY QUOTES
+        </h1>
+        <div class="quote-cards-container pb-4 h-[68vh] overflow-y-scroll scrollbar]">
+          <div
+            class="quote-card w-[90%] mx-auto mt-4 p-3 bg-[#F1EEFF] rounded-lg shadow-xl shadow-slate-900/5"
+          >
+            <div
+              class="quote-text text-center font-roboto text-[18px] py-2 px-4 rounded-lg shadow-xl shadow-slate-900/5"
+            >
+            <h2 class="author-name text-center pb-3">Author</h2>
+              <p class="quote-text-content font-league max-h-[180px] overflow-scroll scrollbar">
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Officia autem quae quis expedita rem iure sequi explicabo
+                facilis recusandae dolore!
+              </p>
+            </div>
+            <div class="quote-btns mt-4 flex justify-between items-center">
+              <button class="quote-fav-btn">
+                <i class="fas fa-heart text-[20px] text-[#8068FB]"></i>
+              </button>
+              <button class="quote-copy-btn">
+                <i class="fas fa-copy text-[20px] text-[#8068FB]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div  class="qoute-option gap-7 flex justify-center items-center m-4">
+          <button class="quote-show-favs w-[100px] py-2 bg-[#d9d1f8] rounded-2xl " title="show favorites">
+            <i class="fas fa-heart text-[20px] text-[#8068FB]"></i>
+          </button>
+          <button class="preview-btn py-3 rounded-3xl px-10 bg-black text-white font-inter">Preview</button>
+          <button class="quote-refresh w-[100px] py-2 bg-[#d9d1f8] rounded-2xl" title="refresh">
+            <i class="fas fa-redo-alt text-[20px] text-[#8068FB]"></i>
+          </button>
+        </div>
+
+        <div class="hidden quote-preview">
+          <div class="quote-preview-container">
+            <div class="preview-card absolute -translate-y-1/2 top-[45%] left-[50%] -translate-x-1/2 h-[250px] w-[75%] rounded-lg shadow-xl shadow-slate-900/5 ring-slate-200 ring-2  p-4  bg-[#F1EEFF]">
+              <h2 id="author-name" class="text-center text-pretty my-0 mb-4 font-bold text-[23px]">Eyo</h2>
+              <div class="quote-content max-h-[160px] overflow-y-scroll scrollbar">
+              <p id="preview-quote">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Molestias pariatur numquam non officia consequuntur nemo, cum dolorum commodi facilis. Possimus nobis odit, repudiandae quas repellat voluptates obcaecati esse itaque ea perferendis.</p>
+            </div>
+            </div>   
+            
+            <button class="close-quote-preview rounded-full bg-[#F1EEFF] ring-[2px] ring-slate-600 text-white w-14 h-14 absolute bottom-[5%] -translate-x-1/2 -translate-y-1/2 left-[50%]">
+              <i class="fas fa-times  text-[28px] text-[#8068FB]"></i>
+            </button>   
+          </div>
+        </div>
+      </div>
+
+      <footer
+        class="flex items-center justify-between px-2 fixed bottom-0 left-0 right-0 h-16 bg-white shadow-2xl shadow-slate-900 mt-4"
+      >
+        <div
+          class="w-10 h-10 rounded-full bg-[#F1EEFF] relative"
+          id="back-quote"
+        >
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-chevron-left"
+          ></i>
+        </div>
+
+        <div
+          id="about-card"
+          class="w-10 h-10 rounded-full bg-[#F1EEFF] relative ml-12"
+        >
+          <i
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-info-circle"
+          >
+          </i>
+        </div>
+      </footer>
+    </section>
     <script>
       async function checkScreenAndDevice() {
         const screen = window.screen.width;
@@ -1005,11 +1083,11 @@
       setInterval(checkScreenAndDevice, 3000);
 
       document.addEventListener("DOMContentLoaded", () => {
-        checkScreenAndDevice();
+        // checkScreenAndDevice();
       });
 
       document.addEventListener("resize", () => {
-        checkScreenAndDevice();
+        // checkScreenAndDevice();
       });
 
       const ip = "https://develevate-production.up.railway.app";
@@ -1039,6 +1117,7 @@
     <script src="./components/openAi.js"></script>
     <!-- <script src="./components/project.js"></script> -->
     <script src="./components/TS_dist/focus_sessions.js"></script>
+    <script src="./components/quote.js"></script>
     <!-- <script src="touchTracker.js"></script> -->
   </body>
 </html>

@@ -11,6 +11,7 @@ const opendarkMode = mainPage.querySelector("#dark-mode");
 const mainAiQuetionSection = document.querySelector("#main-Ai-question");
 const noteCardCouter = mainPage.querySelector(".main-notes-card-counter");
 const mainToDoSection = document.querySelector("#main-to-do-section");
+const mainQuoteSection = document.querySelector("#main-quote-section");
 const projectCardCouter = mainPage.querySelector(".main-projects-card-counter");
 const journalCardCouter = mainPage.querySelector(".main-journal-card-counter");
 const toDoCardCouter = mainPage.querySelector(".main-to-do-card-counter");
@@ -32,6 +33,11 @@ opentodoSection.addEventListener("click", () => {
 openfocusSessionSection.addEventListener("click", () => {
   mainPage.classList.add("hidden");
   mainFocusSessions.classList.remove("hidden");
+});
+
+openquoteSection.addEventListener("click", () => {
+  mainPage.classList.add("hidden");
+  mainQuoteSection.classList.remove("hidden");
 });
 
 // openfocusSessionSection.addEventListener("click", () => {
