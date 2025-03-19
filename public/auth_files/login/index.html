@@ -79,50 +79,11 @@
       </form>
     </section>
     <script>
-      const BASE_URL = `http://10.4.103.224:9000`;
+      const BASE_URL = `https://develevate-production.up.railway.app/`;
       const logBtn = document.getElementById("log-btn");
       const cancelBtn = document.getElementById("log-cancel-btn");
       const forgetBtn = document.getElementById("forget");
       const form = document.querySelector("form");
-
-      // form.addEventListener("submit", async (e) => {
-      //   e.preventDefault();
-      //   const formData = new FormData(form);
-      //   const data = {
-      //     username: document.getElementById("log-user-name").value,
-      //     password: document.getElementById("log-pass").value,
-      //   };
-
-      //   if (!data.password === "" && !data.username) {
-      //     alert("Please fill in all fields");
-      //     return;
-      //   }
-
-      //   try {
-      //     const response = await fetch(`${BASE_URL}/login`, {
-      //       method: "POST",
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //       },
-      //       body: JSON.stringify(data),
-      //     });
-
-      //     const { isValid, message } = await response.json();
-      //     if (session === undefined) {
-      //       alert("Invalid username or password");
-      //       return;
-      //     }
-      //     if (session) {
-      //       alert(message);
-      //     }
-      //     sessionStorage.setItem("token", session);
-      //     window.location.href = `${BASE_URL}/home`;
-      //   } catch (err) {
-      //     alert(err.message);
-      //   }
-
-      //   form.reset();
-      // });
 
       cancelBtn.addEventListener("click", () => {
         window.location.href = `${BASE_URL}`;
