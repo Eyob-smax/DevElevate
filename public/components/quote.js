@@ -141,6 +141,14 @@ async function fetchQuote() {
   try {
     const response = await fetch(`${DOMAIN}/quote`);
     const result = await response.json();
+    if (!result.success) {
+      return Swal.fire({
+        icon: "error",
+        title: "Failed to fetch quotes,try again",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
     arr.push(...result.data);
     arr.forEach((quote) => {
       const { a, q } = quote;
