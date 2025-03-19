@@ -1092,15 +1092,15 @@
         }
       }
 
-      // setInterval(checkScreenAndDevice, 3000);
+      setInterval(checkScreenAndDevice, 10000);
 
       document.addEventListener("DOMContentLoaded", async () => {
-        // checkScreenAndDevice();
+        checkScreenAndDevice();
         await getCurrentUserData();
       });
 
-      document.addEventListener("resize", () => {
-        // checkScreenAndDevice();
+      window.addEventListener("resize", () => {
+        checkScreenAndDevice();
       });
 
       const ip = "http://10.4.103.224";
