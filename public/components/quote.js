@@ -61,15 +61,18 @@ function createMainQuoteCard(author, quote) {
     "div",
     "quote-btns mt-4 flex justify-between items-center"
   );
-  const quoteFavBtn = createElement("button", "quote-fav-btn");
+  const quoteFavBtn = createElement("button", "quote-fav-btn cursor-pointer");
   const quoteFavBtnIcon = createElement(
     "i",
-    "fas fa-heart text-[20px] text-[#8068FB]"
+    "fas fa-heart cursor-pointer text-[20px] text-[#8068FB]"
   );
-  const quoteShareBtn = createElement("button", "quote-copy-btn");
+  const quoteShareBtn = createElement(
+    "button",
+    "quote-copy-btn cursor-pointer"
+  );
   const quoteShareBtnIcon = createElement(
     "i",
-    "fas fa-copy text-[20px] text-[#8068FB]"
+    "fas fa-copy cursor-pointer text-[20px] text-[#8068FB]"
   );
 
   quoteFavBtn.appendChild(quoteFavBtnIcon);
@@ -88,6 +91,7 @@ function createMainQuoteCard(author, quote) {
 
   quoteFavBtn.addEventListener("click", () => {
     addToFav(author, quote);
+    animateButtons(quoteFavBtn);
   });
   return card;
 }
@@ -152,6 +156,7 @@ async function fetchQuote() {
         timer: 1500,
       });
     }
+    arr = [];
     arr.push(...result.data);
     arr.forEach((quote) => {
       const { a, q } = quote;
@@ -159,9 +164,18 @@ async function fetchQuote() {
       quoteContainer.appendChild(mainQuoteCard);
     });
   } catch (error) {
-    console.log(error);
+    Swal.fire({
+      icon: "error",
+      title: "Failed to fetch try again",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   } finally {
     loader.style.display = "none";
+    quoteContainer.scroll({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 }
 
@@ -287,6 +301,15 @@ favBtn.addEventListener("click", () => {
   loader.style.display = "block flex";
   setTimeout(() => {
     const favs = getFromLocalStorage();
+    if (!favs) {
+      loader.style.display = "none";
+      return Swal.fire({
+        icon: "error",
+        title: "No favourite quotes found",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
     favs.forEach((quote) => {
       const { author, quote: q } = quote;
       const mainQuoteCard = createMainQuoteCard(author, q);
@@ -295,3 +318,10 @@ favBtn.addEventListener("click", () => {
     loader.style.display = "none";
   }, 1000);
 });
+
+function animateButtons(el) {
+  el.classList.add("animate");
+  setTimeout(() => {
+    el.classList.remove("animate");
+  }, 500);
+}
