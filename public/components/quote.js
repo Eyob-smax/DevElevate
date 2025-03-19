@@ -93,7 +93,7 @@ function createMainQuoteCard(author, quote) {
 let counter = 0;
 let angle = 0;
 
-let arrOfQuote = getFromLocalStorage();
+let arrOfQuote = getFromLocalStorage() || [];
 
 function createPreviewCard(author, quote) {
   const card = createElement(
@@ -192,7 +192,7 @@ backPreviewBtn.addEventListener("click", () => {
   arr.forEach((quote) => {
     const { a, q } = quote;
     const previewCard = createPreviewCard(a, q);
-    quotePreviewContainer.removeChild(previewCard);
+    quotePreviewContainer.appendChild(previewCard);
   });
   toggleToMain();
 });
@@ -212,21 +212,40 @@ function rotateCards() {
 }
 
 function copyToClipboard(authorEl, quoteEl) {
-  const author = authorEl.textContent;
-  const quote = quoteEl.textContent;
-  authorEl.select();
-  quoteEl.select();
+  const author = authorEl.textContent.trim();
+  const quote = quoteEl.textContent.trim();
+
+  let range = document.createRange();
+  let selection = window.getSelection();
+
+  range.selectNodeContents(quoteEl);
+  selection.removeAllRanges();
+  selection.addRange(range);
+
   authorEl.classList.add("copied");
   quoteEl.classList.add("copied");
   const text = `"${quote}" - ${author}`;
   navigator.clipboard.writeText(text);
+
+  Swal.fire({
+    icon: "success",
+    title: "Copied to clipboard",
+    showConfirmButton: false,
+    timer: 500,
+  });
+
+  setTimeout(() => {
+    authorEl.classList.remove("copied");
+    quoteEl.classList.remove("copied");
+    selection.removeAllRanges();
+  }, 1000);
 }
 
 function addToFav(author, quote) {
   const favQuote = { author, quote };
   if (arrOfQuote.length > 0) {
-    arrOfQuote.forEach((quote) => {
-      if (quote.author === author && quote.quote === quote) {
+    arrOfQuote.forEach((qu) => {
+      if (qu.quote === quote && qu.author === author) {
         Swal.fire({
           icon: "error",
           title: "Quote already added to favourites",
@@ -237,6 +256,7 @@ function addToFav(author, quote) {
       }
     });
   }
+
   arrOfQuote.push(favQuote);
   loadToLocalStorage(arrOfQuote);
   Swal.fire({
