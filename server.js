@@ -219,5 +219,5 @@ app.get("/quote", async (req, res) => {
 app.use(express.static("./public/auth_files", { acceptRanges: true }));
 export { MAIN_URL };
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${MAIN_URL}:${PORT}`);
+  console.log(`Server is running on port ${MAIN_URL}`);
 });
