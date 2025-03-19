@@ -189,11 +189,6 @@ backPreviewBtn.addEventListener("click", () => {
   toggleToMain();
 });
 
-const cards = document.getElementsByClassName("preview-card");
-console.log(cards);
-const cardsArray = Array.from(cards);
-const last = cardsArray.length - 1;
-console.log(cardsArray.length);
 function rotateCards() {
   let angle = 0;
   cardsArray.forEach((card, index) => {
@@ -267,3 +262,13 @@ function getFromLocalStorage() {
   const data = localStorage.getItem("favQuotes");
   return JSON.parse(data);
 }
+
+favBtn.addEventListener("click", () => {
+  quoteContainer.innerHTML = "";
+  const favs = getFromLocalStorage();
+  favs.forEach((quote) => {
+    const { author, quote: q } = quote;
+    const mainQuoteCard = createMainQuoteCard(author, q);
+    quoteContainer.appendChild(mainQuoteCard);
+  });
+});
