@@ -93,6 +93,8 @@ function createMainQuoteCard(author, quote) {
 let counter = 0;
 let angle = 0;
 
+let arrOfQuote = getFromLocalStorage();
+
 function createPreviewCard(author, quote) {
   const card = createElement(
     "div",
@@ -233,15 +235,26 @@ function copyToClipboard(authorEl, quoteEl) {
 
 function addToFav(author, quote) {
   const favQuote = { author, quote };
-  const arrOfQuote = [];
+  if (arrOfQuote.length > 0) {
+    arrOfQuote.forEach((quote) => {
+      if (quote.author === author && quote.quote === quote) {
+        Swal.fire({
+          icon: "error",
+          title: "Quote already added to favourites",
+          showConfirmButton: false,
+          timer: 500,
+        });
+        return;
+      }
+    });
+  }
   arrOfQuote.push(favQuote);
   loadToLocalStorage(arrOfQuote);
-  const data = getFromLocalStorage();
-  data.forEach((quote) => {
-    const { author, quote } = quote;
-    quoteContainer.innerHTML = "";
-    const favCard = createMainQuoteCard(author, quote);
-    quoteContainer.appendChild(favCard);
+  Swal.fire({
+    icon: "success",
+    title: "Quote added to favourites",
+    showConfirmButton: false,
+    timer: 500,
   });
 }
 
