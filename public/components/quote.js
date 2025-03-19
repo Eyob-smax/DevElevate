@@ -203,20 +203,6 @@ function rotateCards() {
   });
 }
 
-cardsArray.forEach((card, index) => {
-  card.style.transition = "0.5s ease-in-out";
-  card.addEventListener("click", () => {
-    card.classList.add("away");
-
-    if (index === last) {
-      cardsArray.forEach((each) => {
-        each.classList.remove("away");
-      });
-    }
-    rotateCards();
-  });
-});
-
 function copyToClipboard(authorEl, quoteEl) {
   const author = authorEl.textContent;
   const quote = quoteEl.textContent;
