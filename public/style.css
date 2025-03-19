@@ -272,3 +272,47 @@ label {
   background-color: #f97102;
   color: white;
 }
+
+/* From Uiverse.io by aryamitra06 */
+#main-quote-section .loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#main-quote-section .bar {
+  display: inline-block;
+  width: 7px;
+  height: 20px;
+  font-size: 40px;
+  background-color: #f97102;
+  /* background-color: rgba(255, 255, 255, 0.5); */
+  border-radius: 10px;
+  animation: scale-up4 1s linear infinite;
+}
+
+#main-quote-section .bar:nth-child(2) {
+  height: 35px;
+  margin: 0 5px;
+  animation-delay: 0.25s;
+}
+
+#main-quote-section .bar:nth-child(3) {
+  animation-delay: 0.5s;
+}
+
+@keyframes scale-up4 {
+  20% {
+    background-color: #ffff;
+    transform: scaleY(1.5);
+  }
+
+  40% {
+    transform: scaleY(1);
+  }
+}

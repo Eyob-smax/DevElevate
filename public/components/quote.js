@@ -35,6 +35,8 @@ const refreshBtn = getElement(".quote-refresh", mainQuoteSection);
 const quotePreviewContainer = getElement(".quote-preview", mainQuoteSection);
 const backPreviewBtn = getElement(".close-quote-preview", mainQuoteSection);
 
+const loader = getElement(".loader", mainQuoteSection);
+
 function createMainQuoteCard(author, quote) {
   const card = createElement(
     "div",
@@ -98,12 +100,12 @@ let arrOfQuote = getFromLocalStorage() || [];
 function createPreviewCard(author, quote) {
   const card = createElement(
     "div",
-    "preview-card absolute -translate-y-1/2 top-[45%] left-[50%] -translate-x-1/2 h-[250px] w-[75%] rounded-lg shadow-xl shadow-slate-900/5 ring-slate-200 ring-2  p-4  bg-[#F1EEFF]"
+    "preview-card select-none absolute -translate-y-1/2 top-[45%] left-[50%] -translate-x-1/2 h-[250px] w-[75%] rounded-lg shadow-xl shadow-slate-900/5 ring-slate-200 ring-2  p-4  bg-[#F1EEFF]"
   );
 
   const authorName = createElement(
     "h2",
-    "text-center text-pretty my-0 mb-4 font-bold text-[23px]",
+    "text-center select-none text-pretty my-0 mb-4 font-bold text-[23px]",
     author
   );
   authorName.setAttribute("id", "author-name");
@@ -113,7 +115,7 @@ function createPreviewCard(author, quote) {
   );
   const quoteText = createElement(
     "p",
-    "quote-text font-league text-[18px] text-center",
+    "quote-text select-none font-league text-[18px] text-center",
     quote
   );
 
@@ -138,13 +140,14 @@ function createPreviewCard(author, quote) {
 }
 
 async function fetchQuote() {
+  loader.style.display = "block flex";
   try {
     const response = await fetch(`${DOMAIN}/quote`);
     const result = await response.json();
     if (!result.success) {
       return Swal.fire({
         icon: "error",
-        title: "Failed to fetch quotes,try again",
+        title: "Failed to fetch try again",
         showConfirmButton: false,
         timer: 1500,
       });
@@ -157,6 +160,8 @@ async function fetchQuote() {
     });
   } catch (error) {
     console.log(error);
+  } finally {
+    loader.style.display = "none";
   }
 }
 
@@ -279,10 +284,14 @@ function getFromLocalStorage() {
 
 favBtn.addEventListener("click", () => {
   quoteContainer.innerHTML = "";
-  const favs = getFromLocalStorage();
-  favs.forEach((quote) => {
-    const { author, quote: q } = quote;
-    const mainQuoteCard = createMainQuoteCard(author, q);
-    quoteContainer.appendChild(mainQuoteCard);
-  });
+  loader.style.display = "block flex";
+  setTimeout(() => {
+    const favs = getFromLocalStorage();
+    favs.forEach((quote) => {
+      const { author, quote: q } = quote;
+      const mainQuoteCard = createMainQuoteCard(author, q);
+      quoteContainer.appendChild(mainQuoteCard);
+    });
+    loader.style.display = "none";
+  }, 1000);
 });
