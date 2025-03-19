@@ -987,32 +987,41 @@
     </section>
 
     <section class="hidden relative h-[90vh] bg-white" id="main-quote-section">
-        <h1 class="font-k2d font-bold text-[28px] text-center mt-10">
-          DAILY QUOTES
-        </h1>
-        <div class="quote-cards-container pb-4 h-[68vh] overflow-y-scroll scrollbar]">
-          
-        </div>
-        <div class="qoute-option">
-        <div  class="gap-7 flex justify-center items-center m-4">
-          <button class="quote-show-favs w-[100px] py-2 bg-[#d9d1f8] rounded-2xl " title="show favorites">
+      <h1 class="font-k2d font-bold text-[28px] text-center mt-10">
+        DAILY QUOTES
+      </h1>
+      <div
+        class="quote-cards-container pb-4 h-[68vh] overflow-y-scroll scrollbar]"
+      ></div>
+      <div class="qoute-option">
+        <div class="gap-7 flex justify-center items-center m-4">
+          <button
+            class="quote-show-favs w-[100px] py-2 bg-[#d9d1f8] rounded-2xl"
+            title="show favorites"
+          >
             <i class="fas fa-heart text-[20px] text-[#8068FB]"></i>
           </button>
-          <button class="preview-btn py-3 rounded-3xl px-10 bg-black text-white font-inter">Preview</button>
-          <button class="quote-refresh w-[100px] py-2 bg-[#d9d1f8] rounded-2xl" title="refresh">
+          <button
+            class="preview-btn py-3 rounded-3xl px-10 bg-black text-white font-inter"
+          >
+            Preview
+          </button>
+          <button
+            class="quote-refresh w-[100px] py-2 bg-[#d9d1f8] rounded-2xl"
+            title="refresh"
+          >
             <i class="fas fa-redo-alt text-[20px] text-[#8068FB]"></i>
           </button>
         </div>
       </div>
 
-        <div class="hidden quote-preview">
-          <div class="quote-preview-container">
-                   
-          </div>
-          <button class="close-quote-preview rounded-full bg-[#F1EEFF] ring-[2px] ring-slate-600 text-white w-14 h-14 absolute bottom-[5%] -translate-x-1/2 -translate-y-1/2 left-[50%]">
-            <i class="fas fa-times  text-[28px] text-[#8068FB]"></i>
-          </button> 
-        </div>
+      <div class="hidden quote-preview">
+        <div class="quote-preview-container"></div>
+        <button
+          class="close-quote-preview rounded-full bg-[#F1EEFF] ring-[2px] ring-slate-600 text-white w-14 h-14 absolute bottom-[5%] -translate-x-1/2 -translate-y-1/2 left-[50%]"
+        >
+          <i class="fas fa-times text-[28px] text-[#8068FB]"></i>
+        </button>
       </div>
 
       <footer
@@ -1055,7 +1064,7 @@
         }
       }
 
-      setInterval(checkScreenAndDevice, 3000);
+      // setInterval(checkScreenAndDevice, 3000);
 
       document.addEventListener("DOMContentLoaded", () => {
         // checkScreenAndDevice();

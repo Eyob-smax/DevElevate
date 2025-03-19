@@ -79,6 +79,14 @@ function createMainQuoteCard(author, quote) {
   quoteContent.appendChild(quoteText);
   card.appendChild(quoteContent);
   card.appendChild(quoteBtnContainer);
+
+  quoteShareBtn.addEventListener("click", () => {
+    copyToClipboard(authorName, quoteText);
+  });
+
+  quoteFavBtn.addEventListener("click", () => {
+    addToFav(author, quote);
+  });
   return card;
 }
 
@@ -211,3 +219,38 @@ cardsArray.forEach((card, index) => {
     rotateCards();
   });
 });
+
+function copyToClipboard(authorEl, quoteEl) {
+  const author = authorEl.textContent;
+  const quote = quoteEl.textContent;
+  authorEl.select();
+  quoteEl.select();
+  authorEl.classList.add("copied");
+  quoteEl.classList.add("copied");
+  const text = `"${quote}" - ${author}`;
+  navigator.clipboard.writeText(text);
+}
+
+function addToFav(author, quote) {
+  const favQuote = { author, quote };
+  const arrOfQuote = [];
+  arrOfQuote.push(favQuote);
+  loadToLocalStorage(arrOfQuote);
+  const data = getFromLocalStorage();
+  data.forEach((quote) => {
+    const { author, quote } = quote;
+    quoteContainer.innerHTML = "";
+    const favCard = createMainQuoteCard(author, quote);
+    quoteContainer.appendChild(favCard);
+  });
+}
+
+function loadToLocalStorage(data) {
+  const strigifyData = JSON.stringify(data);
+  localStorage.setItem("favQuotes", strigifyData);
+}
+
+function getFromLocalStorage() {
+  const data = localStorage.getItem("favQuotes");
+  return JSON.parse(data);
+}

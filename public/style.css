@@ -263,3 +263,12 @@ label {
   font-style: normal;
   margin-top: 5px 0;
 }
+
+.copied {
+  user-select: all;
+}
+
+.copied::selection {
+  background-color: #f97102;
+  color: white;
+}
