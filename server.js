@@ -25,7 +25,7 @@ const app = express();
 
 const PORT = process.env.PORT || 9000;
 
-const MAIN_URL = `https://develevate-production.up.railway.app/`;
+const MAIN_URL = `https://develevate-production.up.railway.app`;
 
 app.use(express.json());
 app.use(cors({ origin: "*" }));
