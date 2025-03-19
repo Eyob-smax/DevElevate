@@ -16,6 +16,7 @@ import register from "./routes/register.js";
 import { User } from "./database.js";
 import note from "./routes/notes.js";
 import todo from "./routes/to_do.js";
+import { MAIN_DB } from "./database.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -23,6 +24,8 @@ dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 9000;
+
+const MAIN_URL = `http://10.4.103.224:9000`;
 
 app.use(express.json());
 app.use(cors({ origin: "*" }));
@@ -66,8 +69,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 const store = MongoStore.create({
-  mongoUrl:
-    "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate",
+  mongoUrl: `${MAIN_DB}`,
   collectionName: "sessions",
   ttl: 60 * 60 * 24,
 });
@@ -110,7 +112,6 @@ app.use("/login", login);
 app.use("/register", register);
 app.use("/notes", note);
 app.use("/to-do", todo);
-app.use(express.static("./public/auth_files", { acceptRanges: true }));
 
 const verifyEmailHunter = async (email) => {
   const apiKey = "162bad867fbb15565b9ff631341f35e101dbb038";
@@ -180,7 +181,7 @@ app.post("/register", async (req, res) => {
 
 app.get("/protected-route", (req, res, next) => {
   if (req.isAuthenticated()) {
-    res.redirect("https://develevate-production.up.railway.app/home");
+    res.redirect(`${MAIN_URL}/home`);
   } else {
     res.send(
       '<h1>You are not authenticated</h1><p><a href="/login">Login</a></p>'
@@ -198,7 +199,7 @@ app.get("/logout", (req, res, next) => {
 });
 
 app.get("/login-success", (req, res, next) => {
-  res.redirect("https://develevate-production.up.railway.app/home");
+  res.redirect(`${MAIN_URL}/home`);
 });
 
 app.get("/login-failure", (req, res, next) => {
@@ -215,6 +216,8 @@ app.get("/quote", async (req, res) => {
   }
 });
 
+app.use(express.static("./public/auth_files", { acceptRanges: true }));
+export { MAIN_URL };
 app.listen(PORT, () => {
-  console.log(`Server is running on port http://localhost:${PORT}`);
+  console.log(`Server is running on port ${MAIN_URL}:${PORT}`);
 });

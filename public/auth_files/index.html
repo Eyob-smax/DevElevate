@@ -28,16 +28,16 @@
     </section>
 
     <script>
-      const BASE_URL = "http://localhost:9000";
+      const BASE_URL = "http://10.4.103.224:9000";
       const logBtn = document.getElementById("first-page-log-btn");
       const signBtn = document.getElementById("first-page-sign-btn");
 
       logBtn.addEventListener("click", () => {
-        window.location.href = `https://develevate-production.up.railway.app/login`;
+        window.location.href = `${BASE_URL}/login`;
       });
 
       signBtn.addEventListener("click", () => {
-        window.location.href = `https://develevate-production.up.railway.app/register`;
+        window.location.href = `${BASE_URL}/register`;
       });
     </script>
   </body>

@@ -9,6 +9,8 @@ import mongodb from "mongodb";
 import axios from "axios";
 import { Cookie } from "express-session";
 import { ObjectId } from "mongodb";
+import { MAIN_URL } from "../server.js";
+import { User } from "../database.js";
 
 dotenv.config();
 const home = express();
@@ -20,26 +22,9 @@ home.use((req, res, next) => {
   if (req.isAuthenticated()) {
     next();
   } else {
-    return res.redirect("https://develevate-production.up.railway.app/login");
+    return res.redirect(`${MAIN_URL}/login`);
   }
 });
-
-const User = async () => {
-  try {
-    const client = await mongodb.MongoClient.connect(
-      "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate"
-    );
-    console.log("Connected to MongoDB");
-    const db = client.db("DevElevate");
-    const users = db.collection("users");
-    const sessions = db.collection("sessions");
-    return { users, sessions };
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-home.use(express.static("public", { acceptRanges: true }));
 
 let prompt;
 let assistancePrompt;
@@ -210,5 +195,23 @@ home.get("/assistance", async (req, res) => {
     });
   }
 });
+
+home.get("/getUser", async (req, res) => {
+  try {
+    const userId = req.session.passport.user;
+    const userData = await User.collection.findOne({
+      _id: new ObjectId(userId),
+    });
+    return res.status(200).json({ success: true, userData });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: "Something went wrong, try again!",
+      message: err.message,
+    });
+  }
+});
+
+home.use(express.static("public", { acceptRanges: true }));
 
 export default home;

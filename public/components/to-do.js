@@ -36,6 +36,12 @@ const addNewTodoSection = getElement(".add-todo-section");
 const todoForm = getElement("#todo-form");
 const addTodoBtn = getElement("#add-todo-btn");
 
+// getCurrentUserData().then((data) => {
+//   currentUserDataTodo = data;
+//   const displayTododName = getElement(".display-userName", mainToDoSection);
+//   displayTododName.textContent = data.username;
+// });
+
 getElement("#backToMain", mainToDoSection).addEventListener("click", () => {
   mainPage.classList.remove("hidden");
   mainToDoSection.classList.add("hidden");
@@ -59,24 +65,24 @@ getElement("#backToBoxes", mainToDoSection).addEventListener(
 );
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const userData = await getCurrentUserData();
+  document.querySelector(
+    ".display-userName"
+  ).innerHTML = `Hi ${userData.username}`;
   fetchTodoBox();
 });
 
 function createTodoBox(title, date, number, notesNumber) {
-  // Create main container
   const card = createElement(
     "div",
     "todo-day-container w-[calc(100% - 10px)] custom-height-mq:h-[130px] bg-[url(./images/todo-box.png)] h-[150px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
   );
 
-  // Create title
   const titleElement = createElement(
     "h2",
     "text-white p-5 text-pretty font-roboto font-bold text-2xl",
     title
   );
-
-  // Create count
 
   const dateElement = createElement(
     "h4",
@@ -92,7 +98,6 @@ function createTodoBox(title, date, number, notesNumber) {
     notesNumber || "0"
   );
 
-  // Create delete button
   const deleteButton = createElement(
     "p",
     "absolute right-14 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-sour text-[25px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[#F1EEFF] shadow-lg shadow-slate-900 ring-slate-400 ring-1"
@@ -105,7 +110,6 @@ function createTodoBox(title, date, number, notesNumber) {
     deleteTodoBox(card, title, date);
   });
 
-  // Append all elements to the card
   card.appendChild(titleElement);
   card.appendChild(dateElement);
   card.appendChild(counterBubble);
@@ -123,7 +127,10 @@ function createTodoBox(title, date, number, notesNumber) {
 
 async function fetchTodoBox() {
   try {
-    const response = await fetch(`${DOMAIN}/to-do/box`);
+    const user = await getCurrentUserData();
+    const userId = user._id;
+    if (!userId) return;
+    const response = await fetch(`${DOMAIN}/to-do/box?userId=${userId}`);
     const { success, todoBox } = await response.json();
     if (!success) {
       return Swal.fire({
@@ -274,8 +281,10 @@ addTodoBtn.addEventListener("click", openToDoForm);
 async function handleBoxForm() {
   try {
     const formData = new FormData(todoBoxForm);
+    const user = await getCurrentUserData();
     const data = {
       title: formData.get("todoBoxTitle"),
+      userData: user._id,
       date: formData.get("todoBoxDate"),
     };
 
@@ -351,12 +360,14 @@ async function deleteTodoBox(card, title, date) {
     });
     if (!check.isConfirmed) return;
 
+    const userData = await getCurrentUserData();
+    const userId = userData._id;
     const response = await fetch(`${DOMAIN}/to-do/box`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, date }),
+      body: JSON.stringify({ title, userId, date }),
     });
 
     const { success, message } = await response.json();
@@ -419,8 +430,9 @@ async function openTodo(title, date) {
 
 async function loadTododos(title, date) {
   try {
+    const userData = await getCurrentUserData();
     const response = await fetch(
-      `${DOMAIN}/to-do?parentTitle=${title}&parentDate=${date}`
+      `${DOMAIN}/to-do?parentTitle=${title}&parentDate=${date}&userId=${userData._id}`
     );
     const todos = await response.json();
     if (!todos.success) {
@@ -463,14 +475,16 @@ todoForm.addEventListener("submit", async (e) => {
 async function handleTodoSubmission() {
   try {
     const formData = new FormData(todoForm);
+    const userData = await getCurrentUserData();
+
     const data = {
       parentTitle: currentToDoBox.title,
       parentDate: currentToDoBox.date,
       todo: formData.get("todoBody"),
+      userId: userData._id,
       date: formData.get("todoDate"),
       priority: formData.get("priority"),
     };
-    console.log(data);
 
     const response = await fetch(`${DOMAIN}/to-do`, {
       method: "POST",
@@ -521,12 +535,15 @@ async function deleteTodo(card, todo, date) {
     });
     if (!check.isConfirmed) return;
 
+    const userData = await getCurrentUserData();
+    const userId = userData._id;
+    console.log(userId);
     const response = await fetch(`${DOMAIN}/to-do`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ todo, date }),
+      body: JSON.stringify({ todo, userId, date }),
     });
 
     const result = await response.json();
@@ -576,9 +593,12 @@ function editTodo(todoEl, priorityBtn) {
 
 async function saveTodo(todo, date, precedence, textElement, precedenceButton) {
   try {
+    const userData = await getCurrentUserData();
+    const userId = userData._id;
     const data = {
       parentTitle: currentToDoBox.title,
       parentDate: currentToDoBox.date,
+      userId,
       todo,
       date,
       priority: precedence,

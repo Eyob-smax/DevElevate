@@ -11,10 +11,17 @@ note.use(express.json());
 
 note.post("/", async (req, res) => {
   const { parentTitle, parentDate, title, note, topic } = req.body;
+  const userId = req.query.userId;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ success: false, message: "User Unautherized!" });
+  }
   const parent = `${parentTitle}-${parentDate}`;
   try {
     const noteBook = new NotebookCollection({
       createTime: Date.now(),
+      userId,
       parent,
       title,
       topic,
@@ -46,12 +53,17 @@ note.post("/", async (req, res) => {
 });
 
 note.delete("/", async (req, res) => {
-  const { title, note, topic } = req.body;
+  const { title, userId, note, topic } = req.body;
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ success: false, message: "User Unautherized!" });
+  }
   if (!title || !note || !topic)
     return res.json({ success: false, message: "Incomplete data!" });
 
   try {
-    await NotebookCollection.deleteOne({ title, note, topic });
+    await NotebookCollection.deleteOne({ title, userId, note, topic });
     res.json({ success: true, message: "Note deleted successfully" });
   } catch (err) {
     res.json({
@@ -72,10 +84,13 @@ const notesFromDB = async () => {
 };
 
 note.get("/", async (req, res) => {
-  const { parentTitle, parentDate } = req.query;
+  const { parentTitle, userId, parentDate } = req.query;
+  if (!userId) {
+    return res.json({ success: false, message: "User Unautherized!" });
+  }
   try {
     const notes = await NotebookCollection.collection
-      .find({ parent: `${parentTitle}-${parentDate}` })
+      .find({ parent: `${parentTitle}-${parentDate}`, userId })
       .sort({
         createTime: 1,
       })
@@ -87,6 +102,7 @@ note.get("/", async (req, res) => {
 });
 
 note.put("/", async (req, res) => {
+  const userId = req.query.userId;
   const {
     title,
     note,
@@ -97,6 +113,13 @@ note.put("/", async (req, res) => {
     newTopic,
     newTitle,
   } = req.body;
+
+  if (!userId) {
+    return res
+      .status(403)
+      .json({ success: false, message: "User Unauthorized!" });
+  }
+
   if (!title || !note || !topic || !newNote || !newTopic || !newTitle) {
     return res.json({ success: false, message: "Incomplete data!" });
   }
@@ -107,7 +130,13 @@ note.put("/", async (req, res) => {
 
   try {
     const result = await NotebookCollection.updateOne(
-      { title, note, topic, parent: `${parentTitle}-${parentDate}` },
+      {
+        title,
+        note,
+        topic,
+        parent: `${parentTitle}-${parentDate}`,
+        userId: userId,
+      },
       { $set: { title: newTitle, note: newNote, topic: newTopic } }
     );
 
@@ -128,30 +157,39 @@ note.put("/", async (req, res) => {
 
 note.post("/box", async (req, res) => {
   const { title, date } = req.body;
+  const userId = req.query.userId;
   try {
     const newBox = new NoteBookBox({
       title,
+      userId,
       date,
       number: 0,
     });
     await newBox.save();
-    const boxData = await NoteBookBox.findOne({ title, date });
-    res.json(boxData);
+    const boxData = await NoteBookBox.findOne({ title, userId, date });
+    res.status(200).json({ success: true, boxData });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
 note.get("/box", async (req, res) => {
   try {
+    const userId = req.query.userId;
+    if (!userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: "User Unautherized!" });
+    }
     let number = 0;
-    const boxData = await NoteBookBox.find();
+    const boxData = await NoteBookBox.find({ userId });
     boxData.forEach(async (box) => {
       const title = box.title;
       const date = box.date;
 
       const count = await NotebookCollection.collection.countDocuments({
         parent: `${title}-${date}`,
+        userId,
       });
       box.number = count;
       await box.save();
@@ -163,9 +201,16 @@ note.get("/box", async (req, res) => {
 });
 
 note.delete("/box", async (req, res) => {
-  const { title, date } = req.body;
+  const { title, userId, date } = req.body;
+  console.log(req.body);
+  if (!userId) {
+    return res.json({ success: false, message: "User Unautherized!" });
+  }
+
+  if (!title || !date)
+    return res.json({ success: false, message: "Incomplete data!" });
   try {
-    await NoteBookBox.deleteOne({ title, date });
+    await NoteBookBox.deleteOne({ title, userId, date });
     await NotebookCollection.deleteMany({ parent: `${title}-${date}` });
     res
       .status(200)

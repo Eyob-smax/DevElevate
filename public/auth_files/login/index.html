@@ -70,6 +70,7 @@
           </button>
           <button
             id="log-cancel-btn"
+            type="button"
             class="w-[100%] rounded-3xl border-2 border-black h-10 text-[16px] font-semibold mt-5"
           >
             CANCEL
@@ -78,7 +79,7 @@
       </form>
     </section>
     <script>
-      const BASE_URL = "https://develevate-production.up.railway.app";
+      const BASE_URL = `http://10.4.103.224:9000`;
       const logBtn = document.getElementById("log-btn");
       const cancelBtn = document.getElementById("log-cancel-btn");
       const forgetBtn = document.getElementById("forget");
@@ -124,7 +125,7 @@
       // });
 
       cancelBtn.addEventListener("click", () => {
-        window.location.href = `https://develevate-production.up.railway.app`;
+        window.location.href = `${BASE_URL}`;
       });
     </script>
   </body>

@@ -133,9 +133,7 @@
       <header
         class="h-100px custom-height-mq-850:my-[0px] my-[15px] flex justify-between items-center px-2 custom-height-mq:h-[34px] custom-height-mq:my-[0px]"
       >
-        <p id="display-userName" class="font-faculty text-[#BEB8DD]">
-          Hi, Eyob Simachew
-        </p>
+        <p id="display-userName" class="font-faculty text-[#BEB8DD]"></p>
         <img
           src="images/bgc.png"
           class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
@@ -264,9 +262,7 @@
     </section>
     <section class="hidden h-[99vh]" id="note-section">
       <header class="mt-1 h-100px flex justify-between items-center px-4">
-        <p id="display-userName" class="font-faculty text-[#BEB8DD]">
-          Hi, Eyob Simachew
-        </p>
+        <p class="display-userName-note font-faculty text-[#BEB8DD]"></p>
         <img
           src="images/bgc.png"
           class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
@@ -661,9 +657,7 @@
 
     <section class="h-screen relative hidden" id="main-to-do-section">
       <header class="flex justify-between items-center px-4">
-        <p id="display-userName" class="font-faculty text-[black]">
-          Hi, Eyob Simachew
-        </p>
+        <p class="display-userName font-faculty text-[black]"></p>
         <img
           src="images/bgc.png"
           class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
@@ -1100,34 +1094,49 @@
 
       // setInterval(checkScreenAndDevice, 3000);
 
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", async () => {
         // checkScreenAndDevice();
+        await getCurrentUserData();
       });
 
       document.addEventListener("resize", () => {
         // checkScreenAndDevice();
       });
 
-      const ip = "https://develevate-production.up.railway.app";
+      const ip = "http://10.4.103.224";
       const port = 9000;
-      const DOMAIN = `https://develevate-production.up.railway.app`;
-      // document.addEventListener("DOMContentLoaded", () => {
-      //   (async () => {
-      //     console.log("hi from frontend");
-      //     const sessionId = sessionStorage.getItem("token") || "no token";
-      //     const response = await fetch(
-      //       `http://localhost:8090/?sessionId=${sessionId}`
-      //     );
+      const DOMAIN = `${ip}:${port}`;
 
-      //     const res = fetch(`http://localhost:8090`, {
-      //       method: "POST",
-      //       headers: {
-      //         "content-type": "application/json",
-      //       },
-      //       body: sessionId,
-      //     });
-      //   })();
-      // });
+      async function getCurrentUserData() {
+        try {
+          const getCurrentUser = await fetch(`${DOMAIN}/home/getUser`);
+          const { success, userData } = await getCurrentUser.json();
+
+          if (!success) {
+            return Swal.fire({
+              title: "not authenticated",
+              text: "Please login to access the app",
+              icon: "error",
+              confirmButtonText: "Ok",
+            });
+            window.location.href = `${DOMAIN}/login`;
+          }
+
+          const displayName = document.querySelector("#display-userName");
+          displayName.innerHTML = `Hi ${userData.username}`;
+
+          return userData;
+        } catch (err) {
+          console.log(err);
+          Swal.fire({
+            title: "Error",
+            text: "An error occured, please try again",
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
+          window.location.href = `${DOMAIN}/login`;
+        }
+      }
     </script>
     <script src="./components/script.js"></script>
     <script src="./components/noteBook.js"></script>

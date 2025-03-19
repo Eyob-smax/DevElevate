@@ -141,7 +141,7 @@ function closeBoxAddForm() {
 function createDayContainer(title, date, notesNumber, number) {
   const dayContainer = createElement(
     "div",
-    "day-container w-[calc(100% - 10px)] custom-height-mq:h-[130px] bg-[url(../images/day-container.png)] h-[150px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
+    "day-container w-[calc(100% - 10px)] custom-height-mq:h-[130px] bg-[url(./images/day-container.png)] h-[150px] flex-col items-center justify-center mx-auto rounded-xl shadow-lg shadow-slate-900/5 relative box-border cursor-pointer my-2"
   );
 
   const h2 = createElement(
@@ -197,8 +197,11 @@ function createDayContainer(title, date, notesNumber, number) {
   return dayContainer;
 }
 
-// addNoteForm.addEventListener("submit", );
 document.addEventListener("DOMContentLoaded", async () => {
+  const userData = await getCurrentUserData();
+  document.querySelector(
+    ".display-userName-note"
+  ).innerHTML = `Hi ${userData.username}`;
   const result = await getBoxData();
   if (result.success) {
     boxNumber = result.data.length;
@@ -276,12 +279,15 @@ async function deleteBox(container, title, date) {
   boxNumber--;
   boxCounter.textContent = boxNumber;
 
+  const userData = await getCurrentUserData();
+  const userId = userData._id;
+
   const res = await fetch(`${DOMAIN}/notes/box`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ title, date }),
+    body: JSON.stringify({ title, userId, date }),
   });
 
   const resData = await res.json();
@@ -319,20 +325,31 @@ function delteFromLS(item) {
 }
 
 async function sendDataToServer(data) {
-  const response = await fetch(`${DOMAIN}/notes`, {
+  const userData = await getCurrentUserData();
+  const userId = userData._id;
+  const response = await fetch(`${DOMAIN}/notes/box?userId=${userId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   });
-  const res = await response.json();
-  return res;
+  const { success, boxData } = await response.json();
+  if (!success) {
+    return Swal.fire({
+      icon: "error",
+      title: "Can't add note box!",
+      text: "Something went wrong!",
+    });
+  }
+  return boxData;
 }
 
 async function getBoxData() {
   try {
-    const response = await fetch(`${DOMAIN}/notes/box`);
+    const userData = await getCurrentUserData();
+    const userId = userData._id;
+    const response = await fetch(`${DOMAIN}/notes/box?userId=${userId}`);
     const data = await response.json();
     return data;
   } catch (err) {
@@ -484,11 +501,12 @@ function createNoteCard(title, topic, note) {
 
 async function fetchNotes(title, date) {
   try {
+    const userData = await getCurrentUserData();
+    const userId = userData._id;
     const response = await fetch(
-      `${DOMAIN}/notes?parentTitle=` +
-        encodeURIComponent(title) +
-        "&parentDate=" +
-        encodeURIComponent(date)
+      `${DOMAIN}/notes?parentTitle=${encodeURIComponent(
+        title
+      )}&parentDate=${encodeURIComponent(date)}&userId=${userId}`
     );
     const data = await response.json();
     console.log(data);
@@ -522,7 +540,9 @@ async function handleNotesForm() {
 }
 
 async function sendNotesToServer(data) {
-  const response = await fetch(`${DOMAIN}/notes`, {
+  const userData = await getCurrentUserData();
+  const userId = userData._id;
+  const response = await fetch(`${DOMAIN}/notes&userId=${userId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -533,7 +553,14 @@ async function sendNotesToServer(data) {
   return res;
 }
 
+async function sendNotesToServer() {
+  try {
+  } catch (err) {}
+}
+
 async function deleteNote(card, title, note, topic) {
+  const userData = await getCurrentUserData();
+  const userId = userData._id;
   const result = await Swal.fire({
     title: "Are you sure?",
     text: "You won't be able to revert this!",
@@ -553,7 +580,7 @@ async function deleteNote(card, title, note, topic) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ title, note, topic }),
+    body: JSON.stringify({ title, userId, note, topic }),
   });
 
   const { success, message } = await res.json();
@@ -636,7 +663,9 @@ async function saveNote(
 }
 
 async function updateEditedNotes(data) {
-  const response = await fetch(`${DOMAIN}/notes`, {
+  const userData = await getCurrentUserData();
+  const userId = userData._id;
+  const response = await fetch(`${DOMAIN}/notes&userId=${userId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

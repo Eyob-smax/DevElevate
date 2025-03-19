@@ -4,7 +4,9 @@ import { TodoCollection, TodoBoxCollection } from "../database.js";
 const todo = express.Router();
 todo.get("/box", async (req, res) => {
   try {
-    const todoBox = await TodoBoxCollection.find();
+    const todoBox = await TodoBoxCollection.find({
+      userId: req.query.userId,
+    });
     todoBox.sort((a, b) => {
       if (a.date === b.date) {
         return b.createTime - a.createTime;
@@ -17,7 +19,7 @@ todo.get("/box", async (req, res) => {
       const date = element.date;
 
       await TodoCollection.collection.countDocuments(
-        { parent: `${title}-${date}` },
+        { parent: `${title}-${date}`, userId: req.query.userId },
         (err, count) => {
           element.number = count;
           element.save();
@@ -26,6 +28,7 @@ todo.get("/box", async (req, res) => {
     });
     res.status(200).json({ success: true, todoBox });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ success: false, message: err.message });
   }
 });
@@ -37,7 +40,12 @@ todo.use((req, res, next) => {
 
 todo.post("/box", async (req, res) => {
   try {
-    const { title, date } = req.body;
+    const { title, userData, date } = req.body;
+    if (!userData) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User data is required" });
+    }
     if (!title || !date) {
       res
         .status(400)
@@ -45,10 +53,12 @@ todo.post("/box", async (req, res) => {
       return;
     }
     const todoBox = new TodoBoxCollection({
+      userId: userData,
       title,
       date,
       number: 0,
     });
+
     await todoBox.save();
     const todoBoxData = await TodoBoxCollection.findOne({ title, date });
     res.json({
@@ -57,20 +67,26 @@ todo.post("/box", async (req, res) => {
       todoBoxData,
     });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ success: false, message: err.message });
   }
 });
 
 todo.delete("/box", async (req, res) => {
   try {
-    const { title, date } = req.body;
+    const { title, userId, date } = req.body;
+    if (!userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: "User unauthorized" });
+    }
     if (!title || !date) {
       res
         .status(400)
         .json({ success: false, message: "Title and date are required" });
       return;
     }
-    await TodoBoxCollection.deleteOne({ title, date });
+    await TodoBoxCollection.deleteOne({ title, userId, date });
     await TodoCollection.deleteMany({ parent: `${title}-${date}` });
     res.json({
       success: true,
@@ -83,11 +99,10 @@ todo.delete("/box", async (req, res) => {
 
 todo.get("/", async (req, res) => {
   try {
-    const { parentTitle, parentDate } = req.query;
-    console.log(req.query);
+    const { parentTitle, userId, parentDate } = req.query;
     const parent = `${parentTitle}-${parentDate}`;
 
-    const todo = await TodoCollection.find({ parent }).sort({
+    const todo = await TodoCollection.find({ parent, userId }).sort({
       createdAt: -1,
     });
     res.status(200).json({ success: true, todo });
@@ -98,7 +113,11 @@ todo.get("/", async (req, res) => {
 
 todo.post("/", async (req, res) => {
   try {
-    const { parentTitle, parentDate, date, todo, priority } = req.body;
+    const { parentTitle, parentDate, userId, date, todo, priority } = req.body;
+    if (!userId) {
+      res.status(403).json({ success: false, message: "User unauthorized" });
+      return;
+    }
     if (!parentTitle || !parentDate || !todo) {
       res.status(400).json({ success: false, message: "incomplate Data" });
       return;
@@ -107,6 +126,7 @@ todo.post("/", async (req, res) => {
     const parent = `${parentTitle}-${parentDate}`;
     const newTodo = new TodoCollection({
       parent: parent,
+      userId,
       date,
       todo,
       priority,
@@ -133,9 +153,9 @@ todo.post("/", async (req, res) => {
 
 todo.delete("/", async (req, res) => {
   try {
-    const { todo, date } = req.body;
+    const { todo, userId, date } = req.body;
     console.log(req.body);
-    await TodoCollection.deleteOne({ todo, date });
+    await TodoCollection.deleteOne({ todo, userId, date });
     const result = res.json({
       success: true,
       message: "Todo deleted successfully✅",
@@ -151,12 +171,17 @@ todo.put("/", async (req, res) => {
     const {
       todo,
       date,
+      userId,
       priority,
       newTodo,
       newPriority,
       parentTitle,
       parentDate,
     } = req.body;
+    if (!userId) {
+      res.status(403).json({ success: false, message: "User unauthorized" });
+      return;
+    }
     if (newPriority === "" || newTodo === "") {
       res.json({ success: false, message: "You can't save this info" });
       return;
@@ -173,7 +198,7 @@ todo.put("/", async (req, res) => {
 
     const parent = `${parentTitle}-${parentDate}`;
     await TodoCollection.updateOne(
-      { todo, date, parent },
+      { todo, userId, date, parent },
       { $set: { todo: newTodo, priority: newPriority } }
     );
     res

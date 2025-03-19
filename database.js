@@ -3,16 +3,14 @@ import dotenv from "dotenv";
 import debug from "debug";
 import AutoIncrement from "mongoose-sequence";
 
+const MAIN_DB = `mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate`;
+
 const logger = debug("app:db");
 dotenv.config();
 
-mongoose
-  .connect(
-    "mongodb+srv://eyobsmax:%40Ihaveadream19@cluster0.gfzdy.mongodb.net/DevElevate"
-  )
-  .then(() => {
-    logger("Connected to database");
-  });
+mongoose.connect(MAIN_DB).then(() => {
+  logger("Connected to database");
+});
 
 const connec = mongoose.connection;
 const AutoIncrementPlugin = AutoIncrement(connec);
@@ -79,4 +77,5 @@ export {
   NoteBookBox,
   TodoBoxCollection,
   User,
+  MAIN_DB,
 };
