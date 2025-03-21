@@ -110,17 +110,7 @@
         </div>
 
         <div class="text-right mt-[20px] mr-[15px]" id="forget">
-          <a
-            href="#"
-            class="text-[15px]"
-            onclick='async()=> await Swal.fire({
-            title: "Telegram: @alnova19",
-            text: "Please contact the admin",
-            icon: "info",
-            confirmButtonText: "Ok",
-          })'
-            >Forget Password?</a
-          >
+          <a href="#forget-password" class="text-[15px]">Forget Password?</a>
         </div>
 
         <div class="mx-auto w-[90%] mt-16">
@@ -220,6 +210,16 @@
         }
       });
 
+      document
+        .getElementById("#forget-password")
+        .addEventListener("click", async () => {
+          await Swal.fire({
+            title: "Forget Password",
+            text: "Please contact the admin to reset your password Telegram: @alnova19",
+            icon: "info",
+            confirmButtonText: "Ok",
+          });
+        });
       cancelBtn.addEventListener("click", () => {
         window.location.href = `${BASE_URL}`;
       });
