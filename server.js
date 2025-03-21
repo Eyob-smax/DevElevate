@@ -76,7 +76,7 @@ const sessionMiddleware = session({
   resave: true,
   saveUninitialized: true,
   store,
-  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 },
+  cookie: { secure: false, httpOnly: true, maxAge: 3 * 1000 * 60 * 60 * 24 },
 });
 
 //check is user is authenticated
