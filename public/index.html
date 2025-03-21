@@ -1202,8 +1202,10 @@
           text: "You are about to logout",
           icon: "warning",
           showCancelButton: true,
-          confirmButtonText: "Yes",
+          confirmButtonText: "Logout",
           cancelButtonText: "No",
+          confirmButtonColor: "#f97102",
+          cancelButtonColor: "#8068FB",
         }).then((result) => {
           if (result.isConfirmed) {
             loaderMain.style.display = "block flex";
