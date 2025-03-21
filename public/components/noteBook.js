@@ -53,6 +53,8 @@ const addBoxesSectionContainer = getElement("#add-boxes-section-container");
 const addNotesSectionContainer = getElement("#add-notes-section-container");
 const footerNotes = getElement("#footer-for-notes");
 
+const loaderNotes = getElement(".loader", mainNoteSection);
+
 let currentBoxInfo = {
   title: "",
   date: "",
@@ -98,6 +100,7 @@ getElement("#backToBoxes", mainNoteSection).addEventListener(
       date: "",
     };
     addNotesSection.classList.add("hidden");
+    loaderNotes.style.display = "block flex";
     const { data, success } = await getBoxData();
     if (success) {
       data.forEach((element) => {
@@ -110,6 +113,7 @@ getElement("#backToBoxes", mainNoteSection).addEventListener(
         NotesCardContainer.appendChild(card);
       });
     }
+    loaderNotes.style.display = "none";
   }
 );
 
@@ -163,6 +167,12 @@ function createDayContainer(title, date, notesNumber, number) {
     notesNumber || "0"
   );
 
+  const viewBtn = createElement(
+    "button",
+    "preview-btn-todo todoPreviewBtn ring-1 ring-slate-400 font-bold absolute top-[37px] right-[-50px] -translate-x-1/2 -translate-y-1/2 py-2 hover:bg-[#333] hover:scale-105 rounded-3xl px-10 bg-black text-white font-inter",
+    "View"
+  );
+
   const p2 = createElement(
     "p",
     "absolute right-14 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-sour text-[25px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[#F1EEFF] shadow-lg shadow-slate-900 ring-slate-400 ring-1"
@@ -179,7 +189,8 @@ function createDayContainer(title, date, notesNumber, number) {
     e.stopPropagation();
   });
 
-  dayContainer.addEventListener("click", () => {
+  viewBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     openNotesAddForm(title, date);
     currentBoxInfo.title = title;
     currentBoxInfo.date = date;
@@ -190,6 +201,7 @@ function createDayContainer(title, date, notesNumber, number) {
   });
 
   dayContainer.appendChild(h2);
+  dayContainer.appendChild(viewBtn);
   dayContainer.appendChild(h4);
   dayContainer.appendChild(p);
   dayContainer.appendChild(p2);
@@ -198,7 +210,9 @@ function createDayContainer(title, date, notesNumber, number) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  loaderNotes.style.display = "block flex";
   const userData = await getCurrentUserData();
+  loaderNotes.style.display = "none";
   document.querySelector(
     ".display-userName-note"
   ).innerHTML = `Hi ${userData.username}`;
@@ -216,6 +230,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
       NotesCardContainer.appendChild(card);
     });
+    loaderNotes.style.display = "none";
   } else {
     const data = loadDataFromLS("box-data");
     if (data) {
@@ -234,8 +249,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 formForDayContainer.addEventListener("submit", async (e) => {
   e.preventDefault();
+  loaderNotes.style.display = "block flex";
   const formData = new FormData(formForDayContainer);
-
   const data = {
     title: formData.get("BoxTitle"),
     date: formData.get("BoxDate"),
@@ -253,6 +268,7 @@ formForDayContainer.addEventListener("submit", async (e) => {
 
   saveToLS("box-data", boxArray);
   NotesCardContainer.appendChild(card);
+  loaderNotes.style.display = "none";
 
   boxNumber++;
   boxCounter.textContent = boxNumber;
@@ -292,7 +308,7 @@ async function deleteBox(container, title, date) {
 
   const resData = await res.json();
   if (!resData.success) {
-    Swal.fire({
+    await Swal.fire({
       icon: "error",
       title: "Oops...",
       text: "Something went wrong!",
@@ -300,7 +316,7 @@ async function deleteBox(container, title, date) {
     return;
   }
 
-  Swal.fire("Deleted!", "Your file has been deleted.", "success");
+  await Swal.fire("Deleted!", "Your file has been deleted.", "success");
   boxArray = boxArray.filter(
     (card) => card.title !== title && card.date !== date
   );
@@ -325,6 +341,7 @@ function delteFromLS(item) {
 }
 
 async function sendDataToServer(data) {
+  loaderNotes.style.display = "block flex";
   const userData = await getCurrentUserData();
   const userId = userData._id;
   const response = await fetch(`${DOMAIN}/notes/box?userId=${userId}`, {
@@ -336,24 +353,28 @@ async function sendDataToServer(data) {
   });
   const { success, boxData } = await response.json();
   if (!success) {
-    return Swal.fire({
+    return await Swal.fire({
       icon: "error",
       title: "Can't add note box!",
       text: "Something went wrong!",
     });
   }
+  loaderNotes.style.display = "none";
   return boxData;
 }
 
 async function getBoxData() {
   try {
+    loaderNotes.style.display = "block flex";
     const userData = await getCurrentUserData();
     const userId = userData._id;
     const response = await fetch(`${DOMAIN}/notes/box?userId=${userId}`);
     const data = await response.json();
+    loaderNotes.style.display = "none";
     return data;
   } catch (err) {
-    Swal.fire("Error", err.message, "error");
+    await Swal.fire("Error", err.message, "error");
+    loaderNotes.style.display = "none";
     return;
   }
 }
@@ -500,6 +521,7 @@ function createNoteCard(title, topic, note) {
 }
 
 async function fetchNotes(title, date) {
+  loaderNotes.style.display = "block flex";
   try {
     const userData = await getCurrentUserData();
     const userId = userData._id;
@@ -513,6 +535,10 @@ async function fetchNotes(title, date) {
     return data;
   } catch (err) {
     console.log("Error fetching notes", err.message);
+    loaderNotes.style.display = "none";
+    await Swal.fire("Error", "Error fetching notes", "error");
+  } finally {
+    loaderNotes.style.display = "none";
   }
 }
 
@@ -525,37 +551,44 @@ async function handleNotesForm() {
     note: formData.get("noteBody"),
     topic: formData.get("noteTopic"),
   };
+  loaderNotes.style.display = "block flex";
   const result = await sendNotesToServer(data);
   if (!result.success) {
-    Swal.fire("Error", result.message, "error");
+    await Swal.fire("Error", result.message, "error");
     return;
   }
-  Swal.fire("Success", result.message, "success");
+  await Swal.fire("Success", result.message, "success");
 
   const card = createNoteCard(data.title, data.topic, data.note);
   NotesCardContainer.appendChild(card);
+  loaderNotes.style.display = "none";
 
   addNoteForm.reset();
   closeNoteAddForm();
 }
 
 async function sendNotesToServer(data) {
-  const userData = await getCurrentUserData();
-  const userId = userData._id;
-  const response = await fetch(`${DOMAIN}/notes&userId=${userId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  const res = await response.json();
-  return res;
-}
-
-async function sendNotesToServer() {
   try {
-  } catch (err) {}
+    const userData = await getCurrentUserData();
+    loaderNotes.style.display = "block flex";
+    const userId = userData._id;
+    const response = await fetch(`${DOMAIN}/notes?userId=${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const res = await response.json();
+    return res;
+  } catch (err) {
+    console.log("Error sending notes to server", err.message);
+    loaderNotes.style.display = "none";
+    await Swal.fire("Error", "Error sending notes to server", "error");
+    return { success: false, message: "Server error" };
+  } finally {
+    loaderNotes.style.display = "none";
+  }
 }
 
 async function deleteNote(card, title, note, topic) {
@@ -585,7 +618,7 @@ async function deleteNote(card, title, note, topic) {
 
   const { success, message } = await res.json();
   if (!success) {
-    return swal.fire({
+    return await swal.fire({
       title: "Error!",
       text: message,
       icon: "error",
@@ -593,7 +626,7 @@ async function deleteNote(card, title, note, topic) {
     });
   }
   card.remove();
-  Swal.fire("Deleted!", message, "success");
+  await Swal.fire("Deleted!", message, "success");
 }
 
 function editNote(titleEl, noteText, topicSpan) {
@@ -640,7 +673,11 @@ async function saveNote(
     newTopic: topicSpan.textContent,
     newNote: noteText.textContent,
   };
+
   const { success, message } = await updateEditedNotes(data);
+  if (!success) {
+    return await Swal.fire("Error", message, "error");
+  }
   if (titleEl.textContent === "" || !success) {
     titleEl.textContent = title;
   }
@@ -651,6 +688,7 @@ async function saveNote(
   if (noteText.textContent === "" || !success) {
     noteText.textContent = note;
   }
+
   titleEl.contentEditable = false;
   titleEl.style.outline = "none";
   noteText.contentEditable = false;
@@ -660,29 +698,36 @@ async function saveNote(
 
   titleEl.style.padding = "0";
   noteText.style.padding = "0";
+  await Swal.fire("Success", message, "success");
 }
 
 async function updateEditedNotes(data) {
-  const userData = await getCurrentUserData();
-  const userId = userData._id;
-  const response = await fetch(`${DOMAIN}/notes&userId=${userId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  console.log(data);
+  loaderNotes.style.display = "block flex";
+  try {
+    const userData = await getCurrentUserData();
+    const userId = userData._id;
+    const response = await fetch(`${DOMAIN}/notes?userId=${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-  const res = await response.json();
-  if (!res.success) {
-    return Swal.fire("Error", res.message, "error");
+    const { success, message } = await response.json();
+    return { success, message };
+  } catch (err) {
+    console.log("Error updating notes", err.message);
+    loaderNotes.style.display = "none";
+    return { success: false, message: "Server error" };
+  } finally {
+    loaderNotes.style.display = "none";
   }
-  Swal.fire("Success", res.message, "success");
-  return { success: res.message, message: res.message };
 }
 
 function limitText(textElement, limit) {
-  textElement.addEventListener("keydown", (e) => {
+  textElement.addEventListener("keydown", async (e) => {
     if (
       textElement.textContent.length >= limit &&
       e.key !== "Backspace" &&
@@ -696,7 +741,7 @@ function limitText(textElement, limit) {
       e.key !== "Control" &&
       e.key !== "Alt"
     ) {
-      Swal.fire({ icon: "error", title: "Error", text: "Limit reached" });
+      await Swal.fire({ icon: "error", title: "Error", text: "Limit reached" });
       e.preventDefault();
     } else if (textElement.textContent.length === 0 && e.key === "Backspace") {
       e.preventDefault();

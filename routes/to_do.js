@@ -208,4 +208,28 @@ todo.put("/", async (req, res) => {
     res.status(400).json({ success: false, message: err.message });
   }
 });
+
+todo.put("/status", async (req, res) => {
+  try {
+    const { todo, date, userId, status, parentTitle, parentDate } = req.body;
+    if (!userId) {
+      res.status(403).json({ success: false, message: "User unauthorized" });
+      return;
+    }
+    if (!todo || !status || !parentTitle || !parentDate) {
+      res.json({ success: false, message: "incomplate Data" });
+      return;
+    }
+    const parent = `${parentTitle}-${parentDate}`;
+    await TodoCollection.updateOne(
+      { todo, userId, date, parent },
+      { $set: { status } }
+    );
+    res
+      .status(200)
+      .json({ success: true, message: "Todo status updated successfully✅" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
 export default todo;

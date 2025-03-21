@@ -25,7 +25,7 @@ const app = express();
 
 const PORT = process.env.PORT || 9000;
 
-const MAIN_URL = `https://develevate-production.up.railway.app`;
+const MAIN_URL = `http://localhost:9000`;
 
 app.use(express.json());
 app.use(cors({ origin: "*" }));
@@ -41,13 +41,10 @@ passport.use(
       const user = await User.findOne({ username });
 
       if (!user) {
-        console.log("User not found");
         return cb(null, false);
       }
 
-      console.log(user);
       const isValid = await bcrypt.compare(password, user.password);
-
       return isValid ? cb(null, user) : cb(null, false);
     } catch (err) {
       return cb(err);
@@ -94,18 +91,9 @@ app.post(
     successRedirect: "/protected-route",
   }),
   (err, req, res, next) => {
-    console.log("logining the user");
     if (err) next(err);
   }
 );
-
-// app.use((req, res, next) => {
-//   if (req.isAuthenticated()) {
-//     res.redirect("/home");
-//   } else {
-//     next();
-//   }
-// });
 
 app.use("/home", home);
 app.use("/login", login);
@@ -134,7 +122,6 @@ const verifyEmailHunter = async (email) => {
 
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-  console.log(req.body);
 
   if (username === "" || email === "" || password === "") {
     return res
@@ -181,11 +168,11 @@ app.post("/register", async (req, res) => {
 
 app.get("/protected-route", (req, res, next) => {
   if (req.isAuthenticated()) {
-    res.redirect(`${MAIN_URL}/home`);
+    res.status(200).json({ success: true, message: "You are authenticated" });
   } else {
-    res.send(
-      '<h1>You are not authenticated</h1><p><a href="/login">Login</a></p>'
-    );
+    res
+      .status(401)
+      .json({ success: false, message: "You are not authenticated" });
   }
 });
 
@@ -198,12 +185,11 @@ app.get("/logout", (req, res, next) => {
   });
 });
 
-app.get("/login-success", (req, res, next) => {
-  res.redirect(`${MAIN_URL}/home`);
-});
-
 app.get("/login-failure", (req, res, next) => {
-  res.send("You entered the wrong password.");
+  res
+    .status(401)
+    .json({ success: false, message: "Incorrect password or user name" });
+  next();
 });
 
 app.get("/quote", async (req, res) => {

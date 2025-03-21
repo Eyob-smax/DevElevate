@@ -31,7 +31,7 @@ label {
 }
 
 #first-page {
-  background: url(images/loginBg.jpg) center center/cover no-repeat;
+  background: url(./images/loginBg.jpg) center center/cover no-repeat;
 }
 
 @property --angle {
@@ -185,7 +185,8 @@ label {
   animation: rotate 3s linear infinite;
 }
 
-#write-note-submit-btn::after {
+#write-note-submit-btn::after,
+.todoPreviewBtn::after {
   background-image: conic-gradient(
     from var(--angle),
     transparent,
@@ -274,7 +275,7 @@ label {
 }
 
 /* From Uiverse.io by aryamitra06 */
-#main-quote-section .loader {
+.loader {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -285,7 +286,7 @@ label {
   justify-content: center;
 }
 
-#main-quote-section .bar {
+.bar {
   display: inline-block;
   width: 7px;
   height: 20px;
@@ -296,13 +297,13 @@ label {
   animation: scale-up4 1s linear infinite;
 }
 
-#main-quote-section .bar:nth-child(2) {
+.bar:nth-child(2) {
   height: 35px;
   margin: 0 5px;
   animation-delay: 0.25s;
 }
 
-#main-quote-section .bar:nth-child(3) {
+.bar:nth-child(3) {
   animation-delay: 0.5s;
 }
 

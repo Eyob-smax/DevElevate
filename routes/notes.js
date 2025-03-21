@@ -102,56 +102,57 @@ note.get("/", async (req, res) => {
 });
 
 note.put("/", async (req, res) => {
-  const userId = req.query.userId;
-  const {
-    title,
-    note,
-    topic,
-    parentTitle,
-    parentDate,
-    newNote,
-    newTopic,
-    newTitle,
-  } = req.body;
-
-  if (!userId) {
-    return res
-      .status(403)
-      .json({ success: false, message: "User Unauthorized!" });
-  }
-
-  if (!title || !note || !topic || !newNote || !newTopic || !newTitle) {
-    return res.json({ success: false, message: "Incomplete data!" });
-  }
-
-  if (title === newTitle && note === newNote && topic === newTopic) {
-    return res.json({ success: false, message: "No changes found!" });
-  }
+  console.log(req.body);
 
   try {
-    const result = await NotebookCollection.updateOne(
-      {
-        title,
-        note,
-        topic,
-        parent: `${parentTitle}-${parentDate}`,
-        userId: userId,
-      },
-      { $set: { title: newTitle, note: newNote, topic: newTopic } }
-    );
+    const {
+      parentTitle,
+      parentDate,
+      title,
+      note,
+      topic,
 
-    if (result.modifiedCount === 0) {
-      return res.json({
-        success: false,
-        message: "No matching note found to update",
-      });
+      newTitle,
+      newTopic,
+      newNote,
+    } = req.body;
+    const userId = req.query.userId;
+    if (!userId) {
+      return res.json({ success: false, message: "User Unautherized!" });
     }
-    res.json({ success: true, message: "Note updated successfully✅" });
-  } catch (err) {
-    res.json({
-      success: false,
-      message: "there is something wrong with the DB!",
+
+    if (
+      !newTitle ||
+      !newTopic ||
+      !newNote ||
+      !title ||
+      !topic ||
+      !note ||
+      !parentTitle ||
+      !parentDate
+    ) {
+      return res.json({ success: false, message: "Incomplete data!" });
+    }
+
+    if (newTitle === title && newTopic === topic && newNote === note) {
+      return res.json({ success: false, message: "No changes made!" });
+    }
+    const parent = `${parentTitle}-${parentDate}`;
+    const noteData = await NotebookCollection.findOne({
+      parent,
+      userId,
+      title,
+      note,
+      topic,
     });
+
+    noteData.title = newTitle;
+    noteData.topic = newTopic;
+    noteData.note = newNote;
+    await noteData.save();
+    res.json({ success: true, message: "Note Updated Successfully" });
+  } catch (err) {
+    res.json({ success: false, message: "server Error", error: err.message });
   }
 });
 

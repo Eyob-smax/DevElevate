@@ -52,6 +52,8 @@ let currentToDoBox = {
   date: "",
 };
 
+const loaderTodo = getElement(".loader", mainToDoSection);
+
 getElement("#backToBoxes", mainToDoSection).addEventListener(
   "click",
   async () => {
@@ -60,7 +62,9 @@ getElement("#backToBoxes", mainToDoSection).addEventListener(
     footerTodoSection.style.display = "none";
     mainTodoContainer.innerHTML = "";
     currentToDoBox = {};
+    loaderTodo.style.display = "block flex";
     await fetchTodoBox();
+    loaderTodo.style.display = "none";
   }
 );
 
@@ -69,7 +73,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.querySelector(
     ".display-userName"
   ).innerHTML = `Hi ${userData.username}`;
-  fetchTodoBox();
+  loaderTodo.style.display = "block flex";
+  await fetchTodoBox();
+  loaderTodo.style.display = "none";
 });
 
 function createTodoBox(title, date, number, notesNumber) {
@@ -94,7 +100,7 @@ function createTodoBox(title, date, number, notesNumber) {
 
   const counterBubble = createElement(
     "p",
-    "absolute right-0 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-inter font-semibold  text-[18px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[gold] shadow-lg shadow-slate-900 ring-slate-400 ring-1",
+    "absolute right-0 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-inter font-semibold  text-[18px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[#F1EEFF] text-[#8068FB] shadow-lg shadow-slate-900 ring-slate-400 ring-1",
     notesNumber || "0"
   );
 
@@ -102,7 +108,10 @@ function createTodoBox(title, date, number, notesNumber) {
     "p",
     "absolute right-14 bottom-0 -translate-x-1/2 -translate-y-1/2 w-[40px] h-[40px] font-sour text-[25px] text-black self-end m-0 flex rounded-full items-center justify-center bg-[#F1EEFF] shadow-lg shadow-slate-900 ring-slate-400 ring-1"
   );
-  const deleteIcon = createElement("i", "text-[15px] fas fa-trash-alt");
+  const deleteIcon = createElement(
+    "i",
+    "text-[15px] text-[#8068FB] fas fa-trash-alt"
+  );
   deleteButton.appendChild(deleteIcon);
 
   deleteButton.addEventListener("click", async (e) => {
@@ -110,12 +119,20 @@ function createTodoBox(title, date, number, notesNumber) {
     deleteTodoBox(card, title, date);
   });
 
+  const viewBtn = createElement(
+    "button",
+    "preview-btn-todo todoPreviewBtn ring-1 ring-slate-400 font-bold absolute top-[37px] right-[-50px] -translate-x-1/2 -translate-y-1/2 py-2 hover:bg-[#333] hover:scale-105 rounded-3xl px-10 bg-black text-white font-inter",
+    "View"
+  );
+
   card.appendChild(titleElement);
+  card.appendChild(viewBtn);
   card.appendChild(dateElement);
   card.appendChild(counterBubble);
   card.appendChild(deleteButton);
 
-  card.addEventListener("click", () => {
+  viewBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     currentToDoBox.title = title;
     currentToDoBox.date = date;
     openTodo(title, date);
@@ -133,7 +150,7 @@ async function fetchTodoBox() {
     const response = await fetch(`${DOMAIN}/to-do/box?userId=${userId}`);
     const { success, todoBox } = await response.json();
     if (!success) {
-      return Swal.fire({
+      return await Swal.fire({
         icon: "error",
         text: "Failed to fetch todos",
         title: "Error",
@@ -182,7 +199,7 @@ function createTodoCard(content, date, precedence = "High") {
   const doneButton = createElement(
     "button",
     "complete-todo w-16 rounded-xl bg-[gold]",
-    "Done"
+    "Pending"
   );
   const precedenceButton = createElement(
     "button",
@@ -262,6 +279,58 @@ function createTodoCard(content, date, precedence = "High") {
     }
   });
 
+  doneButton.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    try {
+      loaderTodo.style.display = "block flex";
+      const userData = await getCurrentUserData();
+      const userId = userData._id;
+      const data = {
+        parentTitle: currentToDoBox.title,
+        parentDate: currentToDoBox.date,
+        todo: content,
+        date,
+        precedence,
+        userId,
+        status: "Done",
+      };
+
+      const response = await fetch(`${DOMAIN}/to-do/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const { success, message } = await response.json();
+      if (!success) {
+        return await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: message,
+        });
+      }
+
+      await Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: message,
+      });
+
+      doneButton.textContent = "Done";
+      doneButton.classList.add("bg-[green]");
+    } catch (err) {
+      loaderTodo.style.display = "none";
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.message,
+      });
+    } finally {
+      loaderTodo.style.display = "none";
+    }
+  });
   return card;
 }
 
@@ -298,14 +367,14 @@ async function handleBoxForm() {
 
     const { success, message, todoBoxData } = await response.json();
     if (!success) {
-      return Swal.fire({
+      return await Swal.fire({
         icon: "error",
         title: "Error",
         text: message,
       });
     }
 
-    Swal.fire({
+    await Swal.fire({
       icon: "success",
       title: "Success",
       text: message,
@@ -324,7 +393,7 @@ async function handleBoxForm() {
       behavior: "smooth",
     });
   } catch (err) {
-    Swal.fire({
+    await Swal.fire({
       icon: "success",
       title: "Success",
       text: err.message,
@@ -372,14 +441,14 @@ async function deleteTodoBox(card, title, date) {
 
     const { success, message } = await response.json();
     if (!success) {
-      return Swal.fire({
+      return await Swal.fire({
         icon: "error",
         title: "Error",
         text: message,
       });
     }
 
-    Swal.fire({
+    await Swal.fire({
       icon: "success",
       title: "Success",
       text: message,
@@ -388,7 +457,7 @@ async function deleteTodoBox(card, title, date) {
     boxesCounter--;
     totalToDoElement.textContent = boxesCounter;
   } catch (err) {
-    Swal.fire({
+    await Swal.fire({
       icon: "error",
       title: "Error",
       text: err.message,
@@ -410,22 +479,35 @@ function setUiChanges(todo, box = null) {
 }
 
 async function openTodo(title, date) {
-  setUiChanges(true);
-  todoForm.reset();
-  const { success, todo } = await loadTododos(title, date);
-  if (!success) {
-    return Swal.fire({
+  try {
+    setUiChanges(true);
+    loaderTodo.style.display = "block flex";
+    mainTodoContainer.innerHTML = "";
+    todoForm.reset();
+    const { success, todo } = await loadTododos(title, date);
+    if (!success) {
+      return await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "cannot load todos",
+      });
+    }
+    todo.forEach((t) => {
+      const card = createTodoCard(t.todo, t.date, t.precedence);
+      mainTodoContainer.insertAdjacentElement("afterbegin", card);
+    });
+    todosCounter = todo.length;
+    totalToDoElement.textContent = todosCounter;
+  } catch (err) {
+    loaderTodo.style.display = "none";
+    await Swal.fire({
       icon: "error",
       title: "Error",
-      text: "cannot load todos",
+      text: err.message,
     });
+  } finally {
+    loaderTodo.style.display = "none";
   }
-  todo.forEach((t) => {
-    const card = createTodoCard(t.todo, t.date, t.precedence);
-    mainTodoContainer.insertAdjacentElement("afterbegin", card);
-  });
-  todosCounter = todo.length;
-  totalToDoElement.textContent = todosCounter;
 }
 
 async function loadTododos(title, date) {
@@ -436,7 +518,7 @@ async function loadTododos(title, date) {
     );
     const todos = await response.json();
     if (!todos.success) {
-      return Swal.fire({
+      return await Swal.fire({
         icon: "error",
         title: "Error",
         text: "cannot load todos",
@@ -444,7 +526,7 @@ async function loadTododos(title, date) {
     }
     return todos;
   } catch (err) {
-    Swal.fire({
+    await Swal.fire({
       icon: "error",
       title: "Error",
       text: err.message,
@@ -496,7 +578,7 @@ async function handleTodoSubmission() {
 
     const result = await response.json();
     if (!result.success) {
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
         title: "Error",
         text: result.message,
@@ -516,7 +598,7 @@ async function handleTodoSubmission() {
       behavior: "smooth",
     });
   } catch (err) {
-    Swal.fire({
+    await Swal.fire({
       icon: "error",
       title: "Error",
       text: err.message,
@@ -548,7 +630,7 @@ async function deleteTodo(card, todo, date) {
 
     const result = await response.json();
     if (!result.success) {
-      return Swal.fire({
+      return await Swal.fire({
         icon: "error",
         title: "Error",
         text: "Cannot delete note",
@@ -557,13 +639,13 @@ async function deleteTodo(card, todo, date) {
     card.remove();
     todosCounter--;
     totalToDoElement.textContent = todosCounter;
-    Swal.fire({
+    await Swal.fire({
       icon: "success",
       title: "Success",
       text: result.message,
     });
   } catch (err) {
-    Swal.fire({
+    await Swal.fire({
       icon: "error",
       title: "Error",
       text: "Something went wrong, retry!",
@@ -592,6 +674,7 @@ function editTodo(todoEl, priorityBtn) {
 }
 
 async function saveTodo(todo, date, precedence, textElement, precedenceButton) {
+  loaderTodo.style.display = "block flex";
   try {
     const userData = await getCurrentUserData();
     const userId = userData._id;
@@ -616,7 +699,7 @@ async function saveTodo(todo, date, precedence, textElement, precedenceButton) {
 
     const { success, message } = await response.json();
     if (!success) {
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
         title: "Error",
         text: message,
@@ -624,19 +707,22 @@ async function saveTodo(todo, date, precedence, textElement, precedenceButton) {
       defaultsForSave(textElement, precedenceButton);
       return;
     }
-    Swal.fire({
+    await Swal.fire({
       icon: "success",
       title: "Success",
       text: message,
     });
     defaultsForSave(textElement, precedenceButton);
   } catch (err) {
-    Swal.fire({
+    await Swal.fire({
       icon: "error",
       title: "Error",
       text: "Something went wrong, retry!",
     });
     defaultsForSave(textElement, precedenceButton);
+    loaderTodo.style.display = "none";
+  } finally {
+    loaderTodo.style.display = "none";
   }
 }
 

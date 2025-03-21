@@ -10,7 +10,7 @@ import axios from "axios";
 import { Cookie } from "express-session";
 import { ObjectId } from "mongodb";
 import { MAIN_URL } from "../server.js";
-import { User } from "../database.js";
+import { User, ChatHistory } from "../database.js";
 
 dotenv.config();
 const home = express();
@@ -87,7 +87,6 @@ home.post("/generate", async (req, res) => {
     res.status(400).json({
       success: false,
       message: "Prompt is required",
-      message: err.message,
     });
   }
 });
@@ -205,6 +204,57 @@ home.get("/getUser", async (req, res) => {
     return res.status(200).json({ success: true, userData });
   } catch (err) {
     return res.status(400).json({
+      success: false,
+      message: "Something went wrong, try again!",
+      message: err.message,
+    });
+  }
+});
+
+home.post("/chat-history", async (req, res) => {
+  try {
+    const { userId, chat, response } = req.body;
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User Unautherized!" });
+    }
+    if (!chat || !response) {
+      return res.json({ success: false, message: "Incomplete data!" });
+    }
+    const newChat = new ChatHistory({
+      userId,
+      chat,
+      response,
+    });
+    await newChat.save();
+    res.json({
+      success: true,
+      message: "Chat history saved successfully",
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "Something went wrong, try again!",
+      message: err.message,
+    });
+  }
+});
+
+home.get("/chat-history", async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User Unautherized!" });
+    }
+    const chatHistory = await ChatHistory.find({ userId }).sort({
+      createTime: 1,
+    });
+    res.json({ success: true, chatHistory });
+  } catch (err) {
+    res.status(400).json({
       success: false,
       message: "Something went wrong, try again!",
       message: err.message,

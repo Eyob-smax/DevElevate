@@ -33,6 +33,14 @@ const todoSchema = new Schema({
   todo: String,
   date: String,
   priority: String,
+  status: { type: String, default: "Pending" },
+});
+
+const AIChatHistorySchema = new Schema({
+  createTime: { type: Number, default: Date.now() },
+  userId: String,
+  chat: String,
+  response: String,
 });
 
 const todoBoxSchema = new Schema({
@@ -64,7 +72,7 @@ const noteBookBoxSchema = new Schema({
 });
 
 noteBookBoxSchema.plugin(AutoIncrementPlugin, { inc_field: "index" });
-
+const ChatHistory = mongoose.model("ChatHistory", AIChatHistorySchema);
 const User = mongoose.model("User", userSchema);
 const NotebookCollection = mongoose.model("Notebook", noteBookSchema);
 const TodoBoxCollection = mongoose.model("TodoBox", todoBoxSchema);
@@ -78,4 +86,5 @@ export {
   TodoBoxCollection,
   User,
   MAIN_DB,
+  ChatHistory,
 };

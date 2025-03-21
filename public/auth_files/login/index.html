@@ -4,25 +4,78 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Page</title>
-    <link rel="stylesheet" href="../style.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body>
+    <style>
+      .loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bar {
+        display: inline-block;
+        width: 7px;
+        height: 20px;
+        font-size: 40px;
+        background-color: #f97102;
+        /* background-color: rgba(255, 255, 255, 0.5); */
+        border-radius: 10px;
+        animation: scale-up4 1s linear infinite;
+      }
+
+      .bar:nth-child(2) {
+        height: 35px;
+        margin: 0 5px;
+        animation-delay: 0.25s;
+      }
+
+      .bar:nth-child(3) {
+        animation-delay: 0.5s;
+      }
+
+      @keyframes scale-up4 {
+        20% {
+          background-color: #ffff;
+          transform: scaleY(1.5);
+        }
+
+        40% {
+          transform: scaleY(1);
+        }
+      }
+
+      .animate {
+        animation: shake 0.5s ease-in-out infinite;
+      }
+    </style>
     <section
-      class="flex-col items-center mt-16 justify-center w-[80%] mx-auto"
+      class="flex-col relative items-center mt-16 justify-center w-[80%] mx-auto"
       id="log-section"
     >
+      <div style="display: none" class="loader">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
       <h1
         id="login-text"
         class="text-center mt-10 h-10 text-3xl font-bold mb-10"
       >
         Log In
       </h1>
-      <form action="/login" method="post" class="mb-3">
+      <form class="mb-3">
         <label for="log-email" class="w-[90%] pt-2 mx-auto block"
           >Username</label
         >
@@ -79,11 +132,57 @@
       </form>
     </section>
     <script>
-      const BASE_URL = `https://develevate-production.up.railway.app`;
+      const BASE_URL = `http://localhost:9000`;
       const logBtn = document.getElementById("log-btn");
       const cancelBtn = document.getElementById("log-cancel-btn");
       const forgetBtn = document.getElementById("forget");
       const form = document.querySelector("form");
+      const loader = document.querySelector(".loader");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loader.style.display = "block flex";
+        try {
+          const username = document.getElementById("log-user-name").value;
+          const password = document.getElementById("log-pass").value;
+          const data = {
+            username,
+            password,
+          };
+          const res = await fetch(`${BASE_URL}/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          const { success, message } = await res.json();
+          if (!success) {
+            await Swal.fire({
+              icon: "error",
+              title: "Error logging in",
+              text: message,
+            });
+            return;
+          }
+          await Swal.fire({
+            icon: "success",
+            title: "Logged in successfully",
+            text: message,
+            timer: 2000,
+          });
+          window.location.href = `${BASE_URL}/home`;
+        } catch (err) {
+          await Swal.fire({
+            icon: "error",
+            title: "Error logging in",
+            text: "An error occurred while logging in",
+          });
+        } finally {
+          loader.style.display = "none";
+        }
+      });
 
       cancelBtn.addEventListener("click", () => {
         window.location.href = `${BASE_URL}`;

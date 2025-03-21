@@ -4,10 +4,54 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register Page</title>
-    <link rel="stylesheet" href="../style.css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body>
+    <style>
+      .loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bar {
+        display: inline-block;
+        width: 7px;
+        height: 20px;
+        font-size: 40px;
+        background-color: #f97102;
+        /* background-color: rgba(255, 255, 255, 0.5); */
+        border-radius: 10px;
+        animation: scale-up4 1s linear infinite;
+      }
+
+      .bar:nth-child(2) {
+        height: 35px;
+        margin: 0 5px;
+        animation-delay: 0.25s;
+      }
+
+      .bar:nth-child(3) {
+        animation-delay: 0.5s;
+      }
+
+      @keyframes scale-up4 {
+        20% {
+          background-color: #ffff;
+          transform: scaleY(1.5);
+        }
+
+        40% {
+          transform: scaleY(1);
+        }
+      }
+    </style>
     <section
       id="sign-section"
       class="flex-col items-center justify-center w-[80%] mx-auto"
@@ -19,7 +63,9 @@
         Sign Up
       </h1>
       <form action="" class="mb-3">
-        <label for="sign-email" class="w-[90%] pt-2 mx-auto block">Name</label>
+        <label for="sign-email" class="w-[90%] pt-2 mx-auto block"
+          >Username</label
+        >
         <div
           class="flex items-center w-[90%] px-2 pb-2 border-b-2 border-b-[grey] mx-auto mb-5"
         >
@@ -96,12 +142,19 @@
           </button>
         </div>
       </form>
+      <div style="display: none" class="loader">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
     </section>
     <script>
-      const BASE_URL = `https://develevate-production.up.railway.app`;
+      const BASE_URL = `http://localhost:9000`;
       const signBtn = document.getElementById("sign-btn");
       const cancelBtn = document.getElementById("sign-cancel-btn");
       const form = document.querySelector("form");
+
+      const loader = document.querySelector(".loader");
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -118,17 +171,27 @@
         };
 
         if (!data) {
-          alert("Please fill in all fields");
+          Swal.fire({
+            icon: "error",
+            title: "Incomplete Form",
+            text: "Please fill in all fields",
+          });
           return;
         }
         if (password !== password2) {
           document.getElementById("sign-pass").style.border = "1px solid red";
           document.getElementById("sign-pass2").style.border = "1px solid red";
-          alert("Password does not match");
+          Swal.fire({
+            icon: "error",
+            title: "Password Mismatch",
+            text: "Passwords do not match",
+            time: 1000,
+          });
           return;
         }
 
         try {
+          loader.style.display = "block flex";
           const response = await fetch(`${BASE_URL}/register`, {
             method: "POST",
             headers: {
@@ -136,8 +199,8 @@
             },
             body: JSON.stringify(data),
           });
+          loader.style.display = "none";
           const result = await response.json();
-          console.log(result);
           if (
             !result.valid &&
             result.message === "please enter correct email to precede"
@@ -145,7 +208,11 @@
             document.getElementById("sign-email").style.border =
               "1px solid red";
             document.getElementById("sign-email").style.color = "red";
-            alert("please enter correct email to precede");
+            Swal.fire({
+              icon: "error",
+              title: "Invalid Email",
+              text: "Please enter a valid email",
+            });
             return;
           }
 
@@ -168,17 +235,33 @@
                 "1px solid red";
             }
 
-            alert(result.message);
+            Swal.fire({
+              icon: "error",
+              title: "User Already Exists",
+              text: result.message,
+            });
             return;
           }
 
           if (result.valid) {
-            alert("Registration successful");
+            Swal.fire({
+              icon: "success",
+              title: "Registration Successful",
+              text: "You can now login",
+              timer: 1000,
+            });
+
             window.location.href = `${BASE_URL}/login`;
           }
         } catch (err) {
           console.log(err.message);
-          alert(err.message);
+          Swal.fire({
+            icon: "error",
+            title: "Registration Failed",
+            text: "Please try again",
+            showConfirmButton: true,
+          });
+          window.location.href = `${BASE_URL}`;
         }
       });
 

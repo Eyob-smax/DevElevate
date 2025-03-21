@@ -158,6 +158,9 @@ deleteAllAssistance.addEventListener("click", () => {
   mainAiQuetionSection
     .querySelector(".assistance-landing")
     .classList.remove("hidden");
+  mainAiQuetionSection
+    .querySelector(".loading-landing")
+    .classList.add("hidden");
 });
 
 generateAssistanceBtn.addEventListener("click", async () => {
@@ -208,8 +211,13 @@ generateAssistanceBtn.addEventListener("click", async () => {
       });
     }
     generateAssistance.style.textRendering = "optimizeLegibility";
-    generateAssistance.value = "";
     const fetchedAssistance = await getAssistanceData();
+    const { success, message } = await saveHistory(
+      generateAssistance.value,
+      fetchedAssistance
+    );
+    generateAssistance.value = "";
+
     displayAssistance.firstChild?.remove();
     const preElement = document.createElement("pre");
     preElement.style.whiteSpace = "pre-wrap";
@@ -224,9 +232,13 @@ generateAssistanceBtn.addEventListener("click", async () => {
       title: "Oops...",
       text: err.message,
     });
-    generateBtn.disabled = false;
-    generateBtn.style.cursor = "default";
-    generateBtn.style.backgroundColor = "#8068FB";
+    generateAssistanceBtn.disabled = false;
+    generateAssistanceBtn.style.cursor = "default";
+    generateAssistanceBtn.style.backgroundColor = "#8068FB";
+  } finally {
+    generateAssistanceBtn.disabled = false;
+    generateAssistanceBtn.style.cursor = "default";
+    generateAssistanceBtn.style.backgroundColor = "#8068FB";
     mainAiQuetionSection
       .querySelector(".assistance-landing")
       .classList.add("hidden");
@@ -270,19 +282,6 @@ async function getAssistanceData() {
       title: "Oops...",
       text: err.message,
     });
-    assistanceLandingPage.classList.add("hidden");
-    loadingSpinner.classList.add("hidden");
-  } finally {
-    mainAiQuetionSection
-      .querySelector(".loading-landing")
-      .classList.add("hidden");
-    mainAiQuetionSection
-      .querySelector(".assistance-landing")
-      .classList.add("hidden");
-    loadingSpinner.classList.add("hidden");
-    generateAssistanceBtn.disabled = false;
-    generateAssistanceBtn.style.cursor = "default";
-    generateAssistanceBtn.style.backgroundColor = "#8068FB";
   }
 }
 
@@ -421,4 +420,39 @@ async function manipulateGeneratedData() {
       }
     });
   });
+}
+
+async function saveHistory(chat, response) {
+  try {
+    const userData = await getCurrentUserData();
+    const userId = userData._id;
+    const data = {
+      userId,
+      chat,
+      response,
+    };
+    const res = await fetch(`${DOMAIN}/home/chat-history`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const { success, message } = await res.json();
+    return { success, message };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function getChatHistory(userId) {
+  try {
+    console.log(userId);
+    const res = await fetch(`${DOMAIN}/home/chat-history?userId=${userId}`);
+    const { success, chatHistory } = await res.json();
+    return { s: success, chatHistory };
+  } catch (err) {
+    console.log(err);
+  }
 }

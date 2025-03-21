@@ -125,6 +125,54 @@
         }
       }
     </style>
+    <style>
+      .loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bar {
+        display: inline-block;
+        width: 7px;
+        height: 20px;
+        font-size: 40px;
+        background-color: #f97102;
+        /* background-color: rgba(255, 255, 255, 0.5); */
+        border-radius: 10px;
+        animation: scale-up4 1s linear infinite;
+      }
+
+      .bar:nth-child(2) {
+        height: 35px;
+        margin: 0 5px;
+        animation-delay: 0.25s;
+      }
+
+      .bar:nth-child(3) {
+        animation-delay: 0.5s;
+      }
+
+      @keyframes scale-up4 {
+        20% {
+          background-color: #ffff;
+          transform: scaleY(1.5);
+        }
+
+        40% {
+          transform: scaleY(1);
+        }
+      }
+
+      .animate {
+        animation: shake 0.5s ease-in-out infinite;
+      }
+    </style>
     <link rel="stylesheet" href="./style.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
@@ -139,6 +187,11 @@
           class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
         />
       </header>
+      <div style="display: none" class="loader">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
       <div class="px-2 mb-5 font-inkut font-extrabold text-center">
         CODING JOURNAL APP
       </div>
@@ -186,11 +239,6 @@
             </p>
           </div>
           <p class="font-sour">Focus</p>
-          <div
-            class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[70%] right-[5%]"
-          >
-            <p class="text-[#8068FB] main-projects-card-counter">0</p>
-          </div>
         </div>
         <div
           id="to-do-card"
@@ -225,7 +273,7 @@
           <div
             class="bg-[#F1EEFF] w-8 h-8 rounded-full flex items-center justify-center absolute top-[70%] right-[5%]"
           >
-            <p class="text-[#8068FB] main-journal-card-counter">0</p>
+            <p class="text-[#8068FB] main-journal-card-counter">50</p>
           </div>
         </div>
         <div
@@ -250,9 +298,10 @@
           <div
             id="about-card"
             class="w-10 hover:bg-[black] hover:text-[#8068FB] h-10 rounded-full bg-[#F1EEFF] relative ml-12"
+            onclick="logout()"
           >
             <i
-              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-info-circle"
+              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fas fa-sign-out-alt"
             >
             </i>
           </div>
@@ -268,6 +317,11 @@
           class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
         />
       </header>
+      <div style="display: none" class="loader">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
       <div>
         <h1 class="text-center font-inkut font-extrabold mb-3">NOTES</h1>
       </div>
@@ -663,6 +717,11 @@
           class="ring-2 ring-black ring-opacity-10 shadow-lg w-10 h-10 rounded-full mx-4 my-2 shadow-slate-900/25"
         />
       </header>
+      <div class="loader">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
       <div class="py-1">
         <img src="images/todo.webp" class="h-28 w-full object-cover" />
       </div>
@@ -878,7 +937,7 @@
                 class="write-note-title ring-2 ring-black block rounded-md w-[250px] py-1 px-3 focus:outline-none"
                 type="text"
                 id="todoBoxTitle"
-                maxlength="200"
+                maxlength="15"
                 placeholder="Java"
               />
             </div>
@@ -910,8 +969,6 @@
       <h1 class="text-center w-full font-k2d text-3xl pt-14 font-bold">
         FOCUS SESSION
       </h1>
-      <!-- <p>cut distractions!</p> -->
-
       <div
         class="absolute rounded-full top-[280px] left-1/2 -translate-x-1/2 -translate-y-1/2 main-circle-container size-[252px]"
       >
@@ -1007,8 +1064,8 @@
       </footer>
     </section>
 
-    <section class="hidden relative h-[90vh] bg-white" id="main-quote-section">
-      <h1 class="font-k2d font-bold text-[28px] text-center mt-10">
+    <section class="hidden relative h-[80vh] bg-white" id="main-quote-section">
+      <h1 class="font-k2d font-bold text-[28px] text-center my-2">
         DAILY QUOTES
       </h1>
       <div
@@ -1103,9 +1160,9 @@
         checkScreenAndDevice();
       });
 
-      const ip = "https://develevate-production.up.railway.app";
+      const ip = "http://localhost:9000";
       const port = 9000;
-      const DOMAIN = `https://develevate-production.up.railway.app`;
+      const DOMAIN = `http://localhost:9000`;
 
       async function getCurrentUserData() {
         try {
@@ -1113,7 +1170,7 @@
           const { success, userData } = await getCurrentUser.json();
 
           if (!success) {
-            return Swal.fire({
+            return await Swal.fire({
               title: "not authenticated",
               text: "Please login to access the app",
               icon: "error",
@@ -1128,7 +1185,7 @@
           return userData;
         } catch (err) {
           console.log(err);
-          Swal.fire({
+          await Swal.fire({
             title: "Error",
             text: "An error occured, please try again",
             icon: "error",
@@ -1137,14 +1194,25 @@
           window.location.href = `${DOMAIN}/login`;
         }
       }
+      const mainP = document.querySelector("#main-page");
+      const loaderMain = mainP.querySelector(".loader");
+      function logout() {
+        loaderMain.style.display = "block flex";
+        fetch(`${DOMAIN}/logout`)
+          .then((res) => {
+            window.location.href = `${DOMAIN}`;
+          })
+          .catch((err) => console.log(err));
+
+        loaderMain.style.display = "none";
+      }
     </script>
     <script src="./components/script.js"></script>
     <script src="./components/noteBook.js"></script>
     <script src="./components/to-do.js"></script>
     <script src="./components/openAi.js"></script>
-    <!-- <script src="./components/project.js"></script> -->
     <script src="./components/TS_dist/focus_sessions.js"></script>
     <script src="./components/quote.js"></script>
-    <!-- <script src="touchTracker.js"></script> -->
+    <script src="./components/touchTracker.js"></script>
   </body>
 </html>

@@ -51,6 +51,3 @@ async function countLengthNotes(section = "notes") {
       return data;
     });
 }
-
-projectCardCouter.textContent = "5";
-journalCardCouter.textContent = "3";
