@@ -76,9 +76,7 @@ home.post("/generate", async (req, res) => {
       res.status(400).json({ success: false, message: "Prompt is required" });
       return;
     }
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB4LqRlKRHTHUFTcp63qL3WTOtca-ZT71A"
-    );
+    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const results = await model.generateContent(prompt);
     const generatedData = extractGeneratedData(results);
@@ -123,9 +121,7 @@ home.get("/generate", async (req, res) => {
       res.status(400).json({ success: false, message: "Prompt is required" });
       return;
     }
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB4LqRlKRHTHUFTcp63qL3WTOtca-ZT71A"
-    );
+    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const results = await model.generateContent(prompt);
     const generatedData = extractGeneratedData(results);
@@ -155,9 +151,7 @@ home.post("/assistance", async (req, res) => {
       res.status(400).json({ success: false, message: "Prompt is required" });
       return;
     }
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB4LqRlKRHTHUFTcp63qL3WTOtca-ZT71A"
-    );
+    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(assistancePrompt);
     res
@@ -178,9 +172,7 @@ home.get("/assistance", async (req, res) => {
       res.status(400).json({ success: false, message: "Prompt is required" });
       return;
     }
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB4LqRlKRHTHUFTcp63qL3WTOtca-ZT71A"
-    );
+    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(assistancePrompt);
     res

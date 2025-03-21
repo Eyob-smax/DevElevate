@@ -72,7 +72,7 @@ const store = MongoStore.create({
 });
 
 const sessionMiddleware = session({
-  secret: "dev elevate app",
+  secret: process.env.SESSION_SECRET,
   resave: true,
   saveUninitialized: true,
   store,
@@ -102,7 +102,7 @@ app.use("/notes", note);
 app.use("/to-do", todo);
 
 const verifyEmailHunter = async (email) => {
-  const apiKey = "162bad867fbb15565b9ff631341f35e101dbb038";
+  const apiKey = process.env.HUNTER_API_KEY;
   const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${apiKey}`;
 
   try {
