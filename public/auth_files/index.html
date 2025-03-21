@@ -34,6 +34,33 @@
       const logBtn = document.getElementById("first-page-log-btn");
       const signBtn = document.getElementById("first-page-sign-btn");
 
+      async function checkScreenAndDevice() {
+        const screen = window.screen.width;
+        const device = window.navigator.userAgent;
+
+        if (screen > 500) {
+          await Swal.fire({
+            title: "Please use a Mobile device",
+            text: "This app is optimized for mobile devices",
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
+          document.body.innerHTML =
+            "Please open it in mobile phones, and then refresh it";
+        }
+      }
+
+      setInterval(checkScreenAndDevice, 10000);
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        checkScreenAndDevice();
+        await getCurrentUserData();
+      });
+
+      window.addEventListener("resize", () => {
+        checkScreenAndDevice();
+      });
+
       logBtn.addEventListener("click", () => {
         window.location.href = `${BASE_URL}/login`;
       });
