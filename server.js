@@ -68,7 +68,7 @@ passport.deserializeUser(async (id, done) => {
 const store = MongoStore.create({
   mongoUrl: `${MAIN_DB}`,
   collectionName: "sessions",
-  ttl: 60 * 60 * 24,
+  ttl: 3 * 1000 * 60 * 60 * 24,
 });
 
 const sessionMiddleware = session({
