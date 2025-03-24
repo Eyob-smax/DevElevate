@@ -129,7 +129,10 @@ app.post("/register", async (req, res) => {
       .json({ valid: false, message: "Please fill in all" });
   }
 
-  const emailVerification = await verifyEmailHunter(email);
+  const regExp = /^[a-zA-Z0-9]+$/;
+
+  const emailVerification =
+    email.includes("@") && email.includes(".") && email.length > 5;
 
   if (!emailVerification.valid) {
     return res
