@@ -134,7 +134,7 @@ app.post("/register", async (req, res) => {
   const emailVerification =
     email.includes("@") && email.includes(".") && email.length > 5;
 
-  if (!emailVerification.valid) {
+  if (!emailVerification) {
     return res
       .status(400)
       .json({ valid: false, message: "please enter correct email to precede" });
