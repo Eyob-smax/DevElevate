@@ -23,7 +23,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 9000;
-const MAIN_URL = "https://dev-elevate-ruddy.vercel.app/";
+const MAIN_URL = "https://dev-elevate-ruddy.vercel.app";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
