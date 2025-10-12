@@ -23,7 +23,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 9000;
-const MAIN_URL = "http://localhost:9000";
+const MAIN_URL = "https://dev-elevate-ruddy.vercel.app";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -173,5 +173,3 @@ app.get("/quote", async (req, res) => {
 
 app.use(express.static("./public/auth_files", { acceptRanges: true }));
 app.listen(PORT, () => console.log(`Server running on ${MAIN_URL}`));
-
-export { MAIN_URL };
