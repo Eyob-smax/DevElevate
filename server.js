@@ -81,13 +81,12 @@ app.post(
   })
 );
 
-app.use(express.static("./public/auth_files", { acceptRanges: true }));
-
 app.use("/home", home);
 app.use("/login", login);
 app.use("/register", register);
 app.use("/notes", note);
 app.use("/to-do", todo);
+app.use(express.static("./public/auth_files", { acceptRanges: true }));
 
 const verifyEmailHunter = async (email) => {
   const apiKey = process.env.HUNTER_API_KEY || "YOUR_HUNTER_API_KEY";
