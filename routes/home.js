@@ -5,7 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ObjectId } from "mongodb";
 import { User, ChatHistory } from "../database.js";
 
-const MAIN_URL = "https://dev-elevate-ruddy.vercel.app";
+const MAIN_URL = "https://dev-elevate-ruddy.vercel.app/";
 
 dotenv.config();
 
