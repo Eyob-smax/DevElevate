@@ -15,8 +15,6 @@ const displayDetailsSection = mainProjectsSection.querySelector(
   ".project-details-display"
 );
 
-//card info
-
 const card = {
   title: mainProjectsSection.querySelector(".project-card-name"),
   description: mainProjectsSection.querySelector(".project-card-desc "),

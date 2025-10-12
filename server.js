@@ -4,46 +4,39 @@ import session from "express-session";
 import passport from "passport";
 import cors from "cors";
 import { Strategy as LocalStrategy } from "passport-local";
-
 import MongoStore from "connect-mongo";
 import bcrypt from "bcrypt";
 import { fileURLToPath } from "url";
 import path from "path";
+import dotenv from "dotenv";
+import axios from "axios";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import home from "./routes/home.js";
 import login from "./routes/login.js";
-import axios from "axios";
 import register from "./routes/register.js";
-import { User } from "./database.js";
 import note from "./routes/notes.js";
 import todo from "./routes/to_do.js";
-import { MAIN_DB } from "./database.js";
+import { User, MAIN_DB } from "./database.js";
 
-import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-
 const PORT = process.env.PORT || 9000;
-
-const MAIN_URL = `https://develevate-production.up.railway.app`;
-
-app.use(express.json());
-app.use(cors({ origin: "*" }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const MAIN_URL = "http://localhost:9000";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+app.use(cors({ origin: "*" }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 passport.use(
   new LocalStrategy(async (username, password, cb) => {
     try {
       const user = await User.findOne({ username });
-
-      if (!user) {
-        return cb(null, false);
-      }
-
+      if (!user) return cb(null, false);
       const isValid = await bcrypt.compare(password, user.password);
       return isValid ? cb(null, user) : cb(null, false);
     } catch (err) {
@@ -52,23 +45,20 @@ passport.use(
   })
 );
 
-passport.serializeUser(function (user, cb) {
-  cb(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
+passport.serializeUser((user, cb) => cb(null, user.id));
+passport.deserializeUser(async (id, cb) => {
   try {
     const user = await User.findById(id);
-    done(null, user);
+    cb(null, user);
   } catch (err) {
-    done(err, null);
+    cb(err, null);
   }
 });
 
 const store = MongoStore.create({
-  mongoUrl: `${MAIN_DB}`,
+  mongoUrl: MAIN_DB,
   collectionName: "sessions",
-  ttl: 3 * 1000 * 60 * 60 * 24,
+  ttl: 3 * 24 * 60 * 60,
 });
 
 const sessionMiddleware = session({
@@ -76,10 +66,9 @@ const sessionMiddleware = session({
   resave: true,
   saveUninitialized: true,
   store,
-  cookie: { secure: false, httpOnly: true, maxAge: 3 * 1000 * 60 * 60 * 24 },
+  cookie: { secure: false, httpOnly: true, maxAge: 3 * 24 * 60 * 60 * 1000 },
 });
 
-//check is user is authenticated
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -89,10 +78,7 @@ app.post(
   passport.authenticate("local", {
     failureRedirect: "/login-failure",
     successRedirect: "/protected-route",
-  }),
-  (err, req, res, next) => {
-    if (err) next(err);
-  }
+  })
 );
 
 app.use("/home", home);
@@ -102,74 +88,58 @@ app.use("/notes", note);
 app.use("/to-do", todo);
 
 const verifyEmailHunter = async (email) => {
-  const apiKey = "162bad867fbb15565b9ff631341f35e101dbb038";
+  const apiKey = process.env.HUNTER_API_KEY || "YOUR_HUNTER_API_KEY";
   const url = `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${apiKey}`;
-
   try {
     const response = await axios.get(url);
     const data = response.data.data;
-
-    if (data.result === "deliverable") {
-      return { valid: true, message: "Email is valid and deliverable." };
-    } else {
-      return { valid: false, message: `Email is ${data.result}.` };
-    }
-  } catch (error) {
-    console.error("Error verifying email:", error.message);
+    return data.result === "deliverable"
+      ? { valid: true, message: "Email is valid and deliverable." }
+      : { valid: false, message: `Email is ${data.result}.` };
+  } catch {
     return { valid: false, message: "Email verification failed." };
   }
 };
 
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-
-  if (username === "" || email === "" || password === "") {
+  if (!username || !email || !password) {
     return res
       .status(400)
-      .json({ valid: false, message: "Please fill in all" });
+      .json({ valid: false, message: "Please fill in all fields" });
   }
-
-  const regExp = /^[a-zA-Z0-9]+$/;
-
-  const emailVerification =
-    email.includes("@") && email.includes(".") && email.length > 5;
-
-  if (!emailVerification) {
+  if (
+    !/^[a-zA-Z0-9]+$/.test(username) ||
+    !email.includes("@") ||
+    !email.includes(".")
+  ) {
     return res
       .status(400)
-      .json({ valid: false, message: "please enter correct email to precede" });
+      .json({ valid: false, message: "Invalid username or email" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const isUserExist = await User.findOne({ username });
-  const isEmailExist = await User.findOne({ email });
-
-  if (isUserExist || isEmailExist) {
+  const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+  if (existingUser) {
     return res.status(409).json({
       valid: false,
-      message:
-        "User credentials already exist! Please use unique email and username",
-      which: isUserExist ? "username" : isEmailExist ? "email" : "both",
+      message: "User credentials already exist",
+      which: existingUser.username === username ? "username" : "email",
     });
   }
 
-  const newUser = new User({
-    username: username,
-    email: email,
-    password: hashedPassword,
-  });
-
   try {
+    const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
     res
       .status(200)
       .json({ valid: true, message: "User registered successfully" });
-  } catch (error) {
-    res.status(500).json({ valid: false, message: error.message });
+  } catch (err) {
+    res.status(500).json({ valid: false, message: err.message });
   }
 });
 
-app.get("/protected-route", (req, res, next) => {
+app.get("/protected-route", (req, res) => {
   if (req.isAuthenticated()) {
     res.status(200).json({ success: true, message: "You are authenticated" });
   } else {
@@ -181,32 +151,27 @@ app.get("/protected-route", (req, res, next) => {
 
 app.get("/logout", (req, res, next) => {
   req.logout((err) => {
-    if (err) {
-      return next(err);
-    }
+    if (err) return next(err);
     res.redirect("/");
   });
 });
 
-app.get("/login-failure", (req, res, next) => {
+app.get("/login-failure", (req, res) => {
   res
     .status(401)
-    .json({ success: false, message: "Incorrect password or user name" });
-  next();
+    .json({ success: false, message: "Incorrect username or password" });
 });
 
 app.get("/quote", async (req, res) => {
   try {
-    const response = await axios.get("https://zenquotes.io/api/quotes");
-    const data = response.data;
+    const { data } = await axios.get("https://zenquotes.io/api/quotes");
     res.status(200).json({ success: true, data });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
 app.use(express.static("./public/auth_files", { acceptRanges: true }));
+app.listen(PORT, () => console.log(`Server running on ${MAIN_URL}`));
+
 export { MAIN_URL };
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${MAIN_URL}`);
-});

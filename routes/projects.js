@@ -41,7 +41,6 @@ const upload = multer({
   limits: { fileSize: 500 * 1024 * 1024 },
 });
 
-// Endpoint to handle file uploads and metadata
 projects.post(
   "/",
   upload.fields([
@@ -59,17 +58,6 @@ projects.post(
         ? req.files.source_code[0].path
         : null;
       if (!sourceCodePath) throw new Error("Source code file is missing");
-
-      console.log("Received data:", {
-        name,
-        description,
-        date,
-        time,
-        concept,
-        imagePath,
-        videoPath,
-        sourceCodePath,
-      });
 
       res.status(200).json({ message: "Project uploaded successfully!" });
     } catch (error) {

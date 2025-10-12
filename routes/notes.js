@@ -1,223 +1,220 @@
 import express from "express";
-import debug from "debug";
-
-const logger = debug("app:notes");
-
 import { NotebookCollection, NoteBookBox } from "../database.js";
-import { MongoClient, ObjectId } from "mongodb";
 
 const note = express.Router();
 note.use(express.json());
 
-note.post("/", async (req, res) => {
-  const { parentTitle, parentDate, title, note, topic } = req.body;
-  const userId = req.query.userId;
+function validateUserId(userId, res) {
   if (!userId) {
-    return res
-      .status(401)
-      .json({ success: false, message: "User Unautherized!" });
+    res.status(401).json({ success: false, message: "User Unauthorized!" });
+    return false;
   }
+  return true;
+}
+
+note.post("/", async (req, res) => {
+  const { parentTitle, parentDate, title, note: content, topic } = req.body;
+  const userId = req.query.userId;
+  if (!validateUserId(userId, res)) return;
+
   const parent = `${parentTitle}-${parentDate}`;
+
   try {
-    const noteBook = new NotebookCollection({
+    const newNote = new NotebookCollection({
       createTime: Date.now(),
       userId,
       parent,
       title,
       topic,
-      note,
+      note: content,
     });
 
-    noteBook
-      .save()
-      .then(() => {
-        res.json({
-          success: true,
-          message: "succesfully send notes to database✅",
-        });
-      })
-      .catch((err) => {
-        res.json({
-          success: false,
-          message: "can't save notes to the DB",
-          error: err.message,
-        });
-      });
+    await newNote.save();
+    res
+      .status(200)
+      .json({ success: true, message: "Note saved successfully ✅" });
   } catch (err) {
-    res.json({
+    res.status(500).json({
       success: false,
-      message: "server Error while saving the notes",
+      message: "Server error while saving the note",
       error: err.message,
     });
   }
 });
 
 note.delete("/", async (req, res) => {
-  const { title, userId, note, topic } = req.body;
-  if (!userId) {
+  const { title, userId, note: content, topic } = req.body;
+  if (!validateUserId(userId, res)) return;
+  if (!title || !content || !topic) {
     return res
-      .status(401)
-      .json({ success: false, message: "User Unautherized!" });
+      .status(400)
+      .json({ success: false, message: "Incomplete data!" });
   }
-  if (!title || !note || !topic)
-    return res.json({ success: false, message: "Incomplete data!" });
 
   try {
-    await NotebookCollection.deleteOne({ title, userId, note, topic });
-    res.json({ success: true, message: "Note deleted successfully" });
+    await NotebookCollection.deleteOne({ title, userId, note: content, topic });
+    res
+      .status(200)
+      .json({ success: true, message: "Note deleted successfully" });
   } catch (err) {
-    res.json({
+    res.status(500).json({
       success: false,
-      message: "there is something wrong with the DB!",
+      message: "Database error while deleting the note",
+      error: err.message,
     });
   }
 });
 
-const notesFromDB = async () => {
-  const notes = await NotebookCollection.collection
-    .find()
-    .sort({
-      createTime: 1,
-    })
-    .toArray();
-  return notes;
-};
-
 note.get("/", async (req, res) => {
   const { parentTitle, userId, parentDate } = req.query;
-  if (!userId) {
-    return res.json({ success: false, message: "User Unautherized!" });
-  }
+  if (!validateUserId(userId, res)) return;
+
   try {
+    const parent = `${parentTitle}-${parentDate}`;
     const notes = await NotebookCollection.collection
-      .find({ parent: `${parentTitle}-${parentDate}`, userId })
-      .sort({
-        createTime: 1,
-      })
+      .find({ parent, userId })
+      .sort({ createTime: 1 })
       .toArray();
-    res.json(notes);
+
+    res.status(200).json({ success: true, notes });
   } catch (err) {
-    res.json({ success: false, message: "server Error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
 note.put("/", async (req, res) => {
-  console.log(req.body);
+  const {
+    parentTitle,
+    parentDate,
+    title,
+    note: oldNote,
+    topic,
+    newTitle,
+    newTopic,
+    newNote,
+  } = req.body;
+
+  const userId = req.query.userId;
+  if (!validateUserId(userId, res)) return;
+
+  if (
+    !parentTitle ||
+    !parentDate ||
+    !title ||
+    !oldNote ||
+    !topic ||
+    !newTitle ||
+    !newTopic ||
+    !newNote
+  ) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Incomplete data!" });
+  }
+
+  if (title === newTitle && topic === newTopic && oldNote === newNote) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No changes made!" });
+  }
 
   try {
-    const {
-      parentTitle,
-      parentDate,
-      title,
-      note,
-      topic,
-
-      newTitle,
-      newTopic,
-      newNote,
-    } = req.body;
-    const userId = req.query.userId;
-    if (!userId) {
-      return res.json({ success: false, message: "User Unautherized!" });
-    }
-
-    if (
-      !newTitle ||
-      !newTopic ||
-      !newNote ||
-      !title ||
-      !topic ||
-      !note ||
-      !parentTitle ||
-      !parentDate
-    ) {
-      return res.json({ success: false, message: "Incomplete data!" });
-    }
-
-    if (newTitle === title && newTopic === topic && newNote === note) {
-      return res.json({ success: false, message: "No changes made!" });
-    }
     const parent = `${parentTitle}-${parentDate}`;
     const noteData = await NotebookCollection.findOne({
       parent,
       userId,
       title,
-      note,
+      note: oldNote,
       topic,
     });
+
+    if (!noteData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Note not found!" });
+    }
 
     noteData.title = newTitle;
     noteData.topic = newTopic;
     noteData.note = newNote;
     await noteData.save();
-    res.json({ success: true, message: "Note Updated Successfully" });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Note updated successfully" });
   } catch (err) {
-    res.json({ success: false, message: "server Error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
 note.post("/box", async (req, res) => {
   const { title, date } = req.body;
   const userId = req.query.userId;
+  if (!validateUserId(userId, res)) return;
+
   try {
-    const newBox = new NoteBookBox({
-      title,
-      userId,
-      date,
-      number: 0,
-    });
+    const newBox = new NoteBookBox({ title, userId, date, number: 0 });
     await newBox.save();
+
     const boxData = await NoteBookBox.findOne({ title, userId, date });
     res.status(200).json({ success: true, boxData });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
 note.get("/box", async (req, res) => {
-  try {
-    const userId = req.query.userId;
-    if (!userId) {
-      return res
-        .status(403)
-        .json({ success: false, message: "User Unautherized!" });
-    }
-    let number = 0;
-    const boxData = await NoteBookBox.find({ userId });
-    boxData.forEach(async (box) => {
-      const title = box.title;
-      const date = box.date;
+  const userId = req.query.userId;
+  if (!validateUserId(userId, res)) return;
 
-      const count = await NotebookCollection.collection.countDocuments({
-        parent: `${title}-${date}`,
-        userId,
-      });
-      box.number = count;
-      await box.save();
-    });
-    res.json({ success: true, data: boxData });
+  try {
+    const boxData = await NoteBookBox.find({ userId });
+
+    // Update number of notes in each box
+    await Promise.all(
+      boxData.map(async (box) => {
+        const count = await NotebookCollection.collection.countDocuments({
+          parent: `${box.title}-${box.date}`,
+          userId,
+        });
+        box.number = count;
+        await box.save();
+      })
+    );
+
+    res.status(200).json({ success: true, data: boxData });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
 note.delete("/box", async (req, res) => {
   const { title, userId, date } = req.body;
-  console.log(req.body);
-  if (!userId) {
-    return res.json({ success: false, message: "User Unautherized!" });
-  }
-
+  if (!validateUserId(userId, res)) return;
   if (!title || !date)
-    return res.json({ success: false, message: "Incomplete data!" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Incomplete data!" });
+
   try {
     await NoteBookBox.deleteOne({ title, userId, date });
     await NotebookCollection.deleteMany({ parent: `${title}-${date}` });
+
     res
       .status(200)
-      .json({ success: true, message: "Box deleted successfully " + title });
+      .json({ success: true, message: `Box '${title}' deleted successfully` });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
