@@ -81,6 +81,8 @@ app.post(
   })
 );
 
+app.use(express.static("./public/auth_files", { acceptRanges: true }));
+
 app.use("/home", home);
 app.use("/login", login);
 app.use("/register", register);
@@ -171,5 +173,4 @@ app.get("/quote", async (req, res) => {
   }
 });
 
-app.use(express.static("./public/auth_files", { acceptRanges: true }));
 app.listen(PORT, () => console.log(`Server running on ${MAIN_URL}`));
